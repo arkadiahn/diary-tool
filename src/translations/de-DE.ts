@@ -2,7 +2,7 @@ export default {
     // Common
     welcome: "Willkommen {name}!",
 
-    // Langues
+    // Languages
     languages: {
         "en-US": "Englisch (US)",
         "de-DE": "Deutsch",

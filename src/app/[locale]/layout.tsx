@@ -11,6 +11,7 @@ import Header from "../layout/header";
 /*                                    Fonts                                   */
 /* -------------------------------------------------------------------------- */
 const openSans = Open_Sans({
+	subsets: ["latin"],
     weight: "400",
 });
 

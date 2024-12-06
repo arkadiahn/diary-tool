@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
             }
             return "";
         })(),
-        NEXT_DEFAULT_LOCALE: "en-US",
+        NEXT_DEFAULT_LOCALE: "de-DE",
     },
 };
 
