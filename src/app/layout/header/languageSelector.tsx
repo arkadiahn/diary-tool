@@ -1,17 +1,21 @@
 "use client";
 
-import { useScopedI18n, useChangeLocale, useCurrentLocale } from "@/locales/client";
+import {
+    useChangeLocale,
+    useCurrentLocale,
+    useScopedI18n,
+} from "@/locales/client";
 import { Select, SelectItem } from "@nextui-org/react";
 
 /* -------------------------------------------------------------------------- */
 /*                                  Component                                 */
 /* -------------------------------------------------------------------------- */
 export default function LanguageSelector() {
-	const changeLocale = useChangeLocale({
-		preserveSearchParams: true
-	});
+    const changeLocale = useChangeLocale({
+        preserveSearchParams: true,
+    });
     const t = useScopedI18n("languages");
-	const locale = useCurrentLocale();
+    const locale = useCurrentLocale();
 
     const getCountryFlag = (countryCode: string) => {
         const codePoints = countryCode
@@ -25,18 +29,20 @@ export default function LanguageSelector() {
         <Select
             className="w-32"
             aria-label="Language"
-			selectionMode="single"
+            selectionMode="single"
             disallowEmptySelection
             selectedKeys={[locale]}
-            items={(process.env.NEXT_PUBLIC_LOCALES?.split(",") ?? []).map(locale => ({
-                key: locale,
-                // @ts-expect-error IDK
-                label: `${getCountryFlag(locale.split("-")[1])} ${t(locale)}`
-            }))}
+            items={(process.env.NEXT_PUBLIC_LOCALES?.split(",") ?? []).map(
+                (locale) => ({
+                    key: locale,
+                    // @ts-expect-error IDK
+                    label: `${getCountryFlag(locale.split("-")[1])} ${t(locale)}`,
+                }),
+            )}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onSelectionChange={(value) => changeLocale(value.currentKey as any)}
         >
-			{(locale) => (
+            {(locale) => (
                 <SelectItem key={locale.key} value={locale.key}>
                     {locale.label}
                 </SelectItem>

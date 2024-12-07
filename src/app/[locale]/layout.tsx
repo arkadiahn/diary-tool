@@ -4,14 +4,13 @@ import { Open_Sans } from "next/font/google";
 import Providers from "./providers";
 
 import "./globals.css";
-import { cn } from "@nextui-org/react";
-import Header from "../layout/header";
+import SidebarComponent from "../layout/sidebar";
 
 /* -------------------------------------------------------------------------- */
 /*                                    Fonts                                   */
 /* -------------------------------------------------------------------------- */
 const openSans = Open_Sans({
-	subsets: ["latin"],
+    subsets: ["latin"],
     weight: "400",
 });
 
@@ -41,11 +40,15 @@ export default async function RootLayout({
         <html suppressHydrationWarning lang="en">
             <body
                 suppressHydrationWarning
-                className={cn(openSans.className, "antialiased min-h-dvh")}
+                className={`${openSans.className} antialiased h-full`}
             >
                 <Providers locale={locale.locale}>
-                    <Header />
-                    {children}
+                    <div className="flex h-dvh overflow-hidden">
+                        <SidebarComponent />
+                        <div className="flex-1 flex flex-col relative">
+                            {children}
+                        </div>
+                    </div>
                 </Providers>
             </body>
         </html>

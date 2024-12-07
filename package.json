@@ -3,15 +3,16 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "next dev --turbopack",
+        "dev": "next dev --turbo",
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
+        "orval": "orval",
         "format": "biome check --write"
     },
     "dependencies": {
         "@iconify/react": "^5.0.2",
-        "@nextui-org/react": "^2.4.8",
+        "@nextui-org/react": "2.4.8",
         "framer-motion": "^11.13.1",
         "next": "15.0.3",
         "next-international": "^1.3.1",
@@ -19,6 +20,7 @@
         "nuqs": "^2.2.3",
         "react": "19.0.0-rc-66855b96-20241106",
         "react-dom": "19.0.0-rc-66855b96-20241106",
+        "tailwind-scrollbar": "^3.1.0",
         "usehooks-ts": "^3.1.0"
     },
     "devDependencies": {

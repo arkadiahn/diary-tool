@@ -1,9 +1,9 @@
 "use client";
 
 import { I18nProviderClient } from "@/locales/client";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { NextUIProvider } from "@nextui-org/react";
 import { ThemeProvider } from "next-themes";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export default function Providers({
     children,
