@@ -31,7 +31,7 @@
         },
         "typecheck": {
             "dependsOn": ["^topo"],
-            "outputs": ["node_modules/.cache/tsbuildinfo.json"]
+            "outputs": ["./node_modules/.cache/tsbuildinfo.json"]
         }
     }
 }
