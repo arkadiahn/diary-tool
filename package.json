@@ -1,20 +1,17 @@
 {
     "name": "@arkadia/openspace",
     "private": true,
-    "workspaces": [
-        "packages/*",
-        "apps/*"
-    ],
+    "workspaces": ["packages/*", "apps/*"],
     "scripts": {
         "clean": "git clean -xdf node_modules .turbo",
         "clean:workspaces": "turbo clean",
         "clean:all": "bun clean:workspaces && bun clean",
-        "format": "biome format --write .",
-        "typecheck": "turbo typecheck",
-        "checkall": "bun format && bun lint && bun typecheck",
         "lint": "turbo lint",
         "lint:repo": "bunx sherif@latest",
         "lint:repo:fix": "bunx sherif@latest --fix",
+        "format": "biome format --write .",
+        "typecheck": "turbo typecheck",
+        "checkall": "bun format && bun lint && bun typecheck && bun lint:repo",
         "dev": "turbo dev --parallel",
         "dev:cnauth": "turbo dev --filter=@arkadia/cnauth",
         "dev:frontend": "turbo dev --filter=@arkadia/frontend",
