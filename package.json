@@ -1,5 +1,5 @@
 {
-    "name": "@arkadia/openspace",
+    "name": "@arkadia/intra",
     "private": true,
     "workspaces": ["packages/*", "apps/*"],
     "scripts": {

@@ -1,11 +1,10 @@
 import { formatRedirectUrl } from "@/utils/helpers";
 import { globalConfig } from "@/utils/config";
 
-
 /* -------------------------------------------------------------------------- */
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
-export async function signInClient(provider: string, redirect: string) {
+export async function signIn(provider: string, redirect: string) {
     const signUrl = `${globalConfig.baseApiUrl}${globalConfig.loginEndpoint}?${new URLSearchParams(
         {
             redirect: formatRedirectUrl(redirect),
@@ -15,7 +14,7 @@ export async function signInClient(provider: string, redirect: string) {
     window.location.href = signUrl;
 }
 
-export async function signOutClient(redirect: string) {
+export async function signOut(redirect: string) {
     const signUrl = `${globalConfig.baseApiUrl}${globalConfig.signoutEndpoint}?${new URLSearchParams(
         {
             redirect: formatRedirectUrl(redirect),
@@ -23,3 +22,4 @@ export async function signOutClient(redirect: string) {
     )}`;
     window.location.href = signUrl;
 }
+

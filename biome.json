@@ -4,7 +4,7 @@
         "enabled": true
     },
     "linter": {
-        "ignore": ["node_modules", ".next", "apps/backend", "dist"],
+        "ignore": ["node_modules", ".next", "dist"],
         "enabled": true,
         "rules": {
             "recommended": true,
@@ -20,7 +20,7 @@
         }
     },
     "formatter": {
-        "ignore": ["node_modules", ".next", "apps/backend", "dist"],
+        "ignore": ["node_modules", ".next", "dist"],
         "indentStyle": "space",
         "indentWidth": 4
     }

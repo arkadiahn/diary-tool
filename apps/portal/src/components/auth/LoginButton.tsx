@@ -2,7 +2,7 @@
 
 import CustomIcon from "@/components/common/CustomIcon";
 import type { IconifyIcon } from "@iconify/types";
-import { signInServer } from "@arkadia/cnauth";
+import { signIn } from "@arkadia/cnauth/client";
 import { Button } from "@nextui-org/react";
 
 export interface LoginButtonProps {
@@ -14,7 +14,7 @@ export interface LoginButtonProps {
 
 export function LoginButton({ name, icon, providerKey, redirectUrl }: LoginButtonProps) {
     const onSignIn = () => {
-        signInServer(providerKey, redirectUrl || "/");
+        signIn(providerKey, redirectUrl || "/");
     };
 
     return (

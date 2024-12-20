@@ -2,6 +2,8 @@ import AuthProviders from "@/components/auth/AuthProviders";
 import Header from "@components/layout/Header";
 import Footer from "@components/layout/Footer";
 import { siteConfig } from "@/constants/site";
+import { Spinner } from "@nextui-org/react";
+import { Suspense } from "react";
 import Image from "next/image";
 
 export default function HomePage() {
@@ -24,7 +26,13 @@ function AuthCard() {
     return (
         <div className="flex flex-col gap-20 sm:gap-8 rounded-large sm:bg-content1 sm:px-8 pb-10 pt-6 sm:shadow-large">
             <WelcomeSection />
-            <AuthProviders />
+			<Suspense fallback={
+				<div className="flex flex-col gap-2">
+					<Spinner />
+				</div>
+			}>
+                <AuthProviders />
+            </Suspense>
         </div>
     );
 }

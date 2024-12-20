@@ -1,13 +1,20 @@
 import { nextui } from "@nextui-org/react";
 import scrollbar from "tailwind-scrollbar";
 import type { Config } from "tailwindcss";
+import path from "node:path";
+
 
 export default {
     content: [
-        "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+		// Components
         "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+        // App
         "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-        "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
+        // @nextui-org
+        path.join(
+            require.resolve("@nextui-org/theme"),
+            "../../dist/**/*.{js,ts,jsx,tsx}",
+        ),
     ],
     theme: {
         extend: {

@@ -1,7 +1,8 @@
 import { AuthContext, type AuthContextValue } from "@/components/AuthProvider";
-import { globalConfig } from "@/utils/config";
 import type { UseSessionOptions } from "@/types";
+import { globalConfig } from "@/utils/config";
 import React from "react";
+
 
 /* -------------------------------------------------------------------------- */
 /*                               useSession Hook                              */

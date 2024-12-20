@@ -1,12 +1,19 @@
 import { defineConfig } from "tsup";
+import path from "path";
 
 export default defineConfig({
-    entry: ["src/index.ts"],
-    format: ["cjs", "esm"],
-    dts: true,
-    splitting: false,
-    sourcemap: true,
-    clean: true,
-    treeshake: true,
-    external: ["react", "react-dom", "next"],
+	entry: {
+		index: "src/index.ts",
+		client: "src/client.ts",
+		server: "src/server.ts",
+	},
+	outDir: "dist",
+	format: ["esm", "cjs"],
+	sourcemap: true,
+	dts: true,
+	clean: true,
+	external: ["react", "next"],
+	treeshake: true,
+	splitting: false,
+	bundle: true
 });

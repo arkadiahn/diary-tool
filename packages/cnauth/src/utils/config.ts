@@ -1,4 +1,5 @@
-import type { AuthConfig, GlobalState } from "@/types";
+import { AuthConfig, GlobalState } from "@/types";
+
 
 const defaultConfig: Omit<AuthConfig, "baseApiUrl"> = {
 	baseUrl: "",
@@ -7,24 +8,29 @@ const defaultConfig: Omit<AuthConfig, "baseApiUrl"> = {
     sessionEndpoint: "/session",
 };
 
-export let globalConfig: GlobalState = {
+declare global {
+    var _cnauthConfig: GlobalState | undefined;
+}
+
+const globalConfig: GlobalState = (globalThis._cnauthConfig ??= {
     _lastSync: 0,
     _session: undefined,
     _getSession: () => Promise.resolve(undefined),
     baseApiUrl: "",
     ...defaultConfig,
-};
+});
 
-export const configureAuth = ({
+const configureAuth = ({
     baseApiUrl,
     ...config
 }: Partial<Omit<AuthConfig, "baseApiUrl">> & {
     baseApiUrl: string;
 }): GlobalState => {
-    globalConfig = {
-        ...globalConfig,
+    Object.assign(globalConfig, {
         ...config,
         baseApiUrl,
-    };
+    });
     return globalConfig;
 };
+
+export { globalConfig, configureAuth };

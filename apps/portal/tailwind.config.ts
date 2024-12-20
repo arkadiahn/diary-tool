@@ -2,6 +2,7 @@ import { nextui } from "@nextui-org/theme";
 import type { Config } from "tailwindcss";
 import path from "node:path";
 
+
 export default {
     content: [
         // Components

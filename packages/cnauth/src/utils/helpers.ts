@@ -1,4 +1,5 @@
-import { globalConfig } from "./config";
+import { globalConfig } from "@/utils/config";
+
 
 export const formatRedirectUrl = (path: string): string => {
 	// if (path.startsWith('http')) return path;

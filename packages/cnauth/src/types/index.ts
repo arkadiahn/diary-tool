@@ -1,15 +1,19 @@
+import { NextRequest } from "next/server";
+
 type ISODateString = string;
 
 export interface User {
     id: number;
-    name: string;
+    nickName: string;
     email: string;
-    image: string;
+    imageURL: string;
+	scopes: string[];
 }
 
 export interface Session {
-    user?: User;
-    expires: ISODateString;
+    user: User;
+    // expires: ISODateString;
+	// @todo implement
 }
 
 export interface UseSessionOptions<R extends boolean> {
@@ -36,3 +40,10 @@ export interface GlobalState extends AuthConfig {
     _session?: Session | null;
     _getSession: (params?: { event?: string }) => Promise<void>;
 }
+
+export type NextRequestWrapper = {
+	request: NextRequest;
+	params?: Record<string, string | string[]>;
+};
+  
+export type RouteHandlerCallback = (req: NextRequestWrapper) => Promise<Response> | Response;
