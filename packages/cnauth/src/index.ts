@@ -10,8 +10,9 @@ export { signInClient, signOutClient } from "./lib/client";
 
 // Server
 export { signInServer, signOutServer } from "./lib/server";
-// get session on server
-// middleware
+
+// Utils
+export { configureAuth } from "./utils/config";
 
 // // Components
 // export { NCSessionProvider } from './components/AuthProvider';

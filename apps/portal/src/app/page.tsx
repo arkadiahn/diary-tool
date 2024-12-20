@@ -1,5 +1,4 @@
-import { AUTH_PROVIDERS } from "@constants/auth";
-import { LoginButton } from "@components/auth/LoginButton";
+import AuthProviders from "@/components/auth/AuthProviders";
 import Header from "@components/layout/Header";
 import Footer from "@components/layout/Footer";
 import { siteConfig } from "@/constants/site";
@@ -44,16 +43,6 @@ function WelcomeSection() {
             <p className="text-lg sm:text-small text-default-500">
                 Login to get started
             </p>
-        </div>
-    );
-}
-
-function AuthProviders() {
-    return (
-        <div className="flex flex-col gap-2">
-            {AUTH_PROVIDERS.map((provider) => (
-                <LoginButton key={provider.name} {...provider} />
-            ))}
         </div>
     );
 }

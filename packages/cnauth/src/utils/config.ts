@@ -1,6 +1,7 @@
 import type { AuthConfig, GlobalState } from "@/types";
 
-const defaultConfig: Omit<AuthConfig, "baseUrl"> = {
+const defaultConfig: Omit<AuthConfig, "baseApiUrl"> = {
+	baseUrl: "",
     loginEndpoint: "/login",
     signoutEndpoint: "/logout",
     sessionEndpoint: "/session",
@@ -10,20 +11,20 @@ export let globalConfig: GlobalState = {
     _lastSync: 0,
     _session: undefined,
     _getSession: () => Promise.resolve(undefined),
-    baseUrl: "",
+    baseApiUrl: "",
     ...defaultConfig,
 };
 
 export const configureAuth = ({
-    baseUrl,
+    baseApiUrl,
     ...config
-}: Partial<Omit<AuthConfig, "baseUrl">> & {
-    baseUrl: string;
+}: Partial<Omit<AuthConfig, "baseApiUrl">> & {
+    baseApiUrl: string;
 }): GlobalState => {
     globalConfig = {
         ...globalConfig,
         ...config,
-        baseUrl,
+        baseApiUrl,
     };
     return globalConfig;
 };

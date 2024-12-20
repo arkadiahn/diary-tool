@@ -6,14 +6,15 @@ import { signInServer } from "@arkadia/cnauth";
 import { Button } from "@nextui-org/react";
 
 export interface LoginButtonProps {
+	redirectUrl?: string;
     providerKey: string;
     icon: IconifyIcon;
     name: string;
 }
 
-export function LoginButton({ name, icon, providerKey }: LoginButtonProps) {
+export function LoginButton({ name, icon, providerKey, redirectUrl }: LoginButtonProps) {
     const onSignIn = () => {
-        signInServer(providerKey, "/");
+        signInServer(providerKey, redirectUrl || "/");
     };
 
     return (

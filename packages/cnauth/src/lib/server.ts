@@ -1,5 +1,7 @@
+import { redirect as redirectTo } from "next/navigation";
+import { formatRedirectUrl } from "@/utils/helpers";
 import { globalConfig } from "@/utils/config";
-import { redirect } from "next/navigation";
+
 
 /* -------------------------------------------------------------------------- */
 /*                                   Helpers                                  */
@@ -9,22 +11,23 @@ import { redirect } from "next/navigation";
 /* -------------------------------------------------------------------------- */
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
-export function signInServer(provider: string, redirectUrl: string) {
-    const signUrl = `${globalConfig.baseUrl}${globalConfig.loginEndpoint}/${provider}?${new URLSearchParams(
+export function signInServer(provider: string, redirect: string) {
+    const signUrl = `${globalConfig.baseApiUrl}${globalConfig.loginEndpoint}?${new URLSearchParams(
         {
-            redirect: redirectUrl,
+            redirect: formatRedirectUrl(redirect),
+			method: provider
         },
     )}`;
-    redirect(signUrl);
+    redirectTo(signUrl);
 }
 
-export function signOutServer(redirectUrl: string) {
-    const signUrl = `${globalConfig.baseUrl}${globalConfig.signoutEndpoint}?${new URLSearchParams(
+export function signOutServer(redirect: string) {
+    const signUrl = `${globalConfig.baseApiUrl}${globalConfig.signoutEndpoint}?${new URLSearchParams(
         {
-            redirect: redirectUrl,
+            redirect: formatRedirectUrl(redirect),
         },
     )}`;
-    redirect(signUrl);
+    redirectTo(signUrl);
 }
 
 export function auth() {

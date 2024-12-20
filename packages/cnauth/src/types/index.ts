@@ -24,7 +24,8 @@ export interface SessionProviderProps {
 }
 
 export interface AuthConfig {
-    baseUrl: string;
+	baseUrl: string;
+    baseApiUrl: string;
     loginEndpoint: string;
     signoutEndpoint: string;
     sessionEndpoint: string;
