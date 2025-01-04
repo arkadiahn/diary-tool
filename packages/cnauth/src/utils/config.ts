@@ -3,6 +3,7 @@ import { AuthConfig, GlobalState } from "@/types";
 
 const defaultConfig: Omit<AuthConfig, "baseApiUrl"> = {
 	baseUrl: "",
+	apiUrl: "",
     loginEndpoint: "/login",
     signoutEndpoint: "/logout",
     sessionEndpoint: "/session",

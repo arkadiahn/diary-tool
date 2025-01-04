@@ -28,8 +28,9 @@ export interface SessionProviderProps {
 }
 
 export interface AuthConfig {
-	baseUrl: string;
-    baseApiUrl: string;
+	apiUrl: string;		// apiUrl is the url of the backend
+	baseUrl: string;	// baseUrl is the url of the current application
+	baseApiUrl: string;	// baseApiUrl is the url of the backend api
     loginEndpoint: string;
     signoutEndpoint: string;
     sessionEndpoint: string;
