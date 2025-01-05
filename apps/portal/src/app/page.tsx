@@ -8,7 +8,7 @@ import Image from "next/image";
 
 export default function HomePage() {
     return (
-        <div className="flex min-h-screen flex-col">
+        <div className="flex min-h-dvh flex-col">
             <Header />
 
             <main className="flex-1 flex items-center justify-center p-5">
