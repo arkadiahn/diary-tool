@@ -4,7 +4,12 @@ import { Open_Sans } from "next/font/google";
 import Providers from "./providers";
 
 import "./globals.css";
-import SidebarComponent from "../layout/sidebar";
+
+import Sidebar from "../layout/sidebar";
+import Footer from "../layout/footer";
+
+import icRoundCalendarMonth from "@iconify/icons-ic/round-calendar-month";
+import icRoundHome from "@iconify/icons-ic/round-home";
 
 /* -------------------------------------------------------------------------- */
 /*                                    Fonts                                   */
@@ -44,9 +49,23 @@ export default async function RootLayout({
             >
                 <Providers locale={locale.locale}>
                     <div className="flex h-dvh overflow-hidden">
-                        <SidebarComponent />
-                        <div className="flex-1 flex flex-col relative">
+                        <Sidebar
+                            items={[
+                                {
+                                    icon: icRoundHome,
+									label: "MissionBoard",
+                                    href: "/",
+                                },
+								{
+                                    icon: icRoundCalendarMonth,
+									label: "Calendar",
+                                    href: "/calendar",
+                                },
+                            ]}
+                        />
+                        <div className="flex-1 flex flex-col relative z-10">
                             {children}
+							<Footer />
                         </div>
                     </div>
                 </Providers>

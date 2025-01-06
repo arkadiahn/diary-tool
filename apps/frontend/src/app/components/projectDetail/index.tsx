@@ -1,28 +1,80 @@
 "use client";
 
-import { Icon } from "@iconify/react";
-import { BreadcrumbItem, Breadcrumbs } from "@nextui-org/react";
+import { BreadcrumbItem, Breadcrumbs, Button } from "@nextui-org/react";
+import ProjectState from "../common/projectState";
+import CustomIcon from "../common/CustomIcon";
+import { Project } from "@/api/missionboard";
+import {Chip} from "@nextui-org/react";
 
-export default function ProjectDetailView() {
+import icGithubFill from "@iconify/icons-ri/github-fill";
+import TimeStepper from "../missionView/timeStepper";
+
+
+interface ProjectDetailViewProps {
+	data: Project;
+}
+export default function ProjectDetailView({ data }: ProjectDetailViewProps) {
     return (
         <>
             <div className="w-full p-6">
                 <Breadcrumbs
                     size="lg"
-                    className="mb-6"
+                    className="mb-5"
                     itemClasses={{
                         item: "text-default-600",
                         separator: "text-default-400",
                     }}
                 >
                     <BreadcrumbItem href="/">MissionBoard</BreadcrumbItem>
-                    <BreadcrumbItem>Projekt Name</BreadcrumbItem>
+                    <BreadcrumbItem>{data.title}</BreadcrumbItem>
                 </Breadcrumbs>
 
                 <div className="bg-content1 rounded-large p-6 shadow-small">
-                    {/* Project detail content will go here */}
-                    <h1 className="text-2xl font-bold mb-4">Projekt Name</h1>
-                    {/* Add more project details as needed */}
+					<div className="flex justify-between items-center mb-4">
+						<div className="flex gap-2 items-center">
+							<h1 className="text-2xl font-bold">{data.title}</h1>
+							<ProjectState state={data.project_state} />
+						</div>
+						<Button
+							as="a"
+							href={data.github_link}
+							target="_blank"
+							variant="light"
+							onPress={() => {}}
+						>
+							GitHub
+							<CustomIcon 
+								width={28}
+								icon={icGithubFill}
+							/>
+						</Button>
+					</div>
+					<div className="grid grid-cols-2 gap-4">
+						<div>
+							<div className="space-y-2">
+								<h3 className="text-md font-bold">Description</h3>
+								<p>{data.description}</p>
+							</div>
+							<div className="mt-4 space-y-2">
+								<h3 className="text-md font-bold">Goal</h3>
+								<p>{data.description_goal}</p>
+							</div>
+						</div>
+						<div className="space-y-4 flex flex-col items-end text-right">
+							<div className="space-y-2">
+								<h3 className="text-md font-bold">Needed Skills</h3>
+								<div className="flex flex-wrap gap-1 justify-end">
+									{data.description_skills.split(", ").map((skill) => (
+										<Chip key={skill} className="text-xs" color="primary">{skill}</Chip>
+									))}
+								</div>
+							</div>
+						</div>
+					</div>
+					<div className="w-full space-y-2 mt-4">
+						<h3 className="text-md font-bold">Timeline</h3>
+						<TimeStepper stepsCount={6} currentStep={2} />
+					</div>
                 </div>
             </div>
         </>

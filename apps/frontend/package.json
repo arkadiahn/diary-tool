@@ -3,8 +3,8 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "next dev",
-        "build": "next build",
+        "dev": "orval && next dev",
+        "build": "orval && next build",
         "clean": "git clean -xdf .next .turbo node_modules",
         "lint": "biome lint",
         "format": "biome check --write .",
@@ -13,8 +13,13 @@
         "orval": "orval"
     },
     "dependencies": {
+        "@arkadia/cnauth": "workspace:*",
+        "@iconify-json/fluent-emoji": "^1.2.2",
+        "@iconify/icons-ri": "^1.2.10",
         "@iconify/react": "^5.0.2",
         "@nextui-org/react": "2.4.8",
+        "axios": "^1.7.9",
+        "dotenv": "^16.4.7",
         "framer-motion": "^11.14.4",
         "next": "15.1.1",
         "next-auth": "^5.0.0-beta.25",
@@ -24,8 +29,7 @@
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "tailwind-scrollbar": "^3.1.0",
-        "usehooks-ts": "^3.1.0",
-		"@arkadia/cnauth": "workspace:*"
+        "usehooks-ts": "^3.1.0"
     },
     "devDependencies": {
         "@iconify/icons-ic": "^1.2.13",

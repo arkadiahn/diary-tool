@@ -1,334 +1,85 @@
 "use client";
 
-import { Icon } from "@iconify/react";
-import {
-    Accordion,
-    AccordionItem,
-    type ListboxProps,
-    type ListboxSectionProps,
-    type Selection,
-} from "@nextui-org/react";
-import {
-    Listbox,
-    ListboxItem,
-    ListboxSection,
-    Tooltip,
-} from "@nextui-org/react";
-import { cn } from "@nextui-org/react";
-import React from "react";
+import { IconifyIcon } from "@/app/components/common/CustomIcon";
+import { Divider, ScrollShadow, cn } from "@nextui-org/react";
+import CustomIcon from "@/app/components/common/CustomIcon";
+import SidebarItemWrapper from "./sidebarItemWrapper";
+import { Session } from "@arkadia/cnauth";
+import React, { useState } from "react";
 
-export enum SidebarItemType {
-    Nest = "nest",
+import { AcmeIcon } from "./acme";
+
+import icRoundChevronRight from "@iconify/icons-ic/round-chevron-right";
+import AccountHandler from "./accountHandler";
+import { usePathname, useRouter } from "next/navigation";
+
+
+interface SidebarProps {
+	items: {
+		icon: IconifyIcon;
+		label: string;
+		href: string;
+    }[];
+	session: Session | null;
 }
+export default function Sidebar({ items, session }: SidebarProps) {
+	const [isOpen, setIsOpen] = useState(false);
+	const pathname = usePathname();
+	const router = useRouter();
 
-export type SidebarItem = {
-    key: string;
-    title: string;
-    icon?: string;
-    href?: string;
-    type?: SidebarItemType.Nest;
-    startContent?: React.ReactNode;
-    endContent?: React.ReactNode;
-    items?: SidebarItem[];
-    className?: string;
-};
+	return (
+		<aside className="h-full w-20 lg:w-[248px] p-1 z-[100] isolate">
+			<div className={cn(
+				"h-full border shadow-small rounded-xl flex gap-3 flex-col items-center px-2 py-4 bg-background transition-all duration-1000 ease-in-out",
+				{"w-60" : isOpen, "w-full" : !isOpen}
+			)}>
+				{/* Logo/Name */}
+				<div className="relative w-full flex justify-center items-center">
+					<SidebarItemWrapper
+						forceBreakpoint={isOpen}
+						leading={<AcmeIcon size={38} />}
+						trailing={<h1 className="text-xl font-bold">OpenSpace</h1>}
+					/>
+					<div
+						className={cn(
+							`absolute bg-background rounded-full shadow-sm border top-1/2 -translate-y-1/2 -right-5 cursor-pointer hover:bg-foreground/10 transition-all duration-300 ease-in-out lg:hidden`,
+							{ "rotate-180" : isOpen }
+						)}
+						onClick={() => setIsOpen(!isOpen)}
+					>
+						<CustomIcon
+							className="text-default-500 w-6"
+							icon={icRoundChevronRight}
+							width={32}
+						/>
+					</div>
+				</div>
 
-export type SidebarProps = Omit<ListboxProps<SidebarItem>, "children"> & {
-    items: SidebarItem[];
-    isCompact?: boolean;
-    hideEndContent?: boolean;
-    iconClassName?: string;
-    sectionClasses?: ListboxSectionProps["classNames"];
-    classNames?: ListboxProps["classNames"];
-    defaultSelectedKey: string;
-    onSelect?: (key: string) => void;
-};
+				<Divider />
 
-const SidebarContent = React.forwardRef<HTMLElement, SidebarProps>(
-    (
-        {
-            items,
-            isCompact,
-            defaultSelectedKey,
-            onSelect,
-            hideEndContent,
-            sectionClasses: sectionClassesProp = {},
-            itemClasses: itemClassesProp = {},
-            iconClassName,
-            classNames,
-            className,
-            ...props
-        },
-        ref,
-    ) => {
-        const [selected, setSelected] =
-            React.useState<React.Key>(defaultSelectedKey);
+				{/* Items */}
+				<div className="flex-1 w-full">
+					<ScrollShadow className="h-full w-full flex flex-col items-center gap-1">
+						{items.map((item) => (
+							<SidebarItemWrapper
+								key={item.href}
+								onClick={() => router.push(item.href)}
+								leading={<CustomIcon className="w-[22px]" icon={item.icon} width={22} />}
+								trailing={<h1 className="font-bold">{item.label}</h1>}
+								forceBreakpoint={isOpen}
+								selected={item.href.length !== 1 ? pathname.startsWith(item.href) : pathname === item.href}
+							/>
+						))}
+					</ScrollShadow>
+				</div>
 
-        const sectionClasses = {
-            ...sectionClassesProp,
-            base: cn(sectionClassesProp?.base, "w-full", {
-                "p-0 max-w-[44px]": isCompact,
-            }),
-            group: cn(sectionClassesProp?.group, {
-                "flex flex-col gap-1": isCompact,
-            }),
-            heading: cn(sectionClassesProp?.heading, {
-                hidden: isCompact,
-            }),
-        };
+				<Divider />
 
-        const itemClasses = {
-            ...itemClassesProp,
-            base: cn(itemClassesProp?.base, {
-                "w-11 h-11 gap-0 p-0": isCompact,
-            }),
-        };
-
-        const renderNestItem = React.useCallback(
-            (item: SidebarItem) => {
-                const isNestType =
-                    item.items &&
-                    item.items?.length > 0 &&
-                    item?.type === SidebarItemType.Nest;
-
-                if (isNestType) {
-                    // Is a nest type item , so we need to remove the href
-                    item.href = undefined;
-                }
-
-                return (
-                    <ListboxItem
-                        {...item}
-                        key={item.key}
-                        classNames={{
-                            base: cn(
-                                {
-                                    "h-auto p-0": !isCompact && isNestType,
-                                },
-                                {
-                                    "inline-block w-11":
-                                        isCompact && isNestType,
-                                },
-                            ),
-                        }}
-                        endContent={
-                            isCompact || isNestType || hideEndContent
-                                ? null
-                                : (item.endContent ?? null)
-                        }
-                        startContent={
-                            isCompact || isNestType ? null : item.icon ? (
-                                <Icon
-                                    className={cn(
-                                        "text-default-500 group-data-[selected=true]:text-foreground",
-                                        iconClassName,
-                                    )}
-                                    icon={item.icon}
-                                    width={24}
-                                />
-                            ) : (
-                                (item.startContent ?? null)
-                            )
-                        }
-                        title={isCompact || isNestType ? null : item.title}
-                    >
-                        {isCompact ? (
-                            <Tooltip content={item.title} placement="right">
-                                <div className="flex w-full items-center justify-center">
-                                    {item.icon ? (
-                                        <Icon
-                                            className={cn(
-                                                "text-default-500 group-data-[selected=true]:text-foreground",
-                                                iconClassName,
-                                            )}
-                                            icon={item.icon}
-                                            width={24}
-                                        />
-                                    ) : (
-                                        (item.startContent ?? null)
-                                    )}
-                                </div>
-                            </Tooltip>
-                        ) : null}
-                        {!isCompact && isNestType ? (
-                            <Accordion className={"p-0"}>
-                                <AccordionItem
-                                    key={item.key}
-                                    aria-label={item.title}
-                                    classNames={{
-                                        heading: "pr-3",
-                                        trigger: "p-0",
-                                        content: "py-0 pl-4",
-                                    }}
-                                    title={
-                                        item.icon ? (
-                                            <div
-                                                className={
-                                                    "flex h-11 items-center gap-2 px-2 py-1.5"
-                                                }
-                                            >
-                                                <Icon
-                                                    className={cn(
-                                                        "text-default-500 group-data-[selected=true]:text-foreground",
-                                                        iconClassName,
-                                                    )}
-                                                    icon={item.icon}
-                                                    width={24}
-                                                />
-                                                <span className="text-small font-medium text-default-500 group-data-[selected=true]:text-foreground">
-                                                    {item.title}
-                                                </span>
-                                            </div>
-                                        ) : (
-                                            (item.startContent ?? null)
-                                        )
-                                    }
-                                >
-                                    {item.items && item.items?.length > 0 ? (
-                                        <Listbox
-                                            className={"mt-0.5"}
-                                            classNames={{
-                                                list: cn(
-                                                    "border-l border-default-200 pl-4",
-                                                ),
-                                            }}
-                                            items={item.items}
-                                            variant="flat"
-                                        >
-                                            {item.items.map(renderItem)}
-                                        </Listbox>
-                                    ) : (
-                                        renderItem(item)
-                                    )}
-                                </AccordionItem>
-                            </Accordion>
-                        ) : null}
-                    </ListboxItem>
-                );
-            },
-            [isCompact, hideEndContent, iconClassName, items],
-        );
-
-        const renderItem = React.useCallback(
-            (item: SidebarItem) => {
-                const isNestType =
-                    item.items &&
-                    item.items?.length > 0 &&
-                    item?.type === SidebarItemType.Nest;
-
-                if (isNestType) {
-                    return renderNestItem(item);
-                }
-
-                return (
-                    <ListboxItem
-                        {...item}
-                        key={item.key}
-                        endContent={
-                            isCompact || hideEndContent
-                                ? null
-                                : (item.endContent ?? null)
-                        }
-                        startContent={
-                            isCompact ? null : item.icon ? (
-                                <Icon
-                                    className={cn(
-                                        "text-default-500 group-data-[selected=true]:text-foreground",
-                                        iconClassName,
-                                    )}
-                                    icon={item.icon}
-                                    width={24}
-                                />
-                            ) : (
-                                (item.startContent ?? null)
-                            )
-                        }
-                        textValue={item.title}
-                        title={isCompact ? null : item.title}
-                    >
-                        {isCompact ? (
-                            <Tooltip content={item.title} placement="right">
-                                <div className="flex w-full items-center justify-center">
-                                    {item.icon ? (
-                                        <Icon
-                                            className={cn(
-                                                "text-default-500 group-data-[selected=true]:text-foreground",
-                                                iconClassName,
-                                            )}
-                                            icon={item.icon}
-                                            width={24}
-                                        />
-                                    ) : (
-                                        (item.startContent ?? null)
-                                    )}
-                                </div>
-                            </Tooltip>
-                        ) : null}
-                    </ListboxItem>
-                );
-            },
-            [isCompact, hideEndContent, iconClassName, itemClasses?.base],
-        );
-
-        return (
-            <Listbox
-                aria-label="Sidebar"
-                key={isCompact ? "compact" : "default"}
-                ref={ref}
-                hideSelectedIcon
-                as="nav"
-                className={cn("list-none", className)}
-                classNames={{
-                    ...classNames,
-                    list: cn("items-center", classNames?.list),
-                }}
-                color="default"
-                itemClasses={{
-                    ...itemClasses,
-                    base: cn(
-                        "px-3 min-h-11 rounded-large h-[44px] data-[selected=true]:bg-default-100",
-                        itemClasses?.base,
-                    ),
-                    title: cn(
-                        "text-small font-medium text-default-500 group-data-[selected=true]:text-foreground",
-                        itemClasses?.title,
-                    ),
-                }}
-                items={items}
-                selectedKeys={[selected] as unknown as Selection}
-                selectionMode="single"
-                variant="flat"
-                onSelectionChange={(keys) => {
-                    const key = Array.from(keys)[0];
-
-                    setSelected(key as React.Key);
-                    onSelect?.(key as string);
-                }}
-                {...props}
-            >
-                {(item) => {
-                    return item.items &&
-                        item.items?.length > 0 &&
-                        item?.type === SidebarItemType.Nest ? (
-                        renderNestItem(item)
-                    ) : item.items && item.items?.length > 0 ? (
-                        <ListboxSection
-                            key={item.key}
-                            classNames={sectionClasses}
-                            showDivider={isCompact}
-                            title={item.title}
-                        >
-                            {item.items.map(renderItem)}
-                        </ListboxSection>
-                    ) : (
-                        renderItem(item)
-                    );
-                }}
-            </Listbox>
-        );
-    },
-);
-
-SidebarContent.displayName = "SidebarContent";
-
-export default SidebarContent;
+				{/* Account */}
+				<div className="w-full">
+					<AccountHandler isOpen={isOpen} session={session}/>
+				</div>
+			</div>
+		</aside>
+	)
+}

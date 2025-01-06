@@ -18,6 +18,9 @@ const nextConfig: NextConfig = {
         })(),
         NEXT_DEFAULT_LOCALE: "de-DE",
     },
+	devIndicators: {
+		buildActivityPosition: "top-right"
+	}
 };
 
 export default nextConfig;

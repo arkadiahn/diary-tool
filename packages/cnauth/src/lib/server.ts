@@ -12,7 +12,12 @@ import { headers } from "next/headers";
 async function getSession(headers: Headers): Promise<Session | null> {
 	try {
 		const resp = await fetch(`${globalConfig.baseApiUrl}${globalConfig.sessionEndpoint}`, {
-			headers: { cookie: headers.get("cookie") ?? "" }
+			headers: { 
+				cookie: headers.get("cookie") ?? "",
+				'Cache-Control': 'no-store, no-cache, must-revalidate',
+				'Pragma': 'no-cache'
+			},
+			cache: "no-store"
 		});
 
 		if (!resp.ok) {

@@ -28,7 +28,7 @@ export default function Footer({ className }: FooterProps) {
 
     return (
         <footer
-            className={cn("flex h-10 items-center justify-center", className)}
+            className={cn("flex mt-auto h-10 items-center justify-center", className)}
         >
             <p className="text-lg font-bold uppercase">
                 Learn How To

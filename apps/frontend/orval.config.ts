@@ -1,12 +1,14 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 /** @type {import('orval').OrvalConfig} */
 module.exports = {
     getgas: {
-        input: "../backend/openapi.yaml",
+		input: "../../../backend/openapi.yaml",
         output: {
-            client: "swr",
             httpClient: "fetch",
             target: "./src/api/missionboard.ts",
-            baseUrl: "https://api.getgas.io/api/v1",
+            baseUrl: process.env.NEXT_PUBLIC_BACKEND_URL + "/api/v1",
         },
     },
 };

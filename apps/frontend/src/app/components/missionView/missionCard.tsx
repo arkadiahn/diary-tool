@@ -1,20 +1,64 @@
+"use client";
+
+import { likeMissionboardProject, ProjectSummary } from "@/api/missionboard";
 import { Card, CardBody } from "@nextui-org/react";
+import ProjectState from "../common/projectState";
+import { useRouter } from "next/navigation";
+import { Button } from "@nextui-org/react";
 import TimeStepper from "./timeStepper";
 
-export default function MissionCard() {
+
+interface MissionCardProps {
+	data: ProjectSummary;
+}
+export default function MissionCard({ data }: MissionCardProps) {
+	const router = useRouter();
+
+	const onLike = async () => {
+		await likeMissionboardProject(data.name.split("/").at(-1) ?? "");
+	}
+
     return (
-        <Card className="w-[300px]" isPressable disableRipple>
+        <Card className="w-[300px]" isPressable disableRipple onPress={() => router.push(data.name)}>
             <CardBody className="space-y-4 flex flex-col items-center justify-center px-8">
-                <h2 className="text-2xl font-bold">Mission 1</h2>
-                <div className="w-full">
-                    <TimeStepper stepsCount={5} currentStep={1} />
+                <div className="w-full h-14 flex justify-between items-center mb-1 gap-2">
+                    <h2 className="text-2xl font-bold">{data.title}</h2>
+					<ProjectState state={data.project_state} />
                 </div>
-                <p className="line-clamp-4 max-w-full text-default-600 leading-relaxed">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua.asdasdasdasdasdjkadksasdfhasfajklsdhfahsdfhaksdfadhsfjadksfhajksdhfjkadhsfadjksfhaksdfhkasd
-                </p>
-                <h3 className="text-4xl font-bold">60%</h3>
+                <div className="w-full space-y-1">
+					<h4 className="text-xs font-bold text-default-500 flex items-center">Milestones</h4>
+                    <TimeStepper stepsCount={data.milestones_count} currentStep={data.completed_milestones_count} />
+                </div>
+				<div className="w-full space-y-1">
+					<h4 className="text-xs font-bold text-default-500">Description</h4>
+					<p className="max-w-full text-default-600 leading-relaxed">
+						{data.description}
+					</p>
+				</div>
+				<div className="w-full flex justify-between">
+					<div>
+						<h4 className="text-xs font-bold text-default-500">Progress</h4>
+						<h3 className="text-xl font-bold">
+							{Math.round((data.completed_milestones_count / data.milestones_count) * 100)}%
+						</h3>
+					</div>
+					<div>
+						<h4 className="text-xs font-bold text-default-500">Likes</h4>
+						<div className="flex items-center gap-1">
+							<Button
+								as="div"
+								size="sm" 
+								variant="light" 
+								aria-label="Like mission"
+								className="!p-3"
+								onPress={onLike}
+							>
+								<span className="text-md">{data.like_count}</span>
+								<span className="text-lg">👍</span>
+							</Button>
+						</div>
+					</div>
+				</div>
             </CardBody>
         </Card>
     );

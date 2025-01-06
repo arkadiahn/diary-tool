@@ -31,3 +31,5 @@ export default function CustomIcon({
         />
     );
 }
+
+export type { IconifyIcon };
