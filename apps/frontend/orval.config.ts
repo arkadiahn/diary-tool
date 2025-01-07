@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import https from 'https';
 import fs from 'fs';
 
 dotenv.config();

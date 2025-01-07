@@ -13,7 +13,7 @@
     },
     "dependencies": {
         "@arkadia/cnauth": "workspace:*",
-        "@nextui-org/react": "2.4.8",
+        "@nextui-org/react": "2.6.11",
         "@nextui-org/system": "^2.4.4",
         "@nextui-org/theme": "^2.4.3",
         "framer-motion": "^11.14.4",
