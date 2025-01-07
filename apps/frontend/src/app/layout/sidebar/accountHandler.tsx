@@ -1,7 +1,8 @@
 import CustomIcon from "@/app/components/common/CustomIcon";
 import SidebarItemWrapper from "./sidebarItemWrapper";
 import { Avatar, Button, cn } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
+import { signIn, signOut } from "@arkadia/cnauth/client";
+import { usePathname, useRouter } from "next/navigation";
 import { Session } from "@arkadia/cnauth";
 
 /* ---------------------------------- Icons --------------------------------- */
@@ -14,6 +15,7 @@ interface AccountHandlerProps {
 	session: Session | null;
 }
 export default function AccountHandler({ isOpen, session }: AccountHandlerProps) {
+	const pathname = usePathname();
 	const router = useRouter();
 
 	return (
@@ -35,17 +37,7 @@ export default function AccountHandler({ isOpen, session }: AccountHandlerProps)
             )}
 			{session && (
 				<SidebarItemWrapper
-					onClick={async () => {
-						try {
-							await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/logout`, {
-								method: 'POST',
-								credentials: 'include',
-							});
-							router.refresh();
-						} catch (error) {
-							console.error('Logout failed:', error);
-						}
-					}}
+					onClick={() => signOut(`${process.env.NEXT_PUBLIC_FRONTEND_URL}`)}
 					leading={<CustomIcon className="w-[22px]" icon={icRoundLogout} width={22} />}
 					trailing={<h1 className="font-bold">Logout</h1>}
 					forceBreakpoint={isOpen}
@@ -53,7 +45,8 @@ export default function AccountHandler({ isOpen, session }: AccountHandlerProps)
 			)}
 			{!session && (
 				<SidebarItemWrapper
-					onClick={() => router.push(`${process.env.NEXT_PUBLIC_AUTH_URL}`)}
+					// @todo fix library to push to auth url
+					onClick={() => router.push(`${process.env.NEXT_PUBLIC_AUTH_URL}?redirect=${pathname}`)}
 					leading={<CustomIcon className="w-[22px]" icon={icRoundLogin} width={22} />}
 					trailing={<h1 className="font-bold">Login</h1>}
 					forceBreakpoint={isOpen}

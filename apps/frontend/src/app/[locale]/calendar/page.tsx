@@ -31,7 +31,7 @@ export default async function CalendarPage() {
 							<div key={date} className="col-span-full">
 								<div className="w-full flex items-center gap-4 my-6">
 									<Divider className="flex-1" />
-									<time className="text-default-500 text-sm font-medium whitespace-nowrap">
+									<time className="text-default-500 text-md font-medium whitespace-nowrap">
 										{date}
 									</time>
 									<Divider className="flex-1" />
