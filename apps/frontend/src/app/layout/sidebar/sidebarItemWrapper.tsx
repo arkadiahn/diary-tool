@@ -1,4 +1,5 @@
 import { cn } from "@nextui-org/react";
+import Link from "next/link";
 import React from "react";
 
 
@@ -12,8 +13,8 @@ interface SidebarItemWrapperProps {
 	href?: string;
 }
 export default function SidebarItemWrapper({ leading, trailing, forceBreakpoint, centered, onClick, selected, href }: SidebarItemWrapperProps) {
-	const Component = href ? "a" : (onClick ? "button" : "div");
-	const button = Component === "button" || Component === "a";
+	const Component = href != undefined ? Link : (onClick ? "button" : "div");
+	const button = Component === "button" || Component === Link;
 	// @todo implement nextjs link or router idk
 
 	return (
@@ -30,7 +31,7 @@ export default function SidebarItemWrapper({ leading, trailing, forceBreakpoint,
 				{ "bg-default/40 text-foreground/80" : selected }
 			)}
 			onClick={onClick}
-			href={href}
+			href={href!}
 		>
 			<div className="pointer-events-none">
 				{leading}
