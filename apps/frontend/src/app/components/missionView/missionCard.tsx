@@ -22,15 +22,18 @@ export default function MissionCard({ data }: MissionCardProps) {
         <Card className="w-[300px]" isPressable disableRipple onPress={() => router.push(data.name)}>
             <CardBody className="space-y-4 flex flex-col items-center justify-center px-8">
                 <div className="w-full h-14 flex justify-between items-center mb-1 gap-2">
-                    <h2 className="text-2xl font-bold">{data.title}</h2>
+                    <h2 className="text-2xl font-bold line-clamp-2">{data.title}</h2>
 					<ProjectState state={data.project_state} />
                 </div>
-                <div className="w-full space-y-1">
+                <div className="w-full h-[46px] space-y-1">
 					<h4 className="text-xs font-bold text-default-500 flex items-center">Milestones</h4>
-                    <TimeStepper stepsCount={data.milestones_count} currentStep={data.completed_milestones_count} />
+                    {data.milestones_count === 0 
+                        ? <p className="text-default-500">No milestones</p>
+                        : <TimeStepper stepsCount={data.milestones_count} currentStep={data.completed_milestones_count} />
+                    }
                 </div>
-				<div className="w-full space-y-1">
-					<h4 className="text-xs font-bold text-default-500">Description</h4>
+				<div className="w-full h-[72px] space-y-1">
+					<h4 className="text-xs font-bold text-default-500 line-clamp-2">Description</h4>
 					<p className="max-w-full text-default-600 leading-relaxed">
 						{data.description}
 					</p>
@@ -39,7 +42,9 @@ export default function MissionCard({ data }: MissionCardProps) {
 					<div>
 						<h4 className="text-xs font-bold text-default-500">Progress</h4>
 						<h3 className="text-xl font-bold">
-							{Math.round((data.completed_milestones_count / data.milestones_count) * 100)}%
+							{data.milestones_count === 0 
+								? "0" 
+								: Math.round((data.completed_milestones_count / data.milestones_count) * 100)}%
 						</h3>
 					</div>
 					<div>

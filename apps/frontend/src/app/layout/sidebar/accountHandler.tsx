@@ -1,8 +1,8 @@
 import CustomIcon from "@/app/components/common/CustomIcon";
-import SidebarItemWrapper from "./sidebarItemWrapper";
-import { Avatar, Button, cn } from "@nextui-org/react";
-import { signIn, signOut } from "@arkadia/cnauth/client";
 import { usePathname, useRouter } from "next/navigation";
+import SidebarItemWrapper from "./sidebarItemWrapper";
+import { signOut } from "@arkadia/cnauth/client";
+import { Avatar } from "@nextui-org/react";
 import { Session } from "@arkadia/cnauth";
 
 /* ---------------------------------- Icons --------------------------------- */
