@@ -44,6 +44,7 @@ export interface MinimalRowStepsProps
 
 	milestoneInfo?: {
 		description: string;
+		timestamp: string;
 	}[];
 }
 
@@ -164,7 +165,18 @@ const TimeStepper = React.forwardRef<HTMLDivElement, MinimalRowStepsProps>(
                                     {...props}
                                 >
 									<Tooltip
-										content={milestoneInfo?.[stepIdx].description || ""}
+										// content={milestoneInfo?.[stepIdx].description || ""}
+										content={
+											<div>
+												<p>{milestoneInfo?.[stepIdx].description || ""}</p>
+												<p className="text-xs">{milestoneInfo?.[stepIdx].timestamp ? 
+													new Intl.DateTimeFormat('de-DE', {
+														dateStyle: 'medium'
+													}).format(new Date(milestoneInfo[stepIdx].timestamp))
+													: ""}
+												</p>
+											</div>
+										}
 										placement={stepIdx < Math.floor(stepsCount / 2) || stepsCount === 1 ? "right" : "left"}
 										isDisabled={!milestoneInfo}
 										closeDelay={120}

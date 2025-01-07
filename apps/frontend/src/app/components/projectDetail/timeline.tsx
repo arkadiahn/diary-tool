@@ -23,6 +23,7 @@ export default async function Timeline({ name }: TimelineProps) {
 			currentStep={completedMilestonesCount} 
 			milestoneInfo={data.map(milestone => ({
 				description: milestone.description,
+				timestamp: milestone.end_time,
 			}))}
 		/>
 	);

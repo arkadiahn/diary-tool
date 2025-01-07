@@ -1,11 +1,18 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
-export const customAxios = <T>(config: AxiosRequestConfig): Promise<T> => {
+export const customAxios = <T>(
+	config: AxiosRequestConfig,
+	options?: AxiosRequestConfig
+): Promise<AxiosResponse<T>> => {
 	const instance = axios.create({
+		baseURL: process.env.NEXT_PUBLIC_BACKEND_URL + "/api/v1",
 		withCredentials: true
 	});
 	
-	return instance(config).then(response => response.data);
+	return instance({
+		...config,
+		...options
+	});
 };
 
 export default customAxios;

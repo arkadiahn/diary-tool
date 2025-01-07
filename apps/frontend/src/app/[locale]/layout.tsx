@@ -53,8 +53,13 @@ export default async function RootLayout({
                             items={[
                                 {
                                     icon: icRoundHome,
-									label: "MissionBoard",
+									label: "Home",
                                     href: "/",
+                                },
+								{
+                                    icon: icRoundHome,
+									label: "MissionBoard",
+                                    href: "/missionboard",
                                 },
 								{
                                     icon: icRoundCalendarMonth,
