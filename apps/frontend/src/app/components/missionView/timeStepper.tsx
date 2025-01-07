@@ -180,7 +180,7 @@ const TimeStepper = React.forwardRef<HTMLDivElement, MinimalRowStepsProps>(
 													<m.div
 														className={cn(
 															"relative flex h-[26px] w-[26px] items-center justify-center rounded-full border-medium text-large font-semibold text-default-foreground",
-															{"cursor-pointer": milestoneInfo},
+															{"cursor-help": milestoneInfo},
 															{
 																"shadow-lg":
 																	status ===

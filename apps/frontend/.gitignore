@@ -40,4 +40,5 @@ yarn-error.log*
 next-env.d.ts
 
 src/api/*
+!src/api/customAxios.ts
 ./openapi.yaml

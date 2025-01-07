@@ -63,7 +63,7 @@ export default function Sidebar({ items, session }: SidebarProps) {
 						{items.map((item) => (
 							<SidebarItemWrapper
 								key={item.href}
-								onClick={() => router.push(item.href)}
+								href={item.href}
 								leading={<CustomIcon className="w-[22px]" icon={item.icon} width={22} />}
 								trailing={<h1 className="font-bold">{item.label}</h1>}
 								forceBreakpoint={isOpen}

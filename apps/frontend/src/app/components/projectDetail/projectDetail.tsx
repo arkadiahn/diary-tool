@@ -5,6 +5,7 @@ import ProjectState from "../common/projectState";
 import CustomIcon from "../common/CustomIcon";
 import { Project } from "@/api/missionboard";
 import {Chip} from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 
 import icGithubFill from "@iconify/icons-ri/github-fill";
 import TimeStepper from "../missionView/timeStepper";
@@ -17,6 +18,8 @@ interface ProjectDetailViewProps {
 	timelineComponent?: React.ReactNode;
 }
 export default function ProjectDetailView({ data, timelineComponent }: ProjectDetailViewProps) {
+    const router = useRouter();
+
     return (
         <>
             <div className="w-full p-6">
@@ -37,6 +40,12 @@ export default function ProjectDetailView({ data, timelineComponent }: ProjectDe
 						<div className="flex gap-2 items-center">
 							<h1 className="text-2xl font-bold">{data.title}</h1>
 							<ProjectState state={data.project_state} />
+							<button
+								onClick={() => router.push(`/${data.name}/edit`)}
+								className="text-primary hover:text-primary-600 text-sm font-medium transition-colors"
+							>
+								Edit Project
+							</button>
 						</div>
 						<div className="flex gap-2 items-center">
 							<div className="flex items-center gap-1">

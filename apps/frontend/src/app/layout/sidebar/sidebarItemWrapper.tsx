@@ -9,12 +9,15 @@ interface SidebarItemWrapperProps {
 	centered?: boolean;
 	onClick?: () => void;
 	selected?: boolean;
+	href?: string;
 }
-export default function SidebarItemWrapper({ leading, trailing, forceBreakpoint, centered, onClick, selected }: SidebarItemWrapperProps) {
-	const button = onClick ? true : false;
+export default function SidebarItemWrapper({ leading, trailing, forceBreakpoint, centered, onClick, selected, href }: SidebarItemWrapperProps) {
+	const Component = href ? "a" : (onClick ? "button" : "div");
+	const button = Component === "button" || Component === "a";
+	// @todo implement nextjs link or router idk
 
 	return (
-		<div
+		<Component
 			className={cn(
 				"font-normal text-small overflow-hidden w-full flex justify-center",
 				centered ? "lg:justify-center" : "lg:justify-start",
@@ -27,17 +30,18 @@ export default function SidebarItemWrapper({ leading, trailing, forceBreakpoint,
 				{ "bg-default/40 text-foreground/80" : selected }
 			)}
 			onClick={onClick}
+			href={href}
 		>
-			<div>
+			<div className="pointer-events-none">
 				{leading}
 			</div>
 			<div className={cn(
 				`max-w-0 opacity-0 lg:max-w-full lg:opacity-100 overflow-hidden items-center transition-opacity duration-300`,
-				"flex justify-center",
+				"flex justify-center pointer-events-none",
 				{ "max-w-full opacity-100" : forceBreakpoint }
 			)}>
 				{trailing}
 			</div>
-		</div>
+		</Component>
 	)
 }

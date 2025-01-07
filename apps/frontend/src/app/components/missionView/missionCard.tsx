@@ -18,6 +18,13 @@ export default function MissionCard({ data }: MissionCardProps) {
 		await likeMissionboardProject(data.name.split("/").at(-1) ?? "");
 	}
 
+	const onShare = () => {
+		const url = `${window.location.origin}${data.name}`;
+		navigator.clipboard.writeText(url).then(() => {
+			alert("Link copied to clipboard!");
+		});
+	};
+
     return (
         <Card className="w-[300px]" isPressable disableRipple onPress={() => router.push(data.name)}>
             <CardBody className="space-y-4 flex flex-col items-center justify-center px-8">
@@ -61,6 +68,17 @@ export default function MissionCard({ data }: MissionCardProps) {
 								<span className="text-md">{data.like_count}</span>
 								<span className="text-lg">👍</span>
 							</Button>
+							{/* @todo implement nice share button */}
+							{/* <Button
+								as="div"
+								size="sm"
+								variant="light"
+								aria-label="Share mission"
+								className="!p-3"
+								onPress={onShare}
+							>
+								<span className="text-lg">📤</span>
+							</Button> */}
 						</div>
 					</div>
 				</div>

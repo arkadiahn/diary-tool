@@ -12,29 +12,32 @@ import {
     Chip
 } from "@nextui-org/react";
 import { DatePicker } from "@nextui-org/date-picker";
-import { getMissionboardProjectAccount, Project, Public, patchMissionboardProject, postMissionboardProject } from "@/api/missionboard";
+import { getAccount, Project, Public, patchMissionboardProject, postMissionboardProject } from "@/api/missionboard";
 import CustomIcon from "../common/CustomIcon";
 import icGithubFill from "@iconify/icons-ri/github-fill";
 import { useRouter } from "next/navigation";
-import { CalendarDateTime, parseDate } from "@internationalized/date";
-import { MissionboardProjectProjectState } from "@/api/missionboard";
+import { parseDate } from "@internationalized/date";
+import ProjectState from "../common/projectState";
 
-function ProjectLeaderChip({ account, projectName }: { account: string, projectName: string }) {
+function ProjectLeaderChip({ account }: { account: string }) {
     const [accountData, setAccountData] = useState<Public | null>(null);
 
     useEffect(() => {
         const fetchLeader = async () => {
             try {
-                const { data } = await getMissionboardProjectAccount(projectName.split("/").at(-1)!, account.split("/").at(-1)!);
-                setAccountData(data[0].account);
+
+                const { data } = await getAccount(account.split("/").at(-1)!, {
+					withCredentials: true
+				});
+                setAccountData(data);
             } catch (error) {
-                console.error("Failed to fetch leader:", error);
+                console.log("Failed to fetch leader:", error);
                 setAccountData(null);
             }
         };
 
         fetchLeader();
-    }, [account, projectName]);
+    }, [account]);
 
     return (
         <div className="flex items-center gap-2">
@@ -134,34 +137,7 @@ export default function ProjectEdit({ data }: ProjectEditProps) {
                             maxLength={255}
                             errorMessage={formData.title.length > 255 && "Title must be less than 255 characters"}
                         />
-                        <Select
-                            label="Project State"
-                            selectedKeys={[formData.project_state]}
-                            onChange={(e) => setFormData(prev => ({ 
-                                ...prev, 
-                                project_state: e.target.value as MissionboardProjectProjectState 
-                            }))}
-                            className="w-[200px]"
-                            isRequired
-                        >
-                            {Object.values(MissionboardProjectProjectState).map((state) => (
-                                <SelectItem 
-                                    key={state} 
-                                    value={state}
-                                    startContent={
-                                        <div className={`w-2 h-2 rounded-full ${
-                                            state === MissionboardProjectProjectState.active ? "bg-success" :
-                                            state === MissionboardProjectProjectState.completed ? "bg-primary" :
-                                            state === MissionboardProjectProjectState.failed ? "bg-warning" :
-                                            "bg-default"
-                                        }`}
-                                        />
-                                    }
-                                >
-                                    {state.charAt(0) + state.slice(1).toLowerCase()}
-                                </SelectItem>
-                            ))}
-                        </Select>
+                        <ProjectState state={data.project_state} />
                     </div>
                     <div className="flex gap-2 items-center">
                         <div className="flex items-center gap-2">
@@ -223,7 +199,7 @@ export default function ProjectEdit({ data }: ProjectEditProps) {
                             maxLength={1000}
                             errorMessage={formData.description_goal.length > 1000 && "Goal must be less than 1000 characters"}
                         />
-                        <ProjectLeaderChip account={formData.leader} projectName={data.name} />
+                        <ProjectLeaderChip account={formData.leader} />
                     </div>
                     <div className="space-y-4">
                         <div className="space-y-2">

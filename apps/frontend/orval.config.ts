@@ -33,12 +33,18 @@ const getConfig = async () => {
 
 	/** @type {import('orval').OrvalConfig} */
 	const config = {
-		getgas: {
+		missionboard: {
 			input: await getOpenApiPath(),
 			output: {
-			httpClient: "fetch",
-			target: "./src/api/missionboard.ts",
-			baseUrl: process.env.NEXT_PUBLIC_BACKEND_URL + "/api/v1",
+				httpClient: "fetch",
+				target: "./src/api/missionboard.ts",
+				baseUrl: process.env.NEXT_PUBLIC_BACKEND_URL + "/api/v1",
+				// override: {
+				// 	mutator: {
+				// 		path: "./src/api/customAxios.ts",
+				// 		name: "customAxios",
+				// 	}
+				// }
 			},
 		},
 	};
