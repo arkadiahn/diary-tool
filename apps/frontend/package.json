@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "dev": "orval && next dev",
-        "build": "orval && next build",
+        "build": "next build",
         "clean": "git clean -xdf .next .turbo node_modules",
         "lint": "biome lint",
         "format": "biome check --write .",
