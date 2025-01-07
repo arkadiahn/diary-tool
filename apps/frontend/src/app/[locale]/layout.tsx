@@ -8,8 +8,10 @@ import "./globals.css";
 import Sidebar from "../layout/sidebar";
 import Footer from "../layout/footer";
 
-import icRoundCalendarMonth from "@iconify/icons-ic/round-calendar-month";
-import icRoundHome from "@iconify/icons-ic/round-home";
+/* ---------------------------------- Icons --------------------------------- */
+import solarDocumentsLinear from "@iconify/icons-solar/documents-linear";
+import solarCalendarLinear from "@iconify/icons-solar/calendar-linear";
+import solarHomeLinear from "@iconify/icons-solar/home-linear";
 
 /* -------------------------------------------------------------------------- */
 /*                                    Fonts                                   */
@@ -52,17 +54,17 @@ export default async function RootLayout({
                         <Sidebar
                             items={[
                                 {
-                                    icon: icRoundHome,
+                                    icon: solarHomeLinear,
 									label: "Home",
                                     href: "/",
                                 },
 								{
-                                    icon: icRoundHome,
+                                    icon: solarDocumentsLinear,
 									label: "MissionBoard",
                                     href: "/missionboard",
                                 },
 								{
-                                    icon: icRoundCalendarMonth,
+                                    icon: solarCalendarLinear,
 									label: "Calendar",
                                     href: "/calendar",
                                 },

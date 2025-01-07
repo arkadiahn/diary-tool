@@ -26,9 +26,7 @@ function ProjectLeaderChip({ account }: { account: string }) {
         const fetchLeader = async () => {
             try {
 
-                const { data } = await getAccount(account.split("/").at(-1)!, {
-					withCredentials: true
-				});
+                const { data } = await getAccount(account.split("/").at(-1)!);
                 setAccountData(data);
             } catch (error) {
                 console.log("Failed to fetch leader:", error);

@@ -25,7 +25,7 @@ export default function AccountHandler({ isOpen, session }: AccountHandlerProps)
                     <div className={`p-1 flex items-center gap-3 lg:justify-start ${!isOpen ? "justify-center" : "justify-start"}`}>
                         <Avatar
                             size="sm"
-                            src={session.user.imageURL}
+                            src={session.user.imageURI}
                         />
                         <div className={`lg:flex flex-col ${!isOpen ? "hidden" : ""}`}>
                             <p className="text-small font-medium text-default-600">

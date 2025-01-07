@@ -2,11 +2,12 @@ import { NextRequest } from "next/server";
 
 type ISODateString = string;
 
+/* -------------------------- @todo make definable -------------------------- */
 export interface User {
     id: number;
     nickName: string;
     email: string;
-    imageURL: string;
+    imageURI: string;
 	scopes: string[];
 }
 
