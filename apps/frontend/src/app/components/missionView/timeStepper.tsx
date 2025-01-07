@@ -1,7 +1,7 @@
 "use client";
 
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { type ButtonProps, cn } from "@nextui-org/react";
+import { type ButtonProps, cn, Tooltip } from "@nextui-org/react";
 import { LazyMotion, domAnimation, m } from "framer-motion";
 import React from "react";
 
@@ -41,6 +41,10 @@ export interface MinimalRowStepsProps
      * The custom class for the step.
      */
     stepClassName?: string;
+
+	milestoneInfo?: {
+		description: string;
+	}[];
 }
 
 const TimeStepper = React.forwardRef<HTMLDivElement, MinimalRowStepsProps>(
@@ -53,6 +57,7 @@ const TimeStepper = React.forwardRef<HTMLDivElement, MinimalRowStepsProps>(
             hideProgressBars = false,
             stepClassName,
             className,
+			milestoneInfo,
             ...props
         },
         ref,
@@ -158,64 +163,73 @@ const TimeStepper = React.forwardRef<HTMLDivElement, MinimalRowStepsProps>(
                                     )}
                                     {...props}
                                 >
-                                    {/* Circle */}
-                                    <div className="relative">
-                                        <LazyMotion features={domAnimation}>
-                                            <m.div
-                                                animate={status}
-                                                className="relative"
-                                            >
-                                                <m.div
-                                                    className={cn(
-                                                        "relative flex h-[26px] w-[26px] items-center justify-center rounded-full border-medium text-large font-semibold text-default-foreground",
-                                                        {
-                                                            "shadow-lg":
-                                                                status ===
-                                                                "complete",
-                                                        },
-                                                    )}
-                                                    initial={false}
-                                                    transition={{
-                                                        duration: 0.25,
-                                                    }}
-                                                    variants={{
-                                                        inactive: {
-                                                            backgroundColor:
-                                                                "transparent",
-                                                            borderColor:
-                                                                "var(--inactive-border-color)",
-                                                            color: "var(--inactive-color)",
-                                                        },
-                                                        active: {
-                                                            backgroundColor:
-                                                                "transparent",
-                                                            borderColor:
-                                                                "var(--active-border-color)",
-                                                            color: "var(--active-color)",
-                                                        },
-                                                        complete: {
-                                                            backgroundColor:
-                                                                "var(--complete-background-color)",
-                                                            borderColor:
-                                                                "var(--complete-border-color)",
-                                                        },
-                                                    }}
-                                                >
-                                                    <div className="flex items-center justify-center">
-                                                        {status ===
-                                                        "complete" ? (
-                                                            <Icon
-                                                                icon="solar:clock-circle-linear"
-                                                                className="h-5 w-5 text-[var(--active-fg-color)]"
-                                                            />
-                                                        ) : (
-                                                            <span />
-                                                        )}
-                                                    </div>
-                                                </m.div>
-                                            </m.div>
-                                        </LazyMotion>
-                                    </div>
+									<Tooltip
+										content={milestoneInfo?.[stepIdx].description || ""}
+										placement={stepIdx < Math.floor(stepsCount / 2) || stepsCount === 1 ? "right" : "left"}
+										isDisabled={!milestoneInfo}
+										closeDelay={120}
+										showArrow
+									>
+										{/* Circle */}
+										<div className="relative">
+											<LazyMotion features={domAnimation}>
+												<m.div
+													animate={status}
+													className="relative"
+												>
+													<m.div
+														className={cn(
+															"relative flex h-[26px] w-[26px] items-center justify-center rounded-full border-medium text-large font-semibold text-default-foreground",
+															{"cursor-pointer": milestoneInfo},
+															{
+																"shadow-lg":
+																	status ===
+																	"complete",
+															},
+														)}
+														initial={false}
+														transition={{
+															duration: 0.25,
+														}}
+														variants={{
+															inactive: {
+																backgroundColor:
+																	"transparent",
+																borderColor:
+																	"var(--inactive-border-color)",
+																color: "var(--inactive-color)",
+															},
+															active: {
+																backgroundColor:
+																	"transparent",
+																borderColor:
+																	"var(--active-border-color)",
+																color: "var(--active-color)",
+															},
+															complete: {
+																backgroundColor:
+																	"var(--complete-background-color)",
+																borderColor:
+																	"var(--complete-border-color)",
+															},
+														}}
+													>
+														<div className="flex items-center justify-center">
+															{status ===
+															"complete" ? (
+																<Icon
+																	icon="solar:clock-circle-linear"
+																	className="h-5 w-5 text-[var(--active-fg-color)]"
+																/>
+															) : (
+																<span />
+															)}
+														</div>
+													</m.div>
+												</m.div>
+											</LazyMotion>
+										</div>
+									</Tooltip>
                                 </div>
 
                                 {/* Progress Bar - moved outside the circle div */}
