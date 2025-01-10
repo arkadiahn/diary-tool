@@ -1,4 +1,4 @@
 export const siteConfig = {
-    name: "OpenAuth",
-    description: "Secure authentication platform",
+    name: "Arkadie - Auth",
+    description: "Arkadie - Auth, a secure authentication platform",
 } as const;
