@@ -24,14 +24,14 @@ export default function ProjectDetailView({ data, timelineComponent }: ProjectDe
         <>
             <div className="w-full p-6">
                 <Breadcrumbs
-                    size="lg"
+                    size="md"
                     className="mb-5"
                     itemClasses={{
                         item: "text-default-600",
                         separator: "text-default-400",
                     }}
                 >
-                    <BreadcrumbItem href="/">MissionBoard</BreadcrumbItem>
+                    <BreadcrumbItem href="/missionboard">MissionBoard</BreadcrumbItem>
                     <BreadcrumbItem>{data.title}</BreadcrumbItem>
                 </Breadcrumbs>
 
