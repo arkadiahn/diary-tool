@@ -465,14 +465,6 @@ export interface AuthSession {
   scopes: AuthSessionScopesItem[];
 }
 
-export interface DiaryPatch {
-  goals: DiaryGoal[];
-}
-
-export type DiaryPostGoalsItem = {
-  title: string;
-};
-
 /**
  * The user's obstacles for the project
  */
@@ -498,6 +490,15 @@ export type WeeksTillCompletion = number;
  */
 export type Project = string;
 
+export interface DiaryPatch {
+  goals?: Goals;
+  learnings?: Learnings;
+  motivation?: Motivation;
+  obstacles?: Obstacles;
+  project?: Project;
+  weeks_till_completion?: WeeksTillCompletion;
+}
+
 /**
  * The date of the start of the week on which the diary entry is based
  */
@@ -505,7 +506,7 @@ export type EntryDate = string;
 
 export interface DiaryPost {
   entry_date: EntryDate;
-  goals: DiaryPostGoalsItem[];
+  goals: Goals;
   learnings: Learnings;
   motivation: Motivation;
   obstacles: Obstacles;
@@ -517,6 +518,8 @@ export interface DiaryGoal {
   completed: boolean;
   title: string;
 }
+
+export type Goals = DiaryGoal[];
 
 export interface Diary {
   account_id: string;
@@ -726,6 +729,9 @@ export const getDiary = (
     }
   
 /**
+ * The user can update the diary entry for this week with a grace period of +- 1 day.
+Within a period of 2 weeks the user can also update the completion status of the goals.
+
  * @summary Update a diary
  */
 export const updateDiary = (
