@@ -8,7 +8,7 @@ export async function signIn(provider: string, redirect: string) {
     const signUrl = `${globalConfig.baseApiUrl}${globalConfig.loginEndpoint}?${new URLSearchParams(
         {
             redirect: formatRedirectUrl(redirect),
-            method: provider
+            provider
         },
     )}`;
     window.location.href = signUrl;
