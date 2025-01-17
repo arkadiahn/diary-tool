@@ -1,9 +1,10 @@
 "use client";
 
-import { getAccounts, getAccount, getDiaries, createDiary } from '../../api/missionboard';
+import { getAccounts, getAccount, getDiaries, createDiary } from '@/api/missionboard';
 import { useState, useEffect } from 'react';
 import { Session } from '@arkadia/cnauth';
 import { format } from 'date-fns';
+import { useRouter } from 'next/navigation';
 
 
 interface DiaryGoal {
@@ -26,14 +27,38 @@ interface DiaryEntry {
 }
 
 interface DiaryPageProps {
-	session: Session | null;
+  session: Session | null;
 }
 
 export default function DiaryPage({ session }: DiaryPageProps) {
+  const PROJECT_OPTIONS = [
+    "Libft",
+    "born2beroot",
+    "ft_printf",
+    "get_next_line",
+    "push_swap",
+    "minitalk",
+    "pipex",
+    "so_long",
+    "FdF",
+    "fract-ol",
+    "Philosophers",
+    "minishell",
+    "cub3d",
+    "miniRT",
+    "NetPractice",
+    "CPP Module 00-04",
+    "CPP Module 05-09",
+    "ft_irc",
+    "webserv",
+    "Inception",
+    "ft_transcendence"
+  ];
+
   const [diaries, setDiaries] = useState<DiaryEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   const [newEntry, setNewEntry] = useState({
     entry_date: format(new Date(), 'yyyy-MM-dd'),
     project: '',
@@ -44,13 +69,13 @@ export default function DiaryPage({ session }: DiaryPageProps) {
     goals: [{ title: '', completed: false }]
   });
 
+  const router = useRouter();
+
   useEffect(() => {
     const fetchDiaries = async () => {
       try {
-        if (session?.user.nickName) {
-          const response = await getDiaries(session.user.nickName);
-          setDiaries(response.data);
-        }
+        const response = await getDiaries("me");
+        setDiaries(response.data);
       } catch {
         setError('Failed to fetch diaries');
       } finally {
@@ -64,78 +89,66 @@ export default function DiaryPage({ session }: DiaryPageProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      if (!session?.user.nickName) return;
-      
-      const response = await createDiary(session.user.nickName, {
+      // Filter out goals with empty strings before submission
+      const filteredGoals = newEntry.goals.filter(g => g.title.trim() !== '');
+      await createDiary("me", {
         ...newEntry,
-        goals: newEntry.goals.filter(g => g.title.trim() !== '')
+        goals: filteredGoals
       });
-
-      setDiaries([...diaries, response.data]);
       
-      // Reset form
-      setNewEntry({
-        entry_date: format(new Date(), 'yyyy-MM-dd'),
-        project: '',
-        weeks_till_completion: 1,
-        motivation: 5,
-        learnings: '',
-        obstacles: '',
-        goals: [{ title: '', completed: false }]
-      });
-    } catch {
+      // Redirect to overview page after successful submission
+      router.push('/');
+    } catch (error) {
+      console.log(error);
       setError('Failed to create diary entry');
     }
   };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
-  if (!session) return <div>Please login to view your diary</div>;
+  if (!session) {
+    window.location.href = `${process.env.NEXT_PUBLIC_AUTH_URL}?redirect=${window.location.href}`;
+    return null;
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">My Diary</h1>
-      
+
       {/* New Entry Form */}
       <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-8">
         <h2 className="text-2xl font-bold mb-6">New Entry</h2>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 gap-6">
+
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">
-                Date
+                Project you are currently working on
               </label>
-              <input
-                type="date"
-                value={newEntry.entry_date}
-                onChange={e => setNewEntry({...newEntry, entry_date: e.target.value})}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-                required
-              />
-            </div>
-            
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Project
-              </label>
-              <input
-                type="text"
+              <select
                 value={newEntry.project}
-                onChange={e => setNewEntry({...newEntry, project: e.target.value})}
+                onChange={e => setNewEntry({ ...newEntry, project: e.target.value })}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
                 required
-              />
+              >
+                <option value="">Select a project</option>
+                {PROJECT_OPTIONS.map((project) => (
+                  <option key={project} value={project}>
+                    {project}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">
-                Weeks until completion
+                Expected weeks until completion
               </label>
               <input
                 type="number"
                 min="1"
                 value={newEntry.weeks_till_completion}
-                onChange={e => setNewEntry({...newEntry, weeks_till_completion: parseInt(e.target.value)})}
+                onChange={e => setNewEntry({ ...newEntry, weeks_till_completion: parseInt(e.target.value) })}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
                 required
               />
@@ -143,48 +156,31 @@ export default function DiaryPage({ session }: DiaryPageProps) {
 
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">
-                Motivation (1-10)
-              </label>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                value={newEntry.motivation}
-                onChange={e => setNewEntry({...newEntry, motivation: parseInt(e.target.value)})}
-                className="w-full"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Learnings
+                Biggest learnings last week
               </label>
               <textarea
                 value={newEntry.learnings}
-                onChange={e => setNewEntry({...newEntry, learnings: e.target.value})}
+                onChange={e => setNewEntry({ ...newEntry, learnings: e.target.value })}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
                 rows={4}
-                required
               />
             </div>
 
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">
-                Obstacles
+                Biggest obstacles last week
               </label>
               <textarea
                 value={newEntry.obstacles}
-                onChange={e => setNewEntry({...newEntry, obstacles: e.target.value})}
+                onChange={e => setNewEntry({ ...newEntry, obstacles: e.target.value })}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
                 rows={4}
-                required
               />
             </div>
 
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">
-                Goals
+                Your goals for next week
               </label>
               {newEntry.goals.map((goal, index) => (
                 <div key={index} className="flex gap-2 mb-2">
@@ -194,7 +190,7 @@ export default function DiaryPage({ session }: DiaryPageProps) {
                     onChange={e => {
                       const newGoals = [...newEntry.goals];
                       newGoals[index].title = e.target.value;
-                      setNewEntry({...newEntry, goals: newGoals});
+                      setNewEntry({ ...newEntry, goals: newGoals });
                     }}
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
                     placeholder="Enter a goal"
@@ -203,7 +199,7 @@ export default function DiaryPage({ session }: DiaryPageProps) {
                     type="button"
                     onClick={() => {
                       const newGoals = newEntry.goals.filter((_, i) => i !== index);
-                      setNewEntry({...newEntry, goals: newGoals});
+                      setNewEntry({ ...newEntry, goals: newGoals });
                     }}
                     className="bg-red-500 text-white px-4 py-2 rounded"
                   >
@@ -233,52 +229,6 @@ export default function DiaryPage({ session }: DiaryPageProps) {
             </div>
           </div>
         </form>
-      </div>
-
-      {/* Diary Entries List */}
-      <div className="space-y-6">
-        {diaries.map((diary) => (
-          <div key={diary.name} className="bg-white shadow-md rounded px-8 pt-6 pb-8">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">
-                {new Date(diary.entry_date).toLocaleDateString()}
-              </h3>
-              <span className="text-gray-600">Project: {diary.project}</span>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <p className="font-bold">Weeks till completion:</p>
-                <p>{diary.weeks_till_completion}</p>
-              </div>
-              <div>
-                <p className="font-bold">Motivation:</p>
-                <p>{diary.motivation}/10</p>
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <p className="font-bold">Learnings:</p>
-              <p className="whitespace-pre-wrap">{diary.learnings}</p>
-            </div>
-
-            <div className="mb-4">
-              <p className="font-bold">Obstacles:</p>
-              <p className="whitespace-pre-wrap">{diary.obstacles}</p>
-            </div>
-
-            <div>
-              <p className="font-bold mb-2">Goals:</p>
-              <ul className="list-disc pl-5">
-                {diary.goals.map((goal, index) => (
-                  <li key={index} className={goal.completed ? 'line-through' : ''}>
-                    {goal.title}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        ))}
       </div>
     </div>
   );

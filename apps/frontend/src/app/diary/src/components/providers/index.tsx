@@ -20,7 +20,7 @@ export default function Providers({
     return (
         <>
             <NextUIProvider navigate={router.push}>
-                <ThemeProvider attribute="class" defaultTheme="system">
+                <ThemeProvider attribute="class" defaultTheme="light">
 					<NuqsAdapter>{children}</NuqsAdapter>
                 </ThemeProvider>
             </NextUIProvider>
