@@ -1,0 +1,31 @@
+import { Open_Sans } from "next/font/google";
+import "./globals.css";
+
+/* -------------------------------------------------------------------------- */
+/*                                    Fonts                                   */
+/* -------------------------------------------------------------------------- */
+const openSans = Open_Sans({
+    subsets: ["latin"],
+    weight: "400",
+});
+
+
+/* -------------------------------------------------------------------------- */
+/*                                   Layout                                   */
+/* -------------------------------------------------------------------------- */
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html suppressHydrationWarning lang="en">
+      <body
+	  	suppressHydrationWarning
+        className={`${openSans.className} antialiased`}
+      >
+        {children}
+      </body>
+    </html>
+  );
+}

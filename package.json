@@ -14,14 +14,12 @@
         "checkall": "bun format && bun lint && bun typecheck && bun lint:repo",
         "dev": "turbo dev --parallel",
         "dev:cnauth": "turbo dev --filter=@arkadia/cnauth",
-        "dev:frontend": "turbo dev --filter=@arkadia/frontend",
-        "dev:portal": "turbo dev --filter=@arkadia/portal",
         "dev:diary": "turbo dev --filter=@arkadia/diary",
+        "dev:monoend": "turbo dev --filter=@arkadia/monoend",
         "build": "turbo build",
         "build:cnauth": "turbo build --filter=@arkadia/cnauth",
-        "build:frontend": "turbo build --filter=@arkadia/frontend",
-        "build:portal": "turbo build --filter=@arkadia/portal",
-        "build:diary": "turbo build --filter=@arkadia/diary"
+        "build:diary": "turbo build --filter=@arkadia/diary",
+		"build:monoend": "turbo build --filter=@arkadia/monoend"
     },
     "devDependencies": {
         "@biomejs/biome": "1.9.4",
