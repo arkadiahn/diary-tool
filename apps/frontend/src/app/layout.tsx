@@ -1,3 +1,4 @@
+import Providers from "@/components/providers";
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
 
@@ -24,7 +25,9 @@ export default function RootLayout({
 	  	suppressHydrationWarning
         className={`${openSans.className} antialiased`}
       >
-        {children}
+		<Providers>
+			{children}
+		</Providers>
       </body>
     </html>
   );

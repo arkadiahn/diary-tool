@@ -79,12 +79,12 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
   };
 
   if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
   if (!session) {
-    window.location.href = `${process.env.NEXT_PUBLIC_AUTH_URL}?scopes=user&redirect=${window.location.href}`;
-    return null;
-  }
-
+	  window.location.href = `${process.env.NEXT_PUBLIC_AUTH_URL}?redirect=${window.location.href}`;
+	  return null;
+	}
+	if (error) return <div>Error: {error}</div>;
+	
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">My Diary Entries</h1>

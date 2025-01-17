@@ -33,6 +33,7 @@
     "orval": "7.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hot-toast": "^2.5.1",
     "tailwind-scrollbar": "^3.1.0",
     "twin.macro": "^3.4.1",
     "usehooks-ts": "^3.1.0"

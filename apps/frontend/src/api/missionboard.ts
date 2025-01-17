@@ -193,6 +193,13 @@ code: string;
 state: string;
 };
 
+export type DeleteDiaryParams = {
+/**
+ * delete will return 2xx if the resource is not found
+ */
+allow_missing?: AllowMissingParameter;
+};
+
 export type GetAccounts200 = {
   accounts: GetAccountsResponse;
   next_page_token: string;
@@ -216,11 +223,6 @@ page_token?: PageTokenParameter;
 };
 
 /**
- * delete will return 2xx if the resource is not found
- */
-export type AllowMissingParameter = boolean;
-
-/**
  * include soft deleted resources
  */
 export type ShowDeletedParameter = boolean;
@@ -229,6 +231,11 @@ export type ShowDeletedParameter = boolean;
  * redirect url after action is completed
  */
 export type RedirectUrlParameter = string;
+
+/**
+ * delete will return 2xx if the resource is not found
+ */
+export type AllowMissingParameter = boolean;
 
 /**
  * A page token, received from a previous call.
@@ -247,11 +254,6 @@ If unspecified (or specifies 0), a defualt is chosen.
 export type PageSizeParameter = number;
 
 /**
- * No Content
- */
-export type R204Response = void;
-
-/**
  * Conflict
  */
 export type R409Response = void;
@@ -260,6 +262,11 @@ export type R409Response = void;
  * Redirect
  */
 export type R302Response = void;
+
+/**
+ * No Content
+ */
+export type R204Response = void;
 
 /**
  * Not Found
@@ -326,14 +333,6 @@ export interface MissionMilestone {
   state: MissionMilestoneState;
 }
 
-export interface MissionPatch {
-  description?: Description;
-  description_goal?: DescriptionGoal;
-  description_skills?: DescriptionSkills;
-  github_link?: GithubLink;
-  title?: Title;
-}
-
 export type EndTime = string;
 
 export type KickoffTime = string;
@@ -350,16 +349,6 @@ export type DescriptionSkills = string;
  */
 export type DescriptionGoal = string;
 
-export interface MissionPost {
-  description: Description;
-  description_goal: DescriptionGoal;
-  description_skills: DescriptionSkills;
-  end_time?: EndTime;
-  github_link: GithubLink;
-  kickoff_time: KickoffTime;
-  title: Title;
-}
-
 export type GetMissionResponse = MissionArray | MissionSummaryArray;
 
 /**
@@ -371,6 +360,24 @@ export type Description = string;
  * @maxLength 255
  */
 export type Title = string;
+
+export interface MissionPatch {
+  description?: Description;
+  description_goal?: DescriptionGoal;
+  description_skills?: DescriptionSkills;
+  github_link?: GithubLink;
+  title?: Title;
+}
+
+export interface MissionPost {
+  description: Description;
+  description_goal: DescriptionGoal;
+  description_skills: DescriptionSkills;
+  end_time?: EndTime;
+  github_link: GithubLink;
+  kickoff_time: KickoffTime;
+  title: Title;
+}
 
 export interface MissionSummary {
   account_count: number;
@@ -730,6 +737,21 @@ export const updateDiary = (
       {url: `/accounts/${account}/diaries/${diary}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: diaryPatch
+    },
+      options);
+    }
+  
+/**
+ * @summary Delete a diary
+ */
+export const deleteDiary = (
+    account: string,
+    diary: string,
+    params?: DeleteDiaryParams,
+ options?: SecondParameter<typeof customAxios>,) => {
+      return customAxios<R204Response>(
+      {url: `/accounts/${account}/diaries/${diary}`, method: 'DELETE',
+        params
     },
       options);
     }
@@ -1150,6 +1172,7 @@ export type GetDiariesResult = NonNullable<Awaited<ReturnType<typeof getDiaries>
 export type CreateDiaryResult = NonNullable<Awaited<ReturnType<typeof createDiary>>>
 export type GetDiaryResult = NonNullable<Awaited<ReturnType<typeof getDiary>>>
 export type UpdateDiaryResult = NonNullable<Awaited<ReturnType<typeof updateDiary>>>
+export type DeleteDiaryResult = NonNullable<Awaited<ReturnType<typeof deleteDiary>>>
 export type GetCallbackResult = NonNullable<Awaited<ReturnType<typeof getCallback>>>
 export type GetAuthLoginResult = NonNullable<Awaited<ReturnType<typeof getAuthLogin>>>
 export type GetAuthLoginMockResult = NonNullable<Awaited<ReturnType<typeof getAuthLoginMock>>>

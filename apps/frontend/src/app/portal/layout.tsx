@@ -1,5 +1,5 @@
-import { siteConfig } from "./constants/siteConfig";
-import { Providers } from "./components/providers";
+import { siteConfig } from "./src/constants/siteConfig";
+import { Providers } from "./src/components/providers";
 import { Metadata } from "next";
 
 

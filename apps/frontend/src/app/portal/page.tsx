@@ -1,10 +1,11 @@
-import AuthProviders from "./components/auth/AuthProviders";
-import { siteConfig } from "./constants/siteConfig";
-import Header from "./components/layout/Header";
-import Footer from "./components/layout/Footer";
+import AuthProviders from "./src/components/auth/AuthProviders";
+import { siteConfig } from "./src/constants/siteConfig";
+import Header from "./src/components/layout/Header";
+import Footer from "./src/components/layout/Footer";
 import { Spinner } from "@nextui-org/react";
 import { Suspense } from "react";
 import Image from "next/image";
+
 
 export default function HomePage() {
     return (
