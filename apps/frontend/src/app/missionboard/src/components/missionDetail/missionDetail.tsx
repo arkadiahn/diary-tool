@@ -1,10 +1,10 @@
 "use client";
 
-import { BreadcrumbItem, Breadcrumbs, Button, Tooltip } from "@nextui-org/react";
+import { BreadcrumbItem, Breadcrumbs, Button, Tooltip } from "@heroui/react";
 import MissionState from "../common/missionState";
 import CustomIcon from "@/components/CustomIcon";
 import { Mission } from "@/api/missionboard";
-import {Chip} from "@nextui-org/react";
+import {Chip} from "@heroui/react";
 import { useRouter } from "next/navigation";
 
 import icGithubFill from "@iconify/icons-ri/github-fill";

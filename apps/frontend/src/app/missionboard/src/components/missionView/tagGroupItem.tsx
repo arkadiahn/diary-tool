@@ -1,10 +1,10 @@
 "use client";
 
-import type { CheckboxProps } from "@nextui-org/react";
+import type { CheckboxProps } from "@heroui/react";
 
 import { Icon } from "@iconify/react";
-import { Chip, VisuallyHidden, useCheckbox } from "@nextui-org/react";
-import { cn } from "@nextui-org/react";
+import { Chip, VisuallyHidden, useCheckbox } from "@heroui/react";
+import { cn } from "@heroui/react";
 import React from "react";
 
 export type TagGroupItemProps = Omit<CheckboxProps, "icon"> & {

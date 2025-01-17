@@ -3,7 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import CustomIcon from "@/components/CustomIcon";
 import { signOut } from "@arkadia/cnauth/client";
-import { Avatar } from "@nextui-org/react";
+import { Avatar } from "@heroui/react";
 import { Session } from "@arkadia/cnauth";
 import SidebarItem from "./sidebarItem";
 

@@ -1,7 +1,7 @@
 "use client";
 
-import type { RadioGroupProps } from "@nextui-org/react";
-import { cn, RadioGroup } from "@nextui-org/react";
+import type { RadioGroupProps } from "@heroui/react";
+import { cn, RadioGroup } from "@heroui/react";
 import { ThemeRadioItem } from "./RadioItem";
 import { useTheme } from "next-themes";
 import React from "react";

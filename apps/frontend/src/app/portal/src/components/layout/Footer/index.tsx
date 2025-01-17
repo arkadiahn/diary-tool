@@ -1,5 +1,5 @@
 import { siteConfig } from "../../../constants/siteConfig";
-import { Divider } from "@nextui-org/react";
+import { Divider } from "@heroui/react";
 import Image from "next/image";
 
 import SystemStatus from "./SystemStatus";

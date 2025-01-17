@@ -1,4 +1,4 @@
-import { Card, CardBody, CardHeader, Chip, Link } from "@nextui-org/react";
+import { Card, CardBody, CardHeader, Chip, Link } from "@heroui/react";
 import CustomIcon from "@/components/CustomIcon";
 import { Event } from "@/api/missionboard";
 

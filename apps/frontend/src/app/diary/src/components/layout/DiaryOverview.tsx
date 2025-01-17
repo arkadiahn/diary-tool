@@ -4,7 +4,7 @@ import { getDiaries } from '@/api/missionboard';
 import { useState, useEffect } from 'react';
 import { Session } from '@arkadia/cnauth';
 import { useRouter } from 'next/navigation';
-import { Button } from '@nextui-org/react';
+import { Button } from "@heroui/react";
 import { format } from 'date-fns';
 
 interface DiaryGoal {

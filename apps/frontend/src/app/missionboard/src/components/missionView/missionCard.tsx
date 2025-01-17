@@ -1,10 +1,10 @@
 "use client";
 
 import { likeMission, MissionSummary } from "@/api/missionboard";
-import { Card, CardBody } from "@nextui-org/react";
+import { Card, CardBody } from "@heroui/react";
 import MissionState from "../common/missionState";
 import { useRouter } from "next/navigation";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import TimeStepper from "./timeStepper";
 
 

@@ -1,5 +1,5 @@
 import { MissionMissionState } from "@/api/missionboard";
-import { Chip } from "@nextui-org/react";
+import { Chip } from "@heroui/react";
 
 
 export default function MissionState({ state }: { state: MissionMissionState }) {

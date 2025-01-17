@@ -1,7 +1,7 @@
 "use client";
 
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { type ButtonProps, cn, Tooltip } from "@nextui-org/react";
+import { type ButtonProps, cn, Tooltip } from "@heroui/react";
 import { LazyMotion, domAnimation, m } from "framer-motion";
 import React from "react";
 
@@ -73,45 +73,45 @@ const TimeStepper = React.forwardRef<HTMLDivElement, MinimalRowStepsProps>(
                 "[--active-color:hsl(var(--step-color))]",
                 "[--complete-background-color:hsl(var(--step-color))]",
                 "[--complete-border-color:hsl(var(--step-color))]",
-                "[--inactive-border-color:hsl(var(--nextui-default-300))]",
-                "[--inactive-color:hsl(var(--nextui-default-300))]",
+                "[--inactive-border-color:hsl(var(--heroui-default-300))]",
+                "[--inactive-color:hsl(var(--heroui-default-300))]",
             ];
 
             switch (color) {
                 case "primary":
-                    userColor = "[--step-color:var(--nextui-primary)]";
+                    userColor = "[--step-color:var(--heroui-primary)]";
                     fgColor =
-                        "[--step-fg-color:var(--nextui-primary-foreground)]";
+                        "[--step-fg-color:var(--heroui-primary-foreground)]";
                     break;
                 case "secondary":
-                    userColor = "[--step-color:var(--nextui-secondary)]";
+                    userColor = "[--step-color:var(--heroui-secondary)]";
                     fgColor =
-                        "[--step-fg-color:var(--nextui-secondary-foreground)]";
+                        "[--step-fg-color:var(--heroui-secondary-foreground)]";
                     break;
                 case "success":
-                    userColor = "[--step-color:var(--nextui-success)]";
+                    userColor = "[--step-color:var(--heroui-success)]";
                     fgColor =
-                        "[--step-fg-color:var(--nextui-success-foreground)]";
+                        "[--step-fg-color:var(--heroui-success-foreground)]";
                     break;
                 case "warning":
-                    userColor = "[--step-color:var(--nextui-warning)]";
+                    userColor = "[--step-color:var(--heroui-warning)]";
                     fgColor =
-                        "[--step-fg-color:var(--nextui-warning-foreground)]";
+                        "[--step-fg-color:var(--heroui-warning-foreground)]";
                     break;
                 case "danger":
-                    userColor = "[--step-color:var(--nextui-error)]";
+                    userColor = "[--step-color:var(--heroui-error)]";
                     fgColor =
-                        "[--step-fg-color:var(--nextui-error-foreground)]";
+                        "[--step-fg-color:var(--heroui-error-foreground)]";
                     break;
                 case "default":
-                    userColor = "[--step-color:var(--nextui-default)]";
+                    userColor = "[--step-color:var(--heroui-default)]";
                     fgColor =
-                        "[--step-fg-color:var(--nextui-default-foreground)]";
+                        "[--step-fg-color:var(--heroui-default-foreground)]";
                     break;
                 default:
-                    userColor = "[--step-color:var(--nextui-primary)]";
+                    userColor = "[--step-color:var(--heroui-primary)]";
                     fgColor =
-                        "[--step-fg-color:var(--nextui-primary-foreground)]";
+                        "[--step-fg-color:var(--heroui-primary-foreground)]";
                     break;
             }
 
@@ -122,16 +122,16 @@ const TimeStepper = React.forwardRef<HTMLDivElement, MinimalRowStepsProps>(
         }, [color]);
 
         return (
-            <nav
+            (<nav
                 aria-label="Progress"
                 className="flex w-full items-center"
                 ref={ref}
             >
                 {label && (
                     // biome-ignore lint/a11y/noLabelWithoutControl: <explanation>
-                    <label className="w-28 text-small font-medium text-default-foreground lg:text-medium">
+                    (<label className="w-28 text-small font-medium text-default-foreground lg:text-medium">
                         {label}
-                    </label>
+                    </label>)
                 )}
                 <ol
                     className={cn(
@@ -268,7 +268,7 @@ const TimeStepper = React.forwardRef<HTMLDivElement, MinimalRowStepsProps>(
                         );
                     })}
                 </ol>
-            </nav>
+            </nav>)
         );
     },
 );

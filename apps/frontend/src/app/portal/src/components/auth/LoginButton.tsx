@@ -3,7 +3,7 @@
 import type { IconifyIcon } from "@iconify/types";
 import CustomIcon from "@/components/CustomIcon";
 import { signIn } from "@arkadia/cnauth/client";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 
 export interface LoginButtonProps {
 	redirectUrl?: string;

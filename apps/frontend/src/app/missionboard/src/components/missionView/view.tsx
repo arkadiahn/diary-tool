@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckboxGroup, Input, ScrollShadow } from "@nextui-org/react";
+import { CheckboxGroup, Input, ScrollShadow } from "@heroui/react";
 import { MissionSummaryArray } from "@/api/missionboard";
 import TagGroupItem from "./tagGroupItem";
 import MissionCard from "./missionCard";

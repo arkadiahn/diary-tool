@@ -2,12 +2,12 @@ import {
     useRadio,
     useRadioGroupContext,
     VisuallyHidden,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import CustomIcon from "@/components/CustomIcon";
-import { cn } from "@nextui-org/react";
+import { cn } from "@heroui/react";
 
 /* ---------------------------------- Types --------------------------------- */
-import type { RadioProps } from "@nextui-org/react";
+import type { RadioProps } from "@heroui/react";
 import type { IconifyIcon } from "@iconify/types";
 import type React from "react";
 

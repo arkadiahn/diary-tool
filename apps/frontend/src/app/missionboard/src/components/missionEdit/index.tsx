@@ -8,8 +8,8 @@ import {
     Input,
     Textarea,
     Chip
-} from "@nextui-org/react";
-import { DatePicker } from "@nextui-org/date-picker";
+} from "@heroui/react";
+import { DatePicker } from "@heroui/date-picker";
 import { getAccount, patchMission, postMission, Mission, AccountPublic } from "@/api/missionboard";
 import icGithubFill from "@iconify/icons-ri/github-fill";
 import { parseDate } from "@internationalized/date";
@@ -102,7 +102,7 @@ export default function MissionEdit({ data }: MissionEditProps) {
     };
 
     return (
-        <div className="w-full p-6">
+        (<div className="w-full p-6">
             <Breadcrumbs
                 size="lg"
                 className="mb-5"
@@ -115,7 +115,6 @@ export default function MissionEdit({ data }: MissionEditProps) {
                 <BreadcrumbItem href={`/${data.name}`}>{data.title}</BreadcrumbItem>
                 <BreadcrumbItem>Edit</BreadcrumbItem>
             </Breadcrumbs>
-
             <form
                 className="bg-content1 rounded-large p-6 shadow-small"
                 onSubmit={async (e) => {
@@ -242,6 +241,6 @@ export default function MissionEdit({ data }: MissionEditProps) {
                     </Button>
                 </div>
             </form>
-        </div>
+        </div>)
     );
 }

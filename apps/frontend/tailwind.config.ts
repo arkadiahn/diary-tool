@@ -1,4 +1,4 @@
-import { nextui } from "@nextui-org/react";
+import { heroui } from "@heroui/react";
 import scrollbar from "tailwind-scrollbar";
 import type { Config } from "tailwindcss";
 import path from "node:path";
@@ -10,9 +10,9 @@ export default {
 		"./src/components/**/*.{js,ts,jsx,tsx,mdx}",
 		// App
 		"./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-		// @nextui-org
+		// @heroui
 		path.join(
-			require.resolve("@nextui-org/theme"),
+			require.resolve("@heroui/theme"),
 			"../../dist/**/*.{js,ts,jsx,tsx}",
 		),
 	],
@@ -40,5 +40,5 @@ export default {
         },
     },
 	darkMode: ["class"],
-	plugins: [nextui(), scrollbar({})],
+	plugins: [heroui(), scrollbar({})],
 } satisfies Config;

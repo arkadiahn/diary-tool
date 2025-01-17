@@ -1,4 +1,4 @@
-import { Divider, ScrollShadow, cn } from "@nextui-org/react";
+import { Divider, ScrollShadow, cn } from "@heroui/react";
 import { IconifyIcon } from "@/components/CustomIcon";
 import CustomIcon from "@/components/CustomIcon";
 import AccountHandler from "./accountHandler";

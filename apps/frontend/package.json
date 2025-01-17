@@ -20,7 +20,7 @@
     "@iconify/icons-ri": "^1.2.10",
     "@iconify/icons-solar": "^1.2.3",
     "@iconify/react": "^5.0.2",
-    "@nextui-org/react": "2.6.11",
+    "@heroui/react": "2.6.13",
     "ajv": "^8.12.0",
     "axios": "^1.7.9",
     "date-fns": "^4.1.0",

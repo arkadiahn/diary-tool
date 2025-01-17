@@ -2,7 +2,7 @@ import AuthProviders from "./src/components/auth/AuthProviders";
 import { siteConfig } from "./src/constants/siteConfig";
 import Header from "./src/components/layout/Header";
 import Footer from "./src/components/layout/Footer";
-import { Spinner } from "@nextui-org/react";
+import { Spinner } from "@heroui/react";
 import { Suspense } from "react";
 import Image from "next/image";
 
