@@ -1,4 +1,4 @@
-import { getMissionboardProjectMilestones } from "@/api/missionboard";
+import { getMissionMilestones } from "@/api/missionboard";
 import TimeStepper from "../missionView/timeStepper";
 
 interface TimelineProps {
@@ -6,7 +6,7 @@ interface TimelineProps {
 }
 
 export default async function Timeline({ name }: TimelineProps) {
-    const { data } = await getMissionboardProjectMilestones(name.split("/").at(-1)!);
+    const { data } = await getMissionMilestones(name.split("/").at(-1)!);
 
 	const milestonesCount = data.length;
 	const completedMilestonesCount = data.filter(milestone => milestone.state === "completed").length;
