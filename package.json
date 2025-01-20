@@ -17,12 +17,16 @@
         "dev:frontend": "turbo dev --filter=@arkadia/frontend",
         "build": "turbo build",
         "build:cnauth": "turbo build --filter=@arkadia/cnauth",
-		"build:frontend": "turbo build --filter=@arkadia/frontend"
+        "build:frontend": "turbo build --filter=@arkadia/frontend"
     },
     "devDependencies": {
         "@biomejs/biome": "1.9.4",
         "turbo": "^2.3.3",
         "typescript": "^5.7.2"
     },
-    "packageManager": "bun@1.1.38"
+    "packageManager": "bun@1.1.38",
+    "dependencies": {
+        "apexcharts": "^4.3.0",
+        "react-apexcharts": "^1.7.0"
+    }
 }

@@ -53,8 +53,6 @@ export type GetMissionAccountParams = {
 show_unapproved?: boolean;
 };
 
-export type PostMissionAccountBodyTwo = { [key: string]: unknown };
-
 export type PostMissionAccountParams = {
 /**
  * Can only be used by admins.
@@ -116,6 +114,16 @@ export const GetMissionsFormat = {
   extended: 'extended',
 } as const;
 
+export type GetAccounts200 = {
+  accounts: GetAccountsResponse;
+  next_page_token: string;
+};
+
+/**
+ * include soft deleted resources
+ */
+export type ShowDeletedParameter = boolean;
+
 export type GetMissionsParams = {
 format?: GetMissionsFormat;
 /**
@@ -133,65 +141,10 @@ show_deleted?: ShowDeletedParameter;
 show_unapproved?: boolean;
 };
 
-export type GetAuthLogoutParams = {
 /**
- * redirect url after action is completed
+ * delete will return 2xx if the resource is not found
  */
-redirect?: RedirectUrlParameter;
-};
-
-export type GetAuthLoginMockScopesItem = typeof GetAuthLoginMockScopesItem[keyof typeof GetAuthLoginMockScopesItem];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetAuthLoginMockScopesItem = {
-  user: 'user',
-  admin: 'admin',
-} as const;
-
-export type GetAuthLoginMockParams = {
-scopes?: GetAuthLoginMockScopesItem[];
-accountId?: string;
-/**
- * If true, the account will automatically be get user scope
- */
-registrationCompleted?: boolean;
-/**
- * redirect url after action is completed
- */
-redirect?: RedirectUrlParameter;
-};
-
-export type GetAuthLoginProvider = typeof GetAuthLoginProvider[keyof typeof GetAuthLoginProvider];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetAuthLoginProvider = {
-  github: 'github',
-  google: 'google',
-} as const;
-
-export type GetAuthLoginParams = {
-/**
- * login provider
- */
-provider: GetAuthLoginProvider;
-/**
- * redirect url after action is completed
- */
-redirect?: RedirectUrlParameter;
-};
-
-export type GetCallbackParams = {
-/**
- * code
- */
-code: string;
-/**
- * state
- */
-state: string;
-};
+export type AllowMissingParameter = boolean;
 
 export type DeleteDiaryParams = {
 /**
@@ -200,10 +153,21 @@ export type DeleteDiaryParams = {
 allow_missing?: AllowMissingParameter;
 };
 
-export type GetAccounts200 = {
-  accounts: GetAccountsResponse;
-  next_page_token: string;
-};
+/**
+ * A page token, received from a previous call.
+Provide this to retrieve the subsequent page.
+When paginating, all other parameters provided must match
+the call that provided the page token.
+
+ */
+export type PageTokenParameter = string;
+
+/**
+ * The maximum number to return. May return fewer than this value.
+If unspecified (or specifies 0), a defualt is chosen.
+
+ */
+export type PageSizeParameter = number;
 
 export type GetAccountsParams = {
 /**
@@ -223,45 +187,9 @@ page_token?: PageTokenParameter;
 };
 
 /**
- * include soft deleted resources
- */
-export type ShowDeletedParameter = boolean;
-
-/**
- * redirect url after action is completed
- */
-export type RedirectUrlParameter = string;
-
-/**
- * delete will return 2xx if the resource is not found
- */
-export type AllowMissingParameter = boolean;
-
-/**
- * A page token, received from a previous call.
-Provide this to retrieve the subsequent page.
-When paginating, all other parameters provided must match
-the call that provided the page token.
-
- */
-export type PageTokenParameter = string;
-
-/**
- * The maximum number to return. May return fewer than this value.
-If unspecified (or specifies 0), a defualt is chosen.
-
- */
-export type PageSizeParameter = number;
-
-/**
  * Conflict
  */
 export type R409Response = void;
-
-/**
- * Redirect
- */
-export type R302Response = void;
 
 /**
  * No Content
@@ -349,6 +277,16 @@ export type DescriptionSkills = string;
  */
 export type DescriptionGoal = string;
 
+export interface MissionPatch {
+  description?: Description;
+  description_goal?: DescriptionGoal;
+  description_skills?: DescriptionSkills;
+  github_link?: GithubLink;
+  title?: Title;
+}
+
+export type MissionSummaryArray = MissionSummary[];
+
 export type GetMissionResponse = MissionArray | MissionSummaryArray;
 
 /**
@@ -360,14 +298,6 @@ export type Description = string;
  * @maxLength 255
  */
 export type Title = string;
-
-export interface MissionPatch {
-  description?: Description;
-  description_goal?: DescriptionGoal;
-  description_skills?: DescriptionSkills;
-  github_link?: GithubLink;
-  title?: Title;
-}
 
 export interface MissionPost {
   description: Description;
@@ -390,7 +320,7 @@ export interface MissionSummary {
   title: Title;
 }
 
-export type MissionSummaryArray = MissionSummary[];
+export type MissionArray = Mission[];
 
 export type MissionApprovalState = typeof MissionApprovalState[keyof typeof MissionApprovalState];
 
@@ -434,8 +364,6 @@ export interface Mission {
   update_time: string;
 }
 
-export type MissionArray = Mission[];
-
 export interface Event {
   begin_time: string;
   description: string;
@@ -448,22 +376,7 @@ export interface Event {
   topic: string;
 }
 
-export type AuthSessionScopesItem = typeof AuthSessionScopesItem[keyof typeof AuthSessionScopesItem];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const AuthSessionScopesItem = {
-  user: 'user',
-  admin: 'admin',
-} as const;
-
-export interface AuthSession {
-  email: string;
-  imageURI: string;
-  name: string;
-  nickName: string;
-  scopes: AuthSessionScopesItem[];
-}
+export type Goals = DiaryGoal[];
 
 /**
  * The user's obstacles for the project
@@ -519,8 +432,6 @@ export interface DiaryGoal {
   title: string;
 }
 
-export type Goals = DiaryGoal[];
-
 export interface Diary {
   account_id: string;
   /** The time the diary entry was created */
@@ -541,44 +452,6 @@ export interface Diary {
   update_time: string;
   /** The number of weeks until the project is completed */
   weeks_till_completion: number;
-}
-
-export type AcceptedNewsletter = boolean;
-
-export type AcceptedTermsOfService = boolean;
-
-export type AcceptedPrivacyPolicy = boolean;
-
-export type Admin = boolean;
-
-/**
- * @maxLength 1
- */
-export type Emoji = string;
-
-export type BirthDate = string;
-
-/**
- * @maxLength 255
- */
-export type FamilyName = string;
-
-/**
- * @maxLength 255
- */
-export type GivenName = string;
-
-export interface AccountPatch {
-  accepted_newsletter?: AcceptedNewsletter;
-  accepted_privacy_policy?: AcceptedPrivacyPolicy;
-  accepted_terms_of_service?: AcceptedTermsOfService;
-  admin?: Admin;
-  birth_date?: BirthDate;
-  email?: Email;
-  emoji?: Emoji;
-  family_name?: FamilyName;
-  given_name?: GivenName;
-  nick_name?: NickName;
 }
 
 export type GetAccountsResponse = AccountArray | AccountPublicArray;
@@ -604,28 +477,15 @@ export interface AccountPublic {
 export type AccountPublicArray = AccountPublic[];
 
 export interface Account {
-  accepted_newsletter: boolean;
-  accepted_privacy_policy: boolean;
-  accepted_terms_of_service: boolean;
-  admin: boolean;
-  birth_date?: string;
-  completed_registration: boolean;
   create_time: string;
+  delete_time?: string;
   /** @maxLength 255 */
   email: string;
-  /** @maxLength 1 */
-  emoji: string;
-  /** @maxLength 255 */
-  family_name: string;
-  /** @maxLength 255 */
-  github_id?: string;
-  /** @maxLength 255 */
-  given_name: string;
-  /** @maxLength 255 */
-  google_id?: string;
+  last_login_time: string;
   readonly name: string;
   /** @maxLength 255 */
   nick_name: string;
+  purge_time?: string;
   update_time: string;
 }
 
@@ -658,6 +518,18 @@ export const getAccounts = (
     }
   
 /**
+ * @summary Create or update an account from jwt
+ */
+export const putAccount = (
+    
+ options?: SecondParameter<typeof customAxios>,) => {
+      return customAxios<Account>(
+      {url: `/accounts`, method: 'PUT'
+    },
+      options);
+    }
+  
+/**
  * @summary Get an account
  */
 export const getAccount = (
@@ -665,25 +537,6 @@ export const getAccount = (
  options?: SecondParameter<typeof customAxios>,) => {
       return customAxios<GetAccountResponse>(
       {url: `/accounts/${account}`, method: 'GET'
-    },
-      options);
-    }
-  
-/**
- * Admins can update all fields.
-Users can only update their own user.
-  And not admin, birth date, email fields.
-
- * @summary Update an account
- */
-export const patchAccount = (
-    account: string,
-    accountPatch: AccountPatch,
- options?: SecondParameter<typeof customAxios>,) => {
-      return customAxios<Account>(
-      {url: `/accounts/${account}`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: accountPatch
     },
       options);
     }
@@ -758,82 +611,6 @@ export const deleteDiary = (
       return customAxios<R204Response>(
       {url: `/accounts/${account}/diaries/${diary}`, method: 'DELETE',
         params
-    },
-      options);
-    }
-  
-/**
- * @summary OAuth2 Callback
- */
-export const getCallback = (
-    params: GetCallbackParams,
- options?: SecondParameter<typeof customAxios>,) => {
-      return customAxios<unknown>(
-      {url: `/auth/callback`, method: 'GET',
-        params
-    },
-      options);
-    }
-  
-/**
- * Will always return a 302 redirect.
-In case of error, the following query parameters will be added to the ERROR_REDIRECT_URL:
-- status: the error status code
-- message: the error message
-If the login is not completed (usually happens on first login) will redirect to COMPLETE_AUTH_REDIRECT_URL
-
- * @summary Redirects the user to the OAuth provider's authorization URL
- */
-export const getAuthLogin = (
-    params: GetAuthLoginParams,
- options?: SecondParameter<typeof customAxios>,) => {
-      return customAxios<unknown>(
-      {url: `/auth/login`, method: 'GET',
-        params
-    },
-      options);
-    }
-  
-/**
- * @summary login
- */
-export const getAuthLoginMock = (
-    params?: GetAuthLoginMockParams,
- options?: SecondParameter<typeof customAxios>,) => {
-      return customAxios<unknown>(
-      {url: `/auth/login/mock`, method: 'GET',
-        params
-    },
-      options);
-    }
-  
-/**
- * Will succeed even if the user is not logged in.
-Will always return a 302 redirect.
-In case of error, the following query parameters will be added to the redirect URL:
-- status: the error status code
-- message: the error message
-
- * @summary Logout the user / clear the session
- */
-export const getAuthLogout = (
-    params?: GetAuthLogoutParams,
- options?: SecondParameter<typeof customAxios>,) => {
-      return customAxios<unknown>(
-      {url: `/auth/logout`, method: 'GET',
-        params
-    },
-      options);
-    }
-  
-/**
- * @summary Get the current session
- */
-export const getSession = (
-    
- options?: SecondParameter<typeof customAxios>,) => {
-      return customAxios<AuthSession>(
-      {url: `/auth/session`, method: 'GET'
     },
       options);
     }
@@ -1083,12 +860,13 @@ export const getMissionAccounts = (
  */
 export const postMissionAccount = (
     mission: string,
-    postMissionAccountBody?: MissionAccountPost | PostMissionAccountBodyTwo,
+    missionAccountPost?: MissionAccountPost,
     params?: PostMissionAccountParams,
  options?: SecondParameter<typeof customAxios>,) => {
       return customAxios<MissionAccount | R204Response>(
       {url: `/missions/${mission}/accounts`, method: 'POST',
-      data: postMissionAccountBody,
+      headers: {'Content-Type': 'application/json', },
+      data: missionAccountPost,
         params
     },
       options);
@@ -1172,18 +950,13 @@ if(uploadFileBody.file !== undefined) {
     }
   
 export type GetAccountsResult = NonNullable<Awaited<ReturnType<typeof getAccounts>>>
+export type PutAccountResult = NonNullable<Awaited<ReturnType<typeof putAccount>>>
 export type GetAccountResult = NonNullable<Awaited<ReturnType<typeof getAccount>>>
-export type PatchAccountResult = NonNullable<Awaited<ReturnType<typeof patchAccount>>>
 export type GetDiariesResult = NonNullable<Awaited<ReturnType<typeof getDiaries>>>
 export type CreateDiaryResult = NonNullable<Awaited<ReturnType<typeof createDiary>>>
 export type GetDiaryResult = NonNullable<Awaited<ReturnType<typeof getDiary>>>
 export type UpdateDiaryResult = NonNullable<Awaited<ReturnType<typeof updateDiary>>>
 export type DeleteDiaryResult = NonNullable<Awaited<ReturnType<typeof deleteDiary>>>
-export type GetCallbackResult = NonNullable<Awaited<ReturnType<typeof getCallback>>>
-export type GetAuthLoginResult = NonNullable<Awaited<ReturnType<typeof getAuthLogin>>>
-export type GetAuthLoginMockResult = NonNullable<Awaited<ReturnType<typeof getAuthLoginMock>>>
-export type GetAuthLogoutResult = NonNullable<Awaited<ReturnType<typeof getAuthLogout>>>
-export type GetSessionResult = NonNullable<Awaited<ReturnType<typeof getSession>>>
 export type GetEventsResult = NonNullable<Awaited<ReturnType<typeof getEvents>>>
 export type GetMissionsResult = NonNullable<Awaited<ReturnType<typeof getMissions>>>
 export type PostMissionResult = NonNullable<Awaited<ReturnType<typeof postMission>>>
