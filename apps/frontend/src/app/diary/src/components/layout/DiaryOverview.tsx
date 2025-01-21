@@ -262,6 +262,9 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
       },
       animations: {
         enabled: false
+      },
+      zoom: {
+        enabled: false
       }
     },
     stroke: {
@@ -362,6 +365,36 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
     data: diaries.map(diary => diary.weeks_till_completion)
   }];
 
+  const completionSeries = [{
+    name: 'Tasks Completed',
+    data: diaries.map(diary => {
+      if (diary.goals.length === 0) return null;
+      const completedTasks = diary.goals.filter(goal => goal.completed).length;
+      return Math.round((completedTasks / diary.goals.length) * 100);
+    })
+  }];
+
+  const completionChartOptions: ApexOptions = {
+    ...baseChartOptions,
+    colors: ['#F5A524'],
+    yaxis: {
+      min: 0,
+      max: 100,
+      title: {
+        text: 'Tasks Completed (%)'
+      },
+      labels: {
+        formatter: (value: number) => `${value}%`
+      }
+    },
+    tooltip: {
+      ...baseChartOptions.tooltip,
+      y: {
+        formatter: (value: number) => `${value}%`
+      }
+    }
+  };
+
   if (loading) return <div>Loading...</div>;
   if (!session) {
 	  // window.location.href = `${process.env.NEXT_PUBLIC_AUTH_URL}?redirect=${window.location.href}`;
@@ -370,15 +403,14 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
 	if (error) return <div>Error: {error}</div>;
 	
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <Card>
+    <div className="w-full px-4 sm:px-6 lg:px-10">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <Card className="w-full col-span-1 lg:col-span-3 xl:col-span-1">
           <CardHeader>
             <h3 className="text-xl font-bold">Motivation Over Time</h3>
           </CardHeader>
           <CardBody>
-            <div className="w-full h-[250px]">
+            <div className="w-full h-[400px] overflow-hidden">
               <Chart
                 options={motivationChartOptions}
                 series={motivationSeries}
@@ -389,15 +421,31 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
           </CardBody>
         </Card>
 
-        <Card>
+        <Card className="w-full col-span-1 lg:col-span-3 xl:col-span-1">
           <CardHeader>
             <h3 className="text-xl font-bold">Weeks Till Completion</h3>
           </CardHeader>
           <CardBody>
-            <div className="w-full h-[250px]">
+            <div className="w-full h-[400px] overflow-hidden">
               <Chart
                 options={weeksChartOptions}
                 series={weeksSeries}
+                type="line"
+                height="100%"
+              />
+            </div>
+          </CardBody>
+        </Card>
+
+        <Card className="w-full col-span-1 lg:col-span-3 xl:col-span-1">
+          <CardHeader>
+            <h3 className="text-xl font-bold">Task Completion Rate</h3>
+          </CardHeader>
+          <CardBody>
+            <div className="w-full h-[400px] overflow-hidden">
+              <Chart
+                options={completionChartOptions}
+                series={completionSeries}
                 type="line"
                 height="100%"
               />
@@ -410,7 +458,7 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
         {!hasEntryThisWeek && (
           <Card 
             isPressable
-            onPress={() => router.push('/new')}
+            onPress={() => router.push('/diary/entries/new')}
             className="bg-success-50 dark:bg-success-100 w-full"
           >
             <CardBody className="py-2">
@@ -465,9 +513,17 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
                 <div className="space-y-1">
                   <p className="font-semibold">Weeks till completion: {diary.weeks_till_completion}</p>
                   <p className="font-semibold">Motivation: {diary.motivation}/10</p>
+                  <div className="mt-2">
+                    <p className="font-semibold text-success">Learnings:</p>
+                    <p className="text-sm mt-1">{diary.learnings}</p>
+                  </div>
+                  <div className="mt-2">
+                    <p className="font-semibold text-danger">Obstacles:</p>
+                    <p className="text-sm mt-1">{diary.obstacles}</p>
+                  </div>
                 </div>
                 <div>
-                  <div className="flex flex-col gap-1">
+                  <div className="flex flex-col gap-1 break-words">
                     {diary.goals.slice(0, 2).map((goal, index) => (
                       <Checkbox
                         key={index}
@@ -476,7 +532,7 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
                         size="sm"
                         lineThrough={true}
                       >
-                        <span className="text-sm">{goal.title}</span>
+                        <span className="text-sm break-words">{goal.title}</span>
                       </Checkbox>
                     ))}
                     {diary.goals.length > 2 && (

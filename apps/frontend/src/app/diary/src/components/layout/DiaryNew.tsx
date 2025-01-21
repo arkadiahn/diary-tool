@@ -55,8 +55,8 @@ export default function DiaryPage({ session }: DiaryPageProps) {
     "ft_transcendence"
   ];
 
-  const [diaries, setDiaries] = useState<DiaryEntry[]>([]);
-  const [loading, setLoading] = useState(true);
+  // const [diaries, setDiaries] = useState<DiaryEntry[]>([]);
+  // const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [newEntry, setNewEntry] = useState({
@@ -72,18 +72,18 @@ export default function DiaryPage({ session }: DiaryPageProps) {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchDiaries = async () => {
-      try {
-        const response = await getDiaries("me");
-        setDiaries(response.data);
-      } catch {
-        setError('Failed to fetch diaries');
-      } finally {
-        setLoading(false);
-      }
-    };
+    // const fetchDiaries = async () => {
+    //   try {
+    //     const response = await getDiaries("me");
+    //     setDiaries(response.data);
+    //   } catch {
+    //     setError('Failed to fetch diaries');
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
 
-    fetchDiaries();
+    // fetchDiaries();
   }, [session]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -104,7 +104,7 @@ export default function DiaryPage({ session }: DiaryPageProps) {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  // if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!session) {
     window.location.href = `${process.env.NEXT_PUBLIC_AUTH_URL}?redirect=${window.location.href}`;

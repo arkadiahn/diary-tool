@@ -29,7 +29,7 @@ export default function NavbarComponent(props: NavbarProps) {
     <Navbar
       {...props}
       classNames={{
-        base: "py-4 backdrop-filter-none bg-transparent",
+        base: "py-4 backdrop-filter-none bg-transparent relative",
         wrapper: "px-0 w-full justify-center bg-transparent",
         item: "hidden md:flex",
       }}
