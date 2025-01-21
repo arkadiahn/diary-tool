@@ -10,7 +10,7 @@ export default async function EntriesPage() {
 			nickName: "Mock User",
 			email: "mock@example.com",
 			imageURI: "",
-			scopes: ["admin"]
+			scopes: [""]
 		}
 	}
 

@@ -9,7 +9,7 @@ export default async function HomePage() {
 			nickName: "Mock User",
 			email: "mock@example.com",
 			imageURI: "",
-			scopes: ["admin"]
+			scopes: [""]
 		}
 	}
 	return <DiaryNew session={session} />;

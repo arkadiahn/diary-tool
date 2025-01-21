@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { Session } from '@arkadia/cnauth';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
+import { Input, Textarea, Select, SelectItem, Button, Card, CardBody } from "@nextui-org/react";
 
 
 interface DiaryGoal {
@@ -113,123 +114,100 @@ export default function DiaryPage({ session }: DiaryPageProps) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">My Diary</h1>
 
-      {/* New Entry Form */}
-      <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-8">
-        <h2 className="text-2xl font-bold mb-6">New Entry</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 gap-6">
-
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Project you are currently working on
-              </label>
-              <select
+      <Card>
+        <CardBody className="px-8 py-6">
+          <h2 className="text-2xl font-bold mb-6">New Entry</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="grid grid-cols-1 gap-6">
+              
+              <Select
+                label="Project you are currently working on"
                 value={newEntry.project}
                 onChange={e => setNewEntry({ ...newEntry, project: e.target.value })}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-                required
+                isRequired
               >
-                <option value="">Select a project</option>
                 {PROJECT_OPTIONS.map((project) => (
-                  <option key={project} value={project}>
+                  <SelectItem key={project} value={project}>
                     {project}
-                  </option>
+                  </SelectItem>
                 ))}
-              </select>
-            </div>
+              </Select>
 
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Expected weeks until completion
-              </label>
-              <input
+              <Input
                 type="number"
-                min="1"
-                value={newEntry.weeks_till_completion}
+                label="Expected weeks until completion"
+                min={1}
+                value={newEntry.weeks_till_completion.toString()}
                 onChange={e => setNewEntry({ ...newEntry, weeks_till_completion: parseInt(e.target.value) })}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-                required
+                isRequired
               />
-            </div>
 
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Biggest learnings last week
-              </label>
-              <textarea
+              <Textarea
+                label="Biggest learnings last week"
                 value={newEntry.learnings}
                 onChange={e => setNewEntry({ ...newEntry, learnings: e.target.value })}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-                rows={4}
+                minRows={4}
               />
-            </div>
 
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Biggest obstacles last week
-              </label>
-              <textarea
+              <Textarea
+                label="Biggest obstacles last week"
                 value={newEntry.obstacles}
                 onChange={e => setNewEntry({ ...newEntry, obstacles: e.target.value })}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-                rows={4}
+                minRows={4}
               />
-            </div>
 
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Your goals for next week
-              </label>
-              {newEntry.goals.map((goal, index) => (
-                <div key={index} className="flex gap-2 mb-2">
-                  <input
-                    type="text"
-                    value={goal.title}
-                    onChange={e => {
-                      const newGoals = [...newEntry.goals];
-                      newGoals[index].title = e.target.value;
-                      setNewEntry({ ...newEntry, goals: newGoals });
-                    }}
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-                    placeholder="Enter a goal"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const newGoals = newEntry.goals.filter((_, i) => i !== index);
-                      setNewEntry({ ...newEntry, goals: newGoals });
-                    }}
-                    className="bg-red-500 text-white px-4 py-2 rounded"
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => setNewEntry({
-                  ...newEntry,
-                  goals: [...newEntry.goals, { title: '', completed: false }]
-                })}
-                className="bg-blue-500 text-white px-4 py-2 rounded"
-              >
-                Add Goal
-              </button>
-            </div>
+              <div className="space-y-4">
+                <label className="block text-sm font-bold">
+                  Your goals for next week
+                </label>
+                {newEntry.goals.map((goal, index) => (
+                  <div key={index} className="flex gap-2">
+                    <Input
+                      type="text"
+                      value={goal.title}
+                      onChange={e => {
+                        const newGoals = [...newEntry.goals];
+                        newGoals[index].title = e.target.value;
+                        setNewEntry({ ...newEntry, goals: newGoals });
+                      }}
+                      placeholder="Enter a goal"
+                    />
+                    <Button
+                      color="danger"
+                      onClick={() => {
+                        const newGoals = newEntry.goals.filter((_, i) => i !== index);
+                        setNewEntry({ ...newEntry, goals: newGoals });
+                      }}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+                <Button
+                  color="primary"
+                  onClick={() => setNewEntry({
+                    ...newEntry,
+                    goals: [...newEntry.goals, { title: '', completed: false }]
+                  })}
+                >
+                  Add Goal
+                </Button>
+              </div>
 
-            <div>
-              <button
-                type="submit"
-                className="bg-green-500 text-white px-6 py-3 rounded font-bold"
-              >
-                Create Entry
-              </button>
+              <div>
+                <Button
+                  type="submit"
+                  color="success"
+                  size="lg"
+                >
+                  Create Entry
+                </Button>
+              </div>
             </div>
-          </div>
-        </form>
-      </div>
+          </form>
+        </CardBody>
+      </Card>
     </div>
   );
 }

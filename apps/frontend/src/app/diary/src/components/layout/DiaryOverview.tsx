@@ -6,7 +6,7 @@ import { Session } from '@arkadia/cnauth';
 import { useRouter } from 'next/navigation';
 import { Button } from "@heroui/react";
 import { format } from 'date-fns';
-import { Card, CardBody, CardHeader, Divider, Checkbox } from "@nextui-org/react";
+import { Card, CardBody, CardHeader, Divider, Checkbox, Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@nextui-org/react";
 import dynamic from 'next/dynamic';
 import { ApexOptions } from 'apexcharts';
 
@@ -509,21 +509,56 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
             </CardHeader>
             <Divider/>
             <CardBody className="py-2">
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="space-y-1">
-                  <p className="font-semibold">Weeks till completion: {diary.weeks_till_completion}</p>
-                  <p className="font-semibold">Motivation: {diary.motivation}/10</p>
-                  <div className="mt-2">
-                    <p className="font-semibold text-success">Learnings:</p>
-                    <p className="text-sm mt-1">{diary.learnings}</p>
-                  </div>
-                  <div className="mt-2">
-                    <p className="font-semibold text-danger">Obstacles:</p>
-                    <p className="text-sm mt-1">{diary.obstacles}</p>
-                  </div>
+              <div className="space-y-4 text-sm">
+                <div className="grid grid-cols-10 gap-4">
+                  <Table 
+                    removeWrapper 
+                    aria-label="Diary metrics table"
+                    hideHeader
+                    className="col-span-3"
+                  >
+                    <TableHeader>
+                      <TableColumn>Label</TableColumn>
+                      <TableColumn>Value</TableColumn>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell className="font-semibold pr-4 w-1/3">Weeks till completion:</TableCell>
+                        <TableCell>{diary.weeks_till_completion}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-semibold pr-4">Motivation:</TableCell>
+                        <TableCell>{diary.motivation}/10</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+
+                  <Table 
+                    removeWrapper 
+                    aria-label="Diary feedback table"
+                    hideHeader
+                    className="col-span-7"
+                  >
+                    <TableHeader>
+                      <TableColumn>Label</TableColumn>
+                      <TableColumn>Value</TableColumn>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell className="font-semibold text-success pr-4 w-1/3">Learnings:</TableCell>
+                        <TableCell>{diary.learnings}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-semibold text-danger pr-4">Obstacles:</TableCell>
+                        <TableCell>{diary.obstacles}</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
                 </div>
-                <div>
-                  <div className="flex flex-col gap-1 break-words">
+
+                <div className="flex gap-4">
+                  <span className="font-semibold">Goals:</span>
+                  <div className="flex flex-col gap-1">
                     {diary.goals.slice(0, 2).map((goal, index) => (
                       <Checkbox
                         key={index}

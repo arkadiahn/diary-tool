@@ -77,25 +77,11 @@ filter?: string;
 show_unapproved?: boolean;
 };
 
-export type DeleteMissionMilestoneParams = {
-/**
- * delete will return 2xx if the resource is not found
- */
-allow_missing?: AllowMissingParameter;
-};
-
 export type PostMissionMilestoneParams = {
 /**
  * 4-63 valid characters: /[a-z][0-9]-/
  */
 milestone_id?: string;
-};
-
-export type DeleteMissionParams = {
-/**
- * delete will return 2xx if the resource is not found
- */
-allow_missing?: AllowMissingParameter;
 };
 
 export type PostMissionParams = {
@@ -113,6 +99,20 @@ export const GetMissionsFormat = {
   summary: 'summary',
   extended: 'extended',
 } as const;
+
+export type PostEventParams = {
+/**
+ * 4-63 valid characters: /[a-z][0-9]-/
+ */
+event_id?: string;
+};
+
+export type DeleteDiaryParams = {
+/**
+ * delete will return 2xx if the resource is not found
+ */
+allow_missing?: AllowMissingParameter;
+};
 
 export type GetAccounts200 = {
   accounts: GetAccountsResponse;
@@ -146,7 +146,14 @@ show_unapproved?: boolean;
  */
 export type AllowMissingParameter = boolean;
 
-export type DeleteDiaryParams = {
+export type DeleteMissionMilestoneParams = {
+/**
+ * delete will return 2xx if the resource is not found
+ */
+allow_missing?: AllowMissingParameter;
+};
+
+export type DeleteMissionParams = {
 /**
  * delete will return 2xx if the resource is not found
  */
@@ -261,7 +268,7 @@ export interface MissionMilestone {
   state: MissionMilestoneState;
 }
 
-export type EndTime = string;
+export type PropertiesEndTime = string;
 
 export type KickoffTime = string;
 
@@ -278,49 +285,47 @@ export type DescriptionSkills = string;
 export type DescriptionGoal = string;
 
 export interface MissionPatch {
-  description?: Description;
+  description?: PropertiesDescription;
   description_goal?: DescriptionGoal;
   description_skills?: DescriptionSkills;
   github_link?: GithubLink;
-  title?: Title;
+  title?: PropertiesTitle;
 }
 
-export type MissionSummaryArray = MissionSummary[];
+export interface MissionPost {
+  description: PropertiesDescription;
+  description_goal: DescriptionGoal;
+  description_skills: DescriptionSkills;
+  end_time?: PropertiesEndTime;
+  github_link: GithubLink;
+  kickoff_time: KickoffTime;
+  title: PropertiesTitle;
+}
 
 export type GetMissionResponse = MissionArray | MissionSummaryArray;
 
 /**
  * @maxLength 1000
  */
-export type Description = string;
+export type PropertiesDescription = string;
 
 /**
  * @maxLength 255
  */
-export type Title = string;
-
-export interface MissionPost {
-  description: Description;
-  description_goal: DescriptionGoal;
-  description_skills: DescriptionSkills;
-  end_time?: EndTime;
-  github_link: GithubLink;
-  kickoff_time: KickoffTime;
-  title: Title;
-}
+export type PropertiesTitle = string;
 
 export interface MissionSummary {
   account_count: number;
   completed_milestones_count: number;
-  description: Description;
+  description: PropertiesDescription;
   like_count: number;
   milestones_count: number;
   mission_state: MissionMissionState;
   name: Name;
-  title: Title;
+  title: PropertiesTitle;
 }
 
-export type MissionArray = Mission[];
+export type MissionSummaryArray = MissionSummary[];
 
 export type MissionApprovalState = typeof MissionApprovalState[keyof typeof MissionApprovalState];
 
@@ -362,6 +367,46 @@ export interface Mission {
   /** @maxLength 255 */
   title: string;
   update_time: string;
+}
+
+export type MissionArray = Mission[];
+
+export type EndTime = string;
+
+export type BeginTime = string;
+
+export type Location = string;
+
+export type Description = string;
+
+export type Link = string;
+
+export type PictureUri = string;
+
+export type Topic = string;
+
+export type Title = string;
+
+export interface EventPatch {
+  begin_time?: BeginTime;
+  description?: Description;
+  end_time?: EndTime;
+  link?: Link;
+  location?: Location;
+  picture_uri?: PictureUri;
+  title?: Title;
+  topic?: Topic;
+}
+
+export interface EventPost {
+  begin_time: BeginTime;
+  description: Description;
+  end_time: EndTime;
+  link: Link;
+  location: Location;
+  picture_uri: PictureUri;
+  title: Title;
+  topic: Topic;
 }
 
 export interface Event {
@@ -623,6 +668,49 @@ export const getEvents = (
  options?: SecondParameter<typeof customAxios>,) => {
       return customAxios<Event[]>(
       {url: `/events`, method: 'GET'
+    },
+      options);
+    }
+  
+/**
+ * @summary Create an event
+ */
+export const postEvent = (
+    eventPost: EventPost,
+    params?: PostEventParams,
+ options?: SecondParameter<typeof customAxios>,) => {
+      return customAxios<Event>(
+      {url: `/events`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: eventPost,
+        params
+    },
+      options);
+    }
+  
+/**
+ * @summary Get an event
+ */
+export const getEvent = (
+    event: string,
+ options?: SecondParameter<typeof customAxios>,) => {
+      return customAxios<Event>(
+      {url: `/events/${event}`, method: 'GET'
+    },
+      options);
+    }
+  
+/**
+ * @summary Update an event
+ */
+export const patchEvent = (
+    event: string,
+    eventPatch: EventPatch,
+ options?: SecondParameter<typeof customAxios>,) => {
+      return customAxios<Event>(
+      {url: `/events/${event}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: eventPatch
     },
       options);
     }
@@ -958,6 +1046,9 @@ export type GetDiaryResult = NonNullable<Awaited<ReturnType<typeof getDiary>>>
 export type UpdateDiaryResult = NonNullable<Awaited<ReturnType<typeof updateDiary>>>
 export type DeleteDiaryResult = NonNullable<Awaited<ReturnType<typeof deleteDiary>>>
 export type GetEventsResult = NonNullable<Awaited<ReturnType<typeof getEvents>>>
+export type PostEventResult = NonNullable<Awaited<ReturnType<typeof postEvent>>>
+export type GetEventResult = NonNullable<Awaited<ReturnType<typeof getEvent>>>
+export type PatchEventResult = NonNullable<Awaited<ReturnType<typeof patchEvent>>>
 export type GetMissionsResult = NonNullable<Awaited<ReturnType<typeof getMissions>>>
 export type PostMissionResult = NonNullable<Awaited<ReturnType<typeof postMission>>>
 export type GetMissionResult = NonNullable<Awaited<ReturnType<typeof getMission>>>
