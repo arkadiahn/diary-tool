@@ -30,7 +30,7 @@ export default function MissionDetailView({ data, timelineComponent }: MissionDe
                         separator: "text-default-400",
                     }}
                 >
-                    <BreadcrumbItem href="/missionboard">MissionBoard</BreadcrumbItem>
+                    <BreadcrumbItem href="/missions">MissionBoard</BreadcrumbItem>
                     <BreadcrumbItem>{data.title}</BreadcrumbItem>
                 </Breadcrumbs>
 

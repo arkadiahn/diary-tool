@@ -6,9 +6,10 @@ import { useRouter } from 'next/navigation';
 import { Button } from "@heroui/react";
 import { format } from 'date-fns';
 import { Card, CardBody, CardHeader, Divider, Checkbox, Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@heroui/react";
-import { Session } from "next-auth";
-import dynamic from 'next/dynamic';
 import { ApexOptions } from 'apexcharts';
+import { Session } from "@/auth/models";
+import dynamic from 'next/dynamic';
+
 
 interface DiaryGoal {
   title: string;
@@ -43,8 +44,7 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
   const [hasEntryThisWeek, setHasEntryThisWeek] = useState(false);
   const router = useRouter();
 
-//   const isAdmin = session?.user?.scopes.includes('admin'); @todo fix this!!!
-  const isAdmin = false;
+  const isAdmin = session?.user?.scopes.includes('diary.admin');
 
   // Get Sunday of current week
   const getSundayOfCurrentWeek = () => {
@@ -59,7 +59,7 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
   useEffect(() => {
     const fetchDiaries = async () => {
       try {
-        throw new Error("test");
+        // throw new Error("test");
         const response = await getDiaries("me");
         // Sort diaries by entry_date in descending order (newest first)
         const sortedDiaries = response.data.sort((a, b) => 
@@ -459,7 +459,7 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
         {!hasEntryThisWeek && (
           <Card 
             isPressable
-            onPress={() => router.push('/diary/entries/new')}
+            onPress={() => router.push('/entries/new')}
             className="bg-success-50 dark:bg-success-100 w-full"
           >
             <CardBody className="py-2">

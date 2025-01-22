@@ -1,6 +1,6 @@
 import SidebarItem from "./sidebarItem";
+import { auth } from "@/auth/server";
 import Sidebar from "./sidebar";
-import { auth } from "@/auth";
 
 import { AcmeIcon } from "./acme";
 
@@ -34,7 +34,7 @@ export default async function SidebarLayout({ children }: SidebarLayoutProps) {
 				{
 					icon: solarDocumentsLinear,
 					label: "Missions",
-					href: "/missionboard",
+					href: "/missions",
 				},
 				{
 					icon: solarCalendarLinear,

@@ -1,8 +1,7 @@
-import { NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { NextRequest, NextResponse } from "next/server";
+import { authMiddleware } from "./auth/server";
 
-
-export default auth((request) => {
+export default authMiddleware((request: NextRequest) => {
 	const host = request.headers.get("host");
 	const subdomain = host?.includes(".") ? host?.split(".")?.[0] : null;
 

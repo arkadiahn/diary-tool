@@ -10,8 +10,10 @@ import {
   NavbarProps,
 } from "@heroui/react";
 import { siteConfig } from "../../constants/siteConfig";
+import LoginButton from "./loginButton";
 import { Link } from "@heroui/react";
 import Image from "next/image";
+
 
 const menuItems = [
     {
@@ -63,9 +65,7 @@ export default function NavbarComponent(props: NavbarProps) {
             </NavbarItem>
         ))}
         <NavbarItem className="ml-2 !flex">
-          <Button radius="full" color="primary" variant="flat">
-            Login
-          </Button>
+            <LoginButton />
         </NavbarItem>
       </NavbarContent>
 

@@ -1,11 +1,11 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { signIn, signOut } from "next-auth/react";
 import CustomIcon from "@/components/CustomIcon";
-import { Avatar } from "@heroui/react";
+import { Session } from "@/auth/models";
 import SidebarItem from "./sidebarItem";
-import { Session } from "next-auth";
+import { Avatar } from "@heroui/react";
+import { signIn } from "@/auth/client";
 
 /* ---------------------------------- Icons --------------------------------- */
 import icRoundLogout from "@iconify/icons-ic/round-logout";
@@ -23,25 +23,24 @@ export default function AccountHandler({ session }: AccountHandlerProps) {
 		<>
 			{session && (
 				<SidebarItem
-					leading={<Avatar size="sm" src={session.user?.image ?? ""} alt={session.user?.name ?? ""} />}
+					leading={<Avatar size="sm" src={session.user.picture} alt={session.user.name} />}
 					trailing={<>
 						<p className="ml-3 text-small font-medium text-default-700">
-							{session.user?.name ?? ""}
+							{session.user.name}
 						</p>
 					</>}
 				/>
             )}
 			{session && (
 				<SidebarItem
-					onClick={() => signOut()} // @todo is this correct redirect?
+					onClick={() => {}} // @todo is this correct redirect?
 					leading={<CustomIcon className="w-[22px]" icon={icRoundLogout} width={22} />}
 					trailing={<h1 className="font-bold">Logout</h1>}
 				/>
 			)}
 			{!session && (
 				<SidebarItem
-					// @todo fix library to push to auth url
-					onClick={() => signIn("keycloak")}
+					onClick={() => signIn()}
 					leading={<CustomIcon className="w-[22px]" icon={icRoundLogin} width={22} />}
 					trailing={<h1 className="font-bold">Login</h1>}
 				/>

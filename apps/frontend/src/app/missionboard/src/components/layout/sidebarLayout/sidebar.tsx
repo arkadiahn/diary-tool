@@ -3,7 +3,7 @@ import { IconifyIcon } from "@/components/CustomIcon";
 import CustomIcon from "@/components/CustomIcon";
 import AccountHandler from "./accountHandler";
 import SidebarItem from "./sidebarItem";
-import { Session } from "next-auth";
+import { Session } from "@/auth/models";
 import Footer from "../footer";
 
 /* ---------------------------------- Icons --------------------------------- */
@@ -23,8 +23,7 @@ interface SidebarProps {
 	children: React.ReactNode;
 }
 export default function Sidebar({ items, adminItems, logoItem, session, children }: SidebarProps) {
-	// const admin = session?.user.scopes.includes("admin") || false;
-	const admin = false; // @todo fix this thing!
+	const admin = session?.user.scopes.includes("admin") || false;
 
 	return (
 		<div className="h-dvh max-w-dvw flex flex-col sm:flex-row">

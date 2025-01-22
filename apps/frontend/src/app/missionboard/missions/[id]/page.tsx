@@ -1,4 +1,4 @@
-import MissionDetailView from "../../../src/components/missionDetail";
+import MissionDetailView from "../../src/components/missionDetail";
 import { getMission } from "@/api/missionboard";
 
 interface ProjectPageProps {
