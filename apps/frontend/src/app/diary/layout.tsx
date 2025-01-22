@@ -1,5 +1,4 @@
 import { siteConfig } from "./src/constants/siteConfig";
-import Providers from "./src/components/providers";
 import Navbar from "./src/layout/navbar";
 import { Metadata } from "next";
 
@@ -21,9 +20,9 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<Providers>
+		<>
 			<Navbar />
 			{children}
-		</Providers>
+		</>
 	);
 }

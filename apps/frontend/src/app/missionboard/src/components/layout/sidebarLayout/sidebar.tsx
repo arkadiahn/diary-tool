@@ -2,8 +2,8 @@ import { Divider, ScrollShadow, cn } from "@heroui/react";
 import { IconifyIcon } from "@/components/CustomIcon";
 import CustomIcon from "@/components/CustomIcon";
 import AccountHandler from "./accountHandler";
-import { Session } from "@arkadia/cnauth";
 import SidebarItem from "./sidebarItem";
+import { Session } from "next-auth";
 import Footer from "../footer";
 
 /* ---------------------------------- Icons --------------------------------- */
@@ -23,7 +23,8 @@ interface SidebarProps {
 	children: React.ReactNode;
 }
 export default function Sidebar({ items, adminItems, logoItem, session, children }: SidebarProps) {
-	const admin = session?.user.scopes.includes("admin") || false;
+	// const admin = session?.user.scopes.includes("admin") || false;
+	const admin = false; // @todo fix this thing!
 
 	return (
 		<div className="h-dvh max-w-dvw flex flex-col sm:flex-row">

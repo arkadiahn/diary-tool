@@ -1,5 +1,4 @@
 import { siteConfig } from "./src/constants/siteConfig";
-import { Providers } from "./src/components/providers";
 import { Metadata } from "next";
 
 
@@ -21,10 +20,8 @@ export default function PortalLayout({
     children: React.ReactNode;
 }>) {
     return (
-		<Providers>
-			<div className="h-dvh flex flex-col">
-				{children}
-			</div>
-		</Providers>
+		<div className="h-dvh flex flex-col">
+			{children}
+		</div>
 	)
 }

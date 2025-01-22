@@ -1,6 +1,6 @@
-import { auth } from "@arkadia/cnauth/server";
 import SidebarItem from "./sidebarItem";
 import Sidebar from "./sidebar";
+import { auth } from "@/auth";
 
 import { AcmeIcon } from "./acme";
 

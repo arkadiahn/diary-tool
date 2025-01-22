@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { NextRequest } from "next/server";
+import { auth } from "@/auth";
 
 
-export default function middleware(request: NextRequest) {
+export default auth((request) => {
 	const host = request.headers.get("host");
 	const subdomain = host?.includes(".") ? host?.split(".")?.[0] : null;
 
@@ -13,7 +13,7 @@ export default function middleware(request: NextRequest) {
 	}
 
 	return NextResponse.next();
-}
+});
 
 export const config = {
 	matcher: ["/((?!api|static|.*\\..*|_next|favicon.ico|robots.txt).*)"],

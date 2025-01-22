@@ -2,7 +2,6 @@
 
 import type { IconifyIcon } from "@iconify/types";
 import CustomIcon from "@/components/CustomIcon";
-import { signIn } from "@arkadia/cnauth/client";
 import { Button } from "@heroui/react";
 
 export interface LoginButtonProps {
@@ -14,7 +13,6 @@ export interface LoginButtonProps {
 
 export function LoginButton({ name, icon, providerKey, redirectUrl }: LoginButtonProps) {
     const onSignIn = () => {
-        signIn(providerKey, redirectUrl || "/");
     };
 
     return (

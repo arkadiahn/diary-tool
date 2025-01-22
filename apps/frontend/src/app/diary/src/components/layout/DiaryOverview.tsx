@@ -2,11 +2,11 @@
 
 import { getDiaries } from '@/api/missionboard';
 import { useState, useEffect } from 'react';
-import { Session } from '@arkadia/cnauth';
 import { useRouter } from 'next/navigation';
 import { Button } from "@heroui/react";
 import { format } from 'date-fns';
-import { Card, CardBody, CardHeader, Divider, Checkbox, Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@nextui-org/react";
+import { Card, CardBody, CardHeader, Divider, Checkbox, Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@heroui/react";
+import { Session } from "next-auth";
 import dynamic from 'next/dynamic';
 import { ApexOptions } from 'apexcharts';
 
@@ -43,7 +43,8 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
   const [hasEntryThisWeek, setHasEntryThisWeek] = useState(false);
   const router = useRouter();
 
-  const isAdmin = session?.user?.scopes.includes('admin');
+//   const isAdmin = session?.user?.scopes.includes('admin'); @todo fix this!!!
+  const isAdmin = false;
 
   // Get Sunday of current week
   const getSundayOfCurrentWeek = () => {

@@ -1,11 +1,11 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
+import { signIn, signOut } from "next-auth/react";
 import CustomIcon from "@/components/CustomIcon";
-import { signOut } from "@arkadia/cnauth/client";
 import { Avatar } from "@heroui/react";
-import { Session } from "@arkadia/cnauth";
 import SidebarItem from "./sidebarItem";
+import { Session } from "next-auth";
 
 /* ---------------------------------- Icons --------------------------------- */
 import icRoundLogout from "@iconify/icons-ic/round-logout";
@@ -23,17 +23,17 @@ export default function AccountHandler({ session }: AccountHandlerProps) {
 		<>
 			{session && (
 				<SidebarItem
-					leading={<Avatar size="sm" src={session.user.imageURI} alt={session.user.nickName} />}
+					leading={<Avatar size="sm" src={session.user?.image ?? ""} alt={session.user?.name ?? ""} />}
 					trailing={<>
 						<p className="ml-3 text-small font-medium text-default-700">
-							{session.user.nickName}
+							{session.user?.name ?? ""}
 						</p>
 					</>}
 				/>
             )}
 			{session && (
 				<SidebarItem
-					onClick={() => signOut(`${process.env.NEXT_PUBLIC_FRONTEND_URL}`)}
+					onClick={() => signOut()} // @todo is this correct redirect?
 					leading={<CustomIcon className="w-[22px]" icon={icRoundLogout} width={22} />}
 					trailing={<h1 className="font-bold">Logout</h1>}
 				/>
@@ -41,7 +41,7 @@ export default function AccountHandler({ session }: AccountHandlerProps) {
 			{!session && (
 				<SidebarItem
 					// @todo fix library to push to auth url
-					onClick={() => router.push(`${process.env.NEXT_PUBLIC_AUTH_URL}?redirect=${pathname}`)}
+					onClick={() => signIn("keycloak")}
 					leading={<CustomIcon className="w-[22px]" icon={icRoundLogin} width={22} />}
 					trailing={<h1 className="font-bold">Login</h1>}
 				/>

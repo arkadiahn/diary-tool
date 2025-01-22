@@ -2,11 +2,10 @@
 
 import { getAccounts, getAccount, getDiaries, createDiary } from '@/api/missionboard';
 import { useState, useEffect } from 'react';
-import { Session } from '@arkadia/cnauth';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
-import { Input, Textarea, Select, SelectItem, Button, Card, CardBody } from "@nextui-org/react";
-
+import { Input, Textarea, Select, SelectItem, Button, Card, CardBody } from "@heroui/react";
+import { Session } from "next-auth";
 
 interface DiaryGoal {
   title: string;
