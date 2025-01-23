@@ -70,40 +70,70 @@ export function authMiddleware(wrappedMiddleware: (request: NextRequest) => Next
 		const realUrl = request.nextUrl.clone();
 		if (host) {
 			realUrl.host = host;
+			realUrl.port = "";
 		}
 		realUrl.searchParams.delete("session_state");
 		realUrl.searchParams.delete("code");
 		realUrl.searchParams.delete("iss");
 
-		const tokenResponse = await fetch(`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/token`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/x-www-form-urlencoded",
-			},
-			body: new URLSearchParams({
+		console.log(realUrl.href);
+		try {
+			console.log(`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/token`);
+			console.log({
 				code,
 				grant_type: "authorization_code",
 				client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID ?? "",
 				redirect_uri: realUrl.href,
-			})
-		});
-		const token = await tokenResponse.json();
-		// @todo check if token is valid!!!! iss, etc.
+			});
+			const tokenResponse = await fetch(`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/token`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded",
+				},
+				body: new URLSearchParams({
+					code,
+					grant_type: "authorization_code",
+					client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID ?? "",
+					redirect_uri: realUrl.href,
+				})
+			});
+			console.log("asd")
 
-		const newURL = request.nextUrl.clone();
-		newURL.searchParams.delete("session_state");
-		newURL.searchParams.delete("code");
-		newURL.searchParams.delete("iss");
+			if (!tokenResponse.ok) {
+				const errorText = await tokenResponse.text();
+				console.error('Token request failed:', {
+					status: tokenResponse.status,
+					statusText: tokenResponse.statusText,
+					error: errorText
+				});
+				return response;
+			}
 
-		const newResponse = NextResponse.redirect(newURL);
-		newResponse.cookies.set("session", token.access_token, {
-			httpOnly: true,
-			secure: process.env.NODE_ENV === "production",
-			sameSite: "strict",
-			maxAge: 60 * 5,
-			domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN
-		});
-		// @todo make cookie settings variable
-		return newResponse;
+			const token = await tokenResponse.json();
+			// @todo check if token is valid!!!! iss, etc.
+
+			const newURL = request.nextUrl.clone();
+			newURL.searchParams.delete("session_state");
+			newURL.searchParams.delete("code");
+			newURL.searchParams.delete("iss");
+
+			const newResponse = NextResponse.redirect(newURL);
+			newResponse.cookies.set("session", token.access_token, {
+				httpOnly: true,
+				secure: process.env.NODE_ENV === "production",
+				sameSite: "strict",
+				maxAge: 60 * 5,
+				domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN
+			});
+			// @todo make cookie settings variable
+			return newResponse;
+		} catch (error) {
+			const newURL = request.nextUrl.clone();
+			newURL.searchParams.delete("session_state");
+			newURL.searchParams.delete("code");
+			newURL.searchParams.delete("iss");
+			console.error('Token request failed:', error instanceof Error ? error.message : error);
+			return NextResponse.redirect(newURL);
+		}
 	}
 }
