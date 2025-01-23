@@ -7,14 +7,22 @@ import { Session } from "./models";
 /* -------------------------------------------------------------------------- */
 /*                                SSR Functions                               */
 /* -------------------------------------------------------------------------- */
-export function signIn() {
-	const params = new URLSearchParams({
-		client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID ?? "",
-		redirect_uri: window.location.href,
-		response_type: "code"
-	});
-	redirect(`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/auth?${params}`);
-}
+// export function signIn() {
+// 	const params = new URLSearchParams({
+// 		client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID ?? "",
+// 		redirect_uri: window.location.href, // @todo fix this thing!
+// 		response_type: "code"
+// 	});
+// 	redirect(`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/auth?${params}`);
+// }
+
+// export function signOut() {
+// 	const params = new URLSearchParams({
+// 		client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID ?? "",
+// 		post_logout_redirect_uri: window.location.href, // @todo fix this thing!
+// 	});
+// 	redirect(`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/logout?${params}`);
+// }
 
 export async function auth(): Promise<Session | null> {
 	const session = (await cookies()).get("session");
