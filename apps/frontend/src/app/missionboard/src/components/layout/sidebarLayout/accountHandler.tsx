@@ -2,10 +2,10 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import CustomIcon from "@/components/CustomIcon";
+import { signIn, signOut } from "@/auth/client";
 import { Session } from "@/auth/models";
 import SidebarItem from "./sidebarItem";
 import { Avatar } from "@heroui/react";
-import { signIn } from "@/auth/client";
 
 /* ---------------------------------- Icons --------------------------------- */
 import icRoundLogout from "@iconify/icons-ic/round-logout";
@@ -33,7 +33,7 @@ export default function AccountHandler({ session }: AccountHandlerProps) {
             )}
 			{session && (
 				<SidebarItem
-					onClick={() => {}} // @todo is this correct redirect?
+					onClick={() => signOut()}
 					leading={<CustomIcon className="w-[22px]" icon={icRoundLogout} width={22} />}
 					trailing={<h1 className="font-bold">Logout</h1>}
 				/>
