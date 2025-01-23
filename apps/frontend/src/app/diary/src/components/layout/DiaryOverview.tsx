@@ -9,7 +9,7 @@ import { Card, CardBody, CardHeader, Divider, Checkbox, Table, TableHeader, Tabl
 import { ApexOptions } from 'apexcharts';
 import { Session } from "@/auth/models";
 import dynamic from 'next/dynamic';
-
+import example_entries from './example_entries.json';
 
 interface DiaryGoal {
   title: string;
@@ -58,160 +58,25 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
 
   useEffect(() => {
     const fetchDiaries = async () => {
+      var diaries: DiaryEntry[] = [];
+      console.log(session);
       try {
-        // throw new Error("test");
-        const response = await getDiaries("me");
-        // Sort diaries by entry_date in descending order (newest first)
-        const sortedDiaries = response.data.sort((a, b) => 
+        diaries = (await getDiaries("me", {
+          headers: {
+            'Authorization': `Bearer ${session?.access_token}`
+          }
+        })).data;
+      } catch {
+        setError('Failed to fetch diaries');
+        diaries = example_entries;
+      } finally {
+        const thisWeekSunday = getSundayOfCurrentWeek();
+        const hasEntry = diaries.some(diary => diary.entry_date === thisWeekSunday);
+        const sortedDiaries = diaries.sort((a, b) => 
           new Date(b.entry_date).getTime() - new Date(a.entry_date).getTime()
         );
-        setDiaries(sortedDiaries);
-        
-        // Check if there's an entry for this week's Sunday
-        const thisWeekSunday = getSundayOfCurrentWeek();
-        const hasEntry = sortedDiaries.some(diary => diary.entry_date === thisWeekSunday);
         setHasEntryThisWeek(hasEntry);
-      } catch {
-        const diaries = [
-          {
-            "name": "accounts/83f11e35-a97e-4c21-bf9a-716a6f853889/diaries/2024-W04",
-            "account_id": "83f11e35-a97e-4c21-bf9a-716a6f853889",
-            "entry_date": "2024-01-26",
-            "project": "printf",
-            "weeks_till_completion": 3,
-            "motivation": 8,
-            "learnings": "Learned about memory management and string manipulation in C",
-            "obstacles": "Struggling with proper memory allocation in ft_split",
-            "create_time": "2024-01-20T17:13:01.521966Z",
-            "update_time": "2024-01-20T17:13:01.521966Z",
-            "goals": [
-              {
-                "title": "Complete ft_split implementation",
-                "completed": false
-              },
-              {
-                "title": "Write tests for string functions",
-                "completed": true
-              }
-            ]
-          },
-          {
-            "name": "accounts/83f11e35-a97e-4c21-bf9a-716a6f853889/diaries/2024-W03",
-            "account_id": "83f11e35-a97e-4c21-bf9a-716a6f853889",
-            "entry_date": "2024-01-19",
-            "project": "printf",
-            "weeks_till_completion": 4,
-            "motivation": 9,
-            "learnings": "Getting comfortable with pointers and memory allocation",
-            "obstacles": "Understanding linked list implementation",
-            "create_time": "2024-01-13T17:13:19.156775Z",
-            "update_time": "2024-01-13T17:13:19.156775Z",
-            "goals": [
-              {
-                "title": "Implement basic string functions",
-                "completed": true
-              },
-              {
-                "title": "Start working on memory functions",
-                "completed": true
-              }
-            ]
-          },
-          {
-            "name": "accounts/83f11e35-a97e-4c21-bf9a-716a6f853889/diaries/2024-W02",
-            "account_id": "83f11e35-a97e-4c21-bf9a-716a6f853889",
-            "entry_date": "2024-01-12",
-            "project": "printf",
-            "weeks_till_completion": 5,
-            "motivation": 7,
-            "learnings": "Started learning C programming fundamentals",
-            "obstacles": "Adjusting to low-level programming concepts",
-            "create_time": "2024-01-06T17:13:09.835782Z",
-            "update_time": "2024-01-06T17:13:09.835782Z",
-            "goals": [
-              {
-                "title": "Set up development environment",
-                "completed": true
-              },
-              {
-                "title": "Complete first 5 functions",
-                "completed": true
-              }
-            ]
-          },
-          {
-            "name": "accounts/83f11e35-a97e-4c21-bf9a-716a6f853889/diaries/2024-W01",
-            "account_id": "83f11e35-a97e-4c21-bf9a-716a6f853889",
-            "entry_date": "2024-01-05",
-            "project": "libft",
-            "weeks_till_completion": 1,
-            "motivation": 9,
-            "learnings": "Completed final libft exercises",
-            "obstacles": "Time management with multiple assignments",
-            "create_time": "2023-12-30T17:13:24.462219Z",
-            "update_time": "2023-12-30T17:13:24.462219Z",
-            "goals": [
-              {
-                "title": "Complete BSQ project",
-                "completed": true
-              },
-              {
-                "title": "Prepare for final exam",
-                "completed": true
-              }
-            ]
-          },
-          {
-            "name": "accounts/83f11e35-a97e-4c21-bf9a-716a6f853889/diaries/2023-W52",
-            "account_id": "83f11e35-a97e-4c21-bf9a-716a6f853889",
-            "entry_date": "2023-12-29",
-            "project": "libft",
-            "weeks_till_completion": 2,
-            "motivation": 8,
-            "learnings": "Advanced C concepts and group projects",
-            "obstacles": "Complex pointer arithmetic in C",
-            "create_time": "2023-12-23T17:13:24.462219Z",
-            "update_time": "2023-12-23T17:13:24.462219Z",
-            "goals": [
-              {
-                "title": "Complete rush01 project",
-                "completed": true
-              },
-              {
-                "title": "Study for C09",
-                "completed": true
-              }
-            ]
-          },
-          {
-            "name": "accounts/83f11e35-a97e-4c21-bf9a-716a6f853889/diaries/2023-W51",
-            "account_id": "83f11e35-a97e-4c21-bf9a-716a6f853889",
-            "entry_date": "2023-12-22",
-            "project": "libft",
-            "weeks_till_completion": 3,
-            "motivation": 6,
-            "learnings": "Shell scripting and basic C programming",
-            "obstacles": "Challenging rush00 weekend project",
-            "create_time": "2023-12-16T17:13:24.462219Z",
-            "update_time": "2023-12-16T17:13:24.462219Z",
-            "goals": [
-              {
-                "title": "Complete Shell01",
-                "completed": true
-              },
-              {
-                "title": "Start C03 exercises",
-                "completed": false
-              }
-            ]
-          }
-        ];
-        const sortedDiaries = diaries.sort((a, b) => 
-          new Date(a.entry_date).getTime() - new Date(b.entry_date).getTime()
-        );
         setDiaries(sortedDiaries);
-        // setError('Failed to fetch diaries');
-      } finally {
         setLoading(false);
       }
     };
@@ -396,15 +261,10 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (!session) {
-	  // window.location.href = `${process.env.NEXT_PUBLIC_AUTH_URL}?redirect=${window.location.href}`;
-	  return null;
-	}
-	if (error) return <div>Error: {error}</div>;
-	
+  if (loading) return <div>Loading...</div>;	
   return (
     <div className="w-full px-4 sm:px-6 lg:px-10">
+      {error && <div>Error: {error}</div>}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
         <Card className="w-full col-span-1 lg:col-span-3 xl:col-span-1">
           <CardHeader>

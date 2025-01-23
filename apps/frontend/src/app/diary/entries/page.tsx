@@ -4,15 +4,7 @@ import { auth } from "@/auth/server";
 
 export default async function EntriesPage() {
 	const session = await auth();
-	// const session = {
-	// 	user: {
-	// 		id: 1,
-	// 		nickName: "Mock User",
-	// 		email: "mock@example.com",
-	// 		imageURI: "",
-	// 		scopes: [""]
-	// 	}
-	// }
+	console.log(session);
 
 	return <DiaryOverview session={session} />;
 }
