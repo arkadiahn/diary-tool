@@ -61,11 +61,7 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
       var diaries: DiaryEntry[] = [];
       console.log(session);
       try {
-        diaries = (await getDiaries("me", {
-          headers: {
-            'Authorization': `Bearer ${session?.access_token}`
-          }
-        })).data;
+        diaries = (await getDiaries("me")).data;
       } catch {
         setError('Failed to fetch diaries');
         diaries = example_entries;
