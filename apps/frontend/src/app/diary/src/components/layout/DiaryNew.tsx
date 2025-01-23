@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { Input, Textarea, Select, SelectItem, Button, Card, CardBody } from "@heroui/react";
-import { Session } from "next-auth";
+import { Session } from "@/auth/models";
 
 interface DiaryGoal {
   title: string;

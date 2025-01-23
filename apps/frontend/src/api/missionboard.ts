@@ -77,11 +77,25 @@ filter?: string;
 show_unapproved?: boolean;
 };
 
+export type DeleteMissionMilestoneParams = {
+/**
+ * delete will return 2xx if the resource is not found
+ */
+allow_missing?: AllowMissingParameter;
+};
+
 export type PostMissionMilestoneParams = {
 /**
  * 4-63 valid characters: /[a-z][0-9]-/
  */
 milestone_id?: string;
+};
+
+export type DeleteMissionParams = {
+/**
+ * delete will return 2xx if the resource is not found
+ */
+allow_missing?: AllowMissingParameter;
 };
 
 export type PostMissionParams = {
@@ -99,6 +113,23 @@ export const GetMissionsFormat = {
   summary: 'summary',
   extended: 'extended',
 } as const;
+
+export type GetMissionsParams = {
+format?: GetMissionsFormat;
+/**
+ * Filter by [mission_state, approval_state]
+ */
+filter?: string;
+/**
+ * Order by [title, like_count]
+ */
+order_by?: string;
+/**
+ * include soft deleted resources
+ */
+show_deleted?: ShowDeletedParameter;
+show_unapproved?: boolean;
+};
 
 export type PostEventParams = {
 /**
@@ -119,63 +150,6 @@ export type GetAccounts200 = {
   next_page_token: string;
 };
 
-/**
- * include soft deleted resources
- */
-export type ShowDeletedParameter = boolean;
-
-export type GetMissionsParams = {
-format?: GetMissionsFormat;
-/**
- * Filter by [mission_state, approval_state]
- */
-filter?: string;
-/**
- * Order by [title, like_count]
- */
-order_by?: string;
-/**
- * include soft deleted resources
- */
-show_deleted?: ShowDeletedParameter;
-show_unapproved?: boolean;
-};
-
-/**
- * delete will return 2xx if the resource is not found
- */
-export type AllowMissingParameter = boolean;
-
-export type DeleteMissionMilestoneParams = {
-/**
- * delete will return 2xx if the resource is not found
- */
-allow_missing?: AllowMissingParameter;
-};
-
-export type DeleteMissionParams = {
-/**
- * delete will return 2xx if the resource is not found
- */
-allow_missing?: AllowMissingParameter;
-};
-
-/**
- * A page token, received from a previous call.
-Provide this to retrieve the subsequent page.
-When paginating, all other parameters provided must match
-the call that provided the page token.
-
- */
-export type PageTokenParameter = string;
-
-/**
- * The maximum number to return. May return fewer than this value.
-If unspecified (or specifies 0), a defualt is chosen.
-
- */
-export type PageSizeParameter = number;
-
 export type GetAccountsParams = {
 /**
  * The maximum number to return. May return fewer than this value.
@@ -192,6 +166,101 @@ the call that provided the page token.
  */
 page_token?: PageTokenParameter;
 };
+
+export type GetOpenidConfiguration200MtlsEndpointAliases = {
+  backchannel_authentication_endpoint?: string;
+  device_authorization_endpoint?: string;
+  introspection_endpoint?: string;
+  pushed_authorization_request_endpoint?: string;
+  registration_endpoint?: string;
+  revocation_endpoint?: string;
+  token_endpoint?: string;
+  userinfo_endpoint?: string;
+};
+
+export type GetOpenidConfiguration200 = {
+  acr_values_supported?: string[];
+  authorization_encryption_alg_values_supported?: string[];
+  authorization_encryption_enc_values_supported?: string[];
+  authorization_endpoint?: string;
+  authorization_response_iss_parameter_supported?: boolean;
+  authorization_signing_alg_values_supported?: string[];
+  backchannel_authentication_endpoint?: string;
+  backchannel_authentication_request_signing_alg_values_supported?: string[];
+  backchannel_logout_session_supported?: boolean;
+  backchannel_logout_supported?: boolean;
+  backchannel_token_delivery_modes_supported?: string[];
+  check_session_iframe?: string;
+  claim_types_supported?: string[];
+  claims_parameter_supported?: boolean;
+  claims_supported?: string[];
+  code_challenge_methods_supported?: string[];
+  device_authorization_endpoint?: string;
+  dpop_signing_alg_values_supported?: string[];
+  end_session_endpoint?: string;
+  frontchannel_logout_session_supported?: boolean;
+  frontchannel_logout_supported?: boolean;
+  grant_types_supported?: string[];
+  id_token_encryption_alg_values_supported?: string[];
+  id_token_encryption_enc_values_supported?: string[];
+  id_token_signing_alg_values_supported?: string[];
+  introspection_endpoint?: string;
+  introspection_endpoint_auth_methods_supported?: string[];
+  introspection_endpoint_auth_signing_alg_values_supported?: string[];
+  issuer?: string;
+  jwks_uri?: string;
+  mtls_endpoint_aliases?: GetOpenidConfiguration200MtlsEndpointAliases;
+  pushed_authorization_request_endpoint?: string;
+  registration_endpoint?: string;
+  request_object_encryption_alg_values_supported?: string[];
+  request_object_encryption_enc_values_supported?: string[];
+  request_object_signing_alg_values_supported?: string[];
+  request_parameter_supported?: boolean;
+  request_uri_parameter_supported?: boolean;
+  require_pushed_authorization_requests?: boolean;
+  require_request_uri_registration?: boolean;
+  response_modes_supported?: string[];
+  response_types_supported?: string[];
+  revocation_endpoint?: string;
+  revocation_endpoint_auth_methods_supported?: string[];
+  revocation_endpoint_auth_signing_alg_values_supported?: string[];
+  scopes_supported?: string[];
+  subject_types_supported?: string[];
+  tls_client_certificate_bound_access_tokens?: boolean;
+  token_endpoint?: string;
+  token_endpoint_auth_methods_supported?: string[];
+  token_endpoint_auth_signing_alg_values_supported?: string[];
+  userinfo_encryption_alg_values_supported?: string[];
+  userinfo_encryption_enc_values_supported?: string[];
+  userinfo_endpoint?: string;
+  userinfo_signing_alg_values_supported?: string[];
+};
+
+/**
+ * include soft deleted resources
+ */
+export type ShowDeletedParameter = boolean;
+
+/**
+ * delete will return 2xx if the resource is not found
+ */
+export type AllowMissingParameter = boolean;
+
+/**
+ * A page token, received from a previous call.
+Provide this to retrieve the subsequent page.
+When paginating, all other parameters provided must match
+the call that provided the page token.
+
+ */
+export type PageTokenParameter = string;
+
+/**
+ * The maximum number to return. May return fewer than this value.
+If unspecified (or specifies 0), a defualt is chosen.
+
+ */
+export type PageSizeParameter = number;
 
 /**
  * Conflict
@@ -545,6 +614,19 @@ type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
 
 
   /**
+ * Get the OpenID Connect configuration
+ * @summary Get the OpenID Connect configuration
+ */
+export const getOpenidConfiguration = (
+    
+ options?: SecondParameter<typeof customAxios>,) => {
+      return customAxios<GetOpenidConfiguration200>(
+      {url: `/auth/realms/os/.well-known/openid-configuration`, method: 'GET'
+    },
+      options);
+    }
+  
+/**
  * Pagination not supported for now!
 Returns a list of accounts.
 default page size 30.
@@ -1037,6 +1119,7 @@ if(uploadFileBody.file !== undefined) {
       options);
     }
   
+export type GetOpenidConfigurationResult = NonNullable<Awaited<ReturnType<typeof getOpenidConfiguration>>>
 export type GetAccountsResult = NonNullable<Awaited<ReturnType<typeof getAccounts>>>
 export type PutAccountResult = NonNullable<Awaited<ReturnType<typeof putAccount>>>
 export type GetAccountResult = NonNullable<Awaited<ReturnType<typeof getAccount>>>
