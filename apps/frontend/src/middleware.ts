@@ -5,7 +5,8 @@ import { authMiddleware } from "./auth/server";
 /*                                 Middleware                                 */
 /* -------------------------------------------------------------------------- */
 export default authMiddleware((request: NextRequest) => {
-	const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+	let host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+	host = host?.replace(process.env.SUBDOMAINS_TOP_LEVEL_DOMAIN, "") ?? host;
 	const subdomains = host?.includes(".") ? host?.split(".") : [];
 
 	const url = request.nextUrl.clone();
