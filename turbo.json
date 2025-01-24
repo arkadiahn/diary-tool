@@ -10,7 +10,13 @@
             "env": [
 				"FRONTEND_URL",
 				"BACKEND_URL",
-				"AUTH_URL"
+				"AUTH_URL",
+				"TOP_LEVEL_DOMAIN",
+				"SESSION_COOKIE_NAME",
+				"KEYCLOAK_SECRET",
+				"KEYCLOAK_CLIENT_ID",
+				"KEYCLOAK_ISSUER",
+				"COOKIE_DOMAIN"
 			],
             "inputs": ["$TURBO_DEFAULT$", ".env"],
             "dependsOn": ["^build"],

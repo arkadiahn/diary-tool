@@ -1,4 +1,4 @@
-import MissionEdit from "@/app/missionboard/src/components/missionEdit";
+import MissionEdit from "../../../src/components/missionEdit";
 import { getMission, Mission } from "@/api/missionboard";
 
 interface EditMissionPageProps {

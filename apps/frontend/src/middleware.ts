@@ -1,17 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authMiddleware } from "./auth/server";
 
+/* -------------------------------------------------------------------------- */
+/*                                 Middleware                                 */
+/* -------------------------------------------------------------------------- */
 export default authMiddleware((request: NextRequest) => {
-	const host = request.headers.get("host");
-	const subdomain = host?.includes(".") ? host?.split(".")?.[0] : null;
+	let host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+	host = host?.replace(process.env.TOP_LEVEL_DOMAIN, "") ?? host;
+	const subdomains = host?.includes(".") ? host?.split(".") : [];
 
-	if (subdomain) {
-		const url = request.nextUrl.clone();
-		url.pathname = `/${subdomain}${url.pathname}`;
-		return NextResponse.rewrite(url);
+	const url = request.nextUrl.clone();
+	if (subdomains.length > 1) {
+		url.pathname = `/${subdomains[0]}${url.pathname}`;
+	} else {
+		url.pathname = `/home${url.pathname}`;
 	}
-
-	return NextResponse.next();
+	return NextResponse.rewrite(url);
 });
 
 export const config = {
