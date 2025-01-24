@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "orval && next dev --port 3000",
+    "dev": "orval && next dev --port 80",
     "build": "next build",
     "clean": "git clean -xdf .next .turbo node_modules",
     "lint": "biome lint",
@@ -35,7 +35,8 @@
     "react-hot-toast": "^2.5.1",
     "tailwind-scrollbar": "^3.1.0",
     "twin.macro": "^3.4.1",
-    "usehooks-ts": "^3.1.0"
+    "usehooks-ts": "^3.1.0",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@iconify/icons-ic": "^1.2.13",
