@@ -36,7 +36,8 @@
     "tailwind-scrollbar": "^3.1.0",
     "twin.macro": "^3.4.1",
     "usehooks-ts": "^3.1.0",
-    "zod": "^3.24.1"
+    "zod": "^3.24.1",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@iconify/icons-ic": "^1.2.13",

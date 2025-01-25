@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { NextURL } from "next/dist/server/web/next-url";
+import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { Session } from "./models";
-import crypto from "crypto";
-import { NextURL } from "next/dist/server/web/next-url";
+import * as jose from 'jose';
 
 
 //@todo remove rewrite headers
@@ -10,74 +11,72 @@ import { NextURL } from "next/dist/server/web/next-url";
 /* -------------------------------------------------------------------------- */
 /*                                   Helpers                                  */
 /* -------------------------------------------------------------------------- */
-const getRealUrl = (request: NextRequest): NextURL => {
+const buildRealUrl = (request: NextRequest): NextURL => {
 	const url = request.nextUrl.clone();
 	[url.host = "", url.port = ""] = (request.headers.get("x-forwarded-host")
 		?? request.headers.get("host") ?? "").split(":");
 	return url;
 }
 
-const base64URLEncode = (data: Buffer): string => data.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+const decodeJWTToken = async (token: string, issuer: string): Promise<jose.JWTPayload | null> => {
+	try {
+		const jwks = await fetch(`${issuer}/protocol/openid-connect/certs`, {
+			next: { revalidate: 30 },
+			cache: "force-cache"
+		}).then(res => res.json());
 
-const validateJWTToken = async (token: string, issuer: string): Promise<boolean> => {
-	const [header, payload, signature] = token.split('.');
-	const decodedPayload = JSON.parse(Buffer.from(payload, 'base64url').toString());
-
-	// validate token expiration
-	if (decodedPayload.exp && decodedPayload.exp * 1000 <= Date.now()) {
-		return false;
+		return (await jose.jwtVerify(token, jose.createLocalJWKSet(jwks), {
+			issuer,
+			clockTolerance: 5
+		})).payload;
+	} catch {
+		return null;
 	}
-
-	// validate token issuer
-	if (decodedPayload.iss !== issuer) {
-		return false;
-	}
-
-	const jwksResponse = await fetch(`${issuer}/protocol/openid-connect/certs`, {
-		next: { revalidate: 60 },
-		cache: "force-cache"
-	});
-	const jwks = await jwksResponse.json();
-	const decodedHeader = JSON.parse(Buffer.from(header, 'base64url').toString());
-	
-	// find matching public key
-	const key = jwks.keys.find((k: any) => k.kid === decodedHeader.kid);
-	if (!key) {
-		return false;
-	}
-
-	// validate signature
-	const signingInput = `${header}.${payload}`;
-	const signatureBytes = Buffer.from(signature, 'base64url');
-	const publicKey = crypto.createPublicKey({
-		key: {
-			kty: key.kty,
-			n: key.n,
-			e: key.e
-		},
-		format: 'jwk'
-	});
-	return crypto.verify(
-		'RSA-SHA256',
-		Buffer.from(signingInput),
-		publicKey,
-		signatureBytes
-	);
 }
+
+interface TokenData {
+	access_token: string;
+	expires_in: number;
+	refresh_token: string;
+	refresh_expires_in: number;
+}
+const setResponseCookies = (response: NextResponse, tokenData?: TokenData) => {
+	response.cookies.set(process.env.SESSION_COOKIE_NAME, tokenData?.access_token ?? "", {
+		httpOnly: true,
+		secure: process.env.NODE_ENV === "production",
+		sameSite: "lax",
+		maxAge: tokenData?.expires_in ?? 0,
+		domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
+		priority: "high"
+	});
+	response.cookies.set("refresh", tokenData?.refresh_token ?? "", {
+		httpOnly: true,
+		secure: process.env.NODE_ENV === "production",
+		sameSite: "lax",
+		maxAge: tokenData?.refresh_expires_in ?? 0,
+		domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
+		priority: "high"
+	});
+	return response;
+}
+
 
 /* -------------------------------------------------------------------------- */
 /*                                SSR Functions                               */
 /* -------------------------------------------------------------------------- */
-export async function auth(): Promise<Session | null> {
-	const session = (await cookies()).get("session");
-	if (!session) {
-		return null;
-	}
-
+export async function auth(redirectUrl?: string): Promise<Session | null> {
 	try {
-		const [header, payload, signature] = session.value.split('.');
-		// @todo check if token is valid!!!! iss, etc.
-		const decodedPayload = JSON.parse(Buffer.from(payload, 'base64url').toString());
+		const response = await fetch(`${process.env.NEXT_PUBLIC_AUTH_URL}/api/session`, {
+			headers: {
+				cookie: (await cookies()).getAll().map(
+					cookie => `${cookie.name}=${cookie.value}`
+				).join("; ")
+			},
+			cache: "no-store"
+		});
+		if (!response.ok) throw new Error("Unauthorized");
+
+		const decodedPayload = await response.json();
 		return {
 			expires: decodedPayload.exp,
 			user: {
@@ -90,6 +89,7 @@ export async function auth(): Promise<Session | null> {
 			}
 		} as Session;
 	} catch (error) {
+		if (redirectUrl) redirect(redirectUrl);
 		return null;
 	}
 }
@@ -100,44 +100,36 @@ export async function auth(): Promise<Session | null> {
 /* -------------------------------------------------------------------------- */
 export function authMiddleware(wrappedMiddleware: (request: NextRequest) => NextResponse) {
 	return async (request: NextRequest) => {
-		const searchParams = request.nextUrl.searchParams;
-		const state = searchParams.get("session_state");
+		const { searchParams } = request.nextUrl;
 		const code = searchParams.get("code");
-		const iss = searchParams.get("iss");
-		if (!state && !code && !iss) {
-			return await wrappedMiddleware(request);
+	
+		if (!searchParams.has("session_state") && !code && !searchParams.has("iss")) {
+			return wrappedMiddleware(request);
 		}
 
-		const realUrl = await getRealUrl(request);
-		const redirectUrl = realUrl.clone();
-		redirectUrl.searchParams.delete("session_state");
-		redirectUrl.searchParams.delete("code");
-		redirectUrl.searchParams.delete("iss");
+		const redirectUrl = buildRealUrl(request);
+		["session_state", "code", "iss"].forEach(param => redirectUrl.searchParams.delete(param));
+		const response = NextResponse.redirect(redirectUrl);
 
-		try {
-			if (code) {
-				const authParams = new URLSearchParams({
-					code: code ?? "",
-					redirect_url: redirectUrl.href
-				});
-				const sessionResponse = await fetch(`${process.env.NEXT_PUBLIC_AUTH_URL}/api/session?${authParams}`);
-
-				if (!sessionResponse.ok) {
-					throw new Error("Session invalid!");
+		if (code) {
+			try {
+				const sessionResponse = await fetch(
+					`${process.env.NEXT_PUBLIC_AUTH_URL}/api/session?${new URLSearchParams({
+						code,
+						redirect_url: redirectUrl.href
+					})}`,
+					{ cache: "no-store" }
+				);
+				
+				if (sessionResponse.ok) {
+					response.headers.set("Set-Cookie", sessionResponse.headers.get("Set-Cookie") ?? "");
+					return response;
 				}
-				const newResponse = NextResponse.redirect(redirectUrl);
-				newResponse.headers.set("Set-Cookie", sessionResponse.headers.get("Set-Cookie") ?? "");
-				//@todo delete cookies from backend
-				return newResponse;
-			}
-			throw new Error("test");
-		} catch (error) {
-			const response = NextResponse.redirect(redirectUrl);
-			response.cookies.delete(process.env.SESSION_COOKIE_NAME);
-			response.cookies.delete("refresh");
-			return response;
+			} catch {}
 		}
-	}
+
+		return setResponseCookies(response);
+	};
 }
 
 
@@ -148,162 +140,107 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
 	const path = (await params).authPath;
 
 	const unauthorizedResponse = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-	
 	if (path.length == 0) return unauthorizedResponse;
 
-	// /* ---------------------------------- LOGIN --------------------------------- */
-	// if (path[0] == "login") {
-	// 	const redirectUrl = request.nextUrl.searchParams.get("redirect_url");
-	// 	if (!redirectUrl) return unauthorizedResponse;
+	/* ---------------------------------- LOGIN --------------------------------- */
+	if (path[0] == "login") {
+		const redirectUrl = request.nextUrl.searchParams.get("redirect_url");
+		const referer = request.headers.get("Referer");
+		if (!redirectUrl) return referer ? NextResponse.redirect(referer) : unauthorizedResponse;
 
-	// 	const urlParams = new URLSearchParams({
-	// 		client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID!,
-	// 		redirect_uri: redirectUrl,
-	// 		response_type: "code"
-	// 	});
-	// 	return NextResponse.redirect(
-	// 		`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/auth?${urlParams}`
-	// 	);
-	// }
+		const urlParams = new URLSearchParams({
+			client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID!,
+			redirect_uri: redirectUrl,
+			response_type: "code"
+		});
+		return NextResponse.redirect(
+			`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/auth?${urlParams}`
+		);
+	}
 
-	// /* --------------------------------- LOGOUT --------------------------------- */
-	// if (path[0] == "logout") {
-	// 	const redirectUrl = request.nextUrl.searchParams.get("redirect_url");
-	// 	if (!redirectUrl) return unauthorizedResponse;
-	// 	const response = NextResponse.redirect(
-	// 		`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/logout?redirect_uri=${redirectUrl}`
-	// 	);
-	// 	response.cookies.delete(process.env.SESSION_COOKIE_NAME);
-	// 	response.cookies.delete("refresh");
-	// 	return response;
-	// }
+	/* --------------------------------- LOGOUT --------------------------------- */
+	if (path[0] == "logout") {
+		const redirectUrl = request.nextUrl.searchParams.get("redirect_url");
+		const referer = request.headers.get("Referer");
+		if (!redirectUrl) return referer ? NextResponse.redirect(referer) : unauthorizedResponse;
+
+		await fetch(`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/logout`, {
+			method: "POST",
+			headers: { "Content-Type": "application/x-www-form-urlencoded" },
+			body: new URLSearchParams({
+				refresh_token: request.cookies.get("refresh")?.value ?? "",
+				client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID,
+				client_secret: process.env.KEYCLOAK_SECRET
+			}),
+			cache: "no-store"
+		});
+		return setResponseCookies(NextResponse.redirect(redirectUrl));
+	}
 
 	/* --------------------------------- SESSION -------------------------------- */
 	if (path[0] == "session") {
-		let tokenResponse: Response;
 
 		/* ---------------------------- New Session Auth ---------------------------- */
-		const code = request.nextUrl.searchParams.get("code");
 		const redirectUrl = request.nextUrl.searchParams.get("redirect_url");
+		const code = request.nextUrl.searchParams.get("code");
 		if (code && redirectUrl) {
-			tokenResponse = await fetch(`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/token`, {
+			const tokenResponse = await fetch(`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/token`, {
 				method: "POST",
-				headers: {
-					"Content-Type": "application/x-www-form-urlencoded",
-				},
+				headers: { "Content-Type": "application/x-www-form-urlencoded" },
 				body: new URLSearchParams({
 					code,
 					grant_type: "authorization_code",
 					client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID,
 					redirect_uri: redirectUrl,
 					client_secret: process.env.KEYCLOAK_SECRET
-				})
+				}),
+				cache: "no-store"
 			});
-			if (!tokenResponse.ok) {
-				unauthorizedResponse.cookies.delete("redirect_url");
-				unauthorizedResponse.cookies.delete("refresh");
-				unauthorizedResponse.cookies.delete(process.env.SESSION_COOKIE_NAME);
-				return unauthorizedResponse;
-			}
-
+			if (!tokenResponse.ok) return setResponseCookies(unauthorizedResponse);
+			
 			const tokenData = await tokenResponse.json();
-			const [header, payload, signature] = tokenData.access_token.split('.');
-			const decodedPayload = JSON.parse(Buffer.from(payload, 'base64url').toString());
-			const response = NextResponse.json(decodedPayload);
-
-			response.cookies.delete("redirect_url");
-			response.cookies.set(process.env.SESSION_COOKIE_NAME, tokenData.access_token, {
-				httpOnly: true,
-				secure: process.env.NODE_ENV === "production",
-				sameSite: "strict",
-				maxAge: tokenData.expires_in,
-				domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN
-			});
-			response.cookies.set("refresh", tokenData.refresh_token, {
-				httpOnly: true,
-				secure: process.env.NODE_ENV === "production",
-				sameSite: "strict",
-				maxAge: 60 * 60 * 24 * 30,
-				domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN
-			});
-			return response;
+			return setResponseCookies(NextResponse.json(
+				await decodeJWTToken(tokenData.access_token, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER)
+			), tokenData);
 		}
 
 		/* -------------------------- Existing Session Auth ------------------------- */
-		const refreshToken = request.cookies.get("refresh");
-		const sessionToken = request.cookies.get(process.env.SESSION_COOKIE_NAME);
-		if (sessionToken) {
+		const sessionToken = request.cookies.get(process.env.SESSION_COOKIE_NAME)?.value;
+		const refreshToken = request.cookies.get("refresh")?.value;
 
-			// if no refresh token, delete session token
-			if (!refreshToken?.value) {
-				unauthorizedResponse.cookies.delete(process.env.SESSION_COOKIE_NAME);
-				return unauthorizedResponse;
-			}
+		// if no session token, delete session
+		if (!sessionToken) return setResponseCookies(unauthorizedResponse);
 
-			// if session token is valid, return session data
-			if (await validateJWTToken(sessionToken.value, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER)) {
-				const [header, payload, signature] = sessionToken.value.split('.');
-				const decodedPayload = JSON.parse(Buffer.from(payload, 'base64url').toString());
+		// if no refresh token, delete session
+		if (!refreshToken) return setResponseCookies(unauthorizedResponse);
 
-				const response = NextResponse.json(decodedPayload);
-				response.cookies.set("refresh", refreshToken.value, {
-					httpOnly: true,
-					secure: process.env.NODE_ENV === "production",
-					sameSite: "strict",
-					maxAge: 60 * 60 * 24 * 30,
-					domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
-					path: "/api/session",
-				});
-				return response;
-			}
+		// if session token is valid, return session data
+		const decodedSessionToken = await decodeJWTToken(sessionToken, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER);
+		if (decodedSessionToken) return NextResponse.json(decodedSessionToken);
 
-			// if session token is expired, use refresh token to get new session token
-			if (await validateJWTToken(refreshToken.value, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER)) {
-				const tokenResponse = await fetch(`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/token`, {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/x-www-form-urlencoded",
-					},
-					body: new URLSearchParams({
-						refresh_token: refreshToken.value,
-						grant_type: "refresh_token",
-						client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID
-					})
-				});
-
-				if (!tokenResponse.ok) {
-					unauthorizedResponse.cookies.delete("refresh");
-					unauthorizedResponse.cookies.delete(process.env.SESSION_COOKIE_NAME);
-					return unauthorizedResponse;
-				}
-
-				const tokenData = await tokenResponse.json();
-				const [header, payload, signature] = tokenData.access_token.split('.');
-				const decodedPayload = JSON.parse(Buffer.from(payload, 'base64url').toString());
-
-				const response = NextResponse.json(decodedPayload);
-				response.cookies.set(process.env.SESSION_COOKIE_NAME, tokenData.access_token, {
-					httpOnly: true,
-					secure: process.env.NODE_ENV === "production",
-					sameSite: "strict",
-					maxAge: tokenData.expires_in,
-					domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN
-				});
-				response.cookies.set("refresh", refreshToken.value, {
-					httpOnly: true,
-					secure: process.env.NODE_ENV === "production",
-					sameSite: "strict",
-					maxAge: 60 * 60 * 24 * 30,
-					domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN
-				});
-				return response;
-			}
-
-			// if refresh token is invalid, delete session token
-			unauthorizedResponse.cookies.delete(process.env.SESSION_COOKIE_NAME);
-			unauthorizedResponse.cookies.delete("refresh");
-			return unauthorizedResponse;
+		// if session token is expired, use refresh token to get new session token
+		const decodedRefreshToken = await decodeJWTToken(refreshToken, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER);
+		if (decodedRefreshToken) {
+			const tokenResponse = await fetch(`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/token`, {
+				method: "POST",
+				headers: { "Content-Type": "application/x-www-form-urlencoded" },
+				body: new URLSearchParams({
+					refresh_token: refreshToken,
+					grant_type: "refresh_token",
+					client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID
+				}),
+				cache: "no-store"
+			});
+			if (!tokenResponse.ok) return setResponseCookies(unauthorizedResponse);
+			
+			const tokenData = await tokenResponse.json();
+			return setResponseCookies(NextResponse.json(
+				await decodeJWTToken(tokenData.access_token, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER)
+			), tokenData);
 		}
+
+		// if refresh token is invalid, delete session token
+		return setResponseCookies(unauthorizedResponse);
 	}
 
 	return unauthorizedResponse;
