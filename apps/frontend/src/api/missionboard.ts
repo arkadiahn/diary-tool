@@ -314,18 +314,7 @@ export interface MissionPost {
   title: PropertiesTitle;
 }
 
-export interface MissionSummary {
-  account_count: number;
-  completed_milestones_count: number;
-  description: PropertiesDescription;
-  like_count: number;
-  milestones_count: number;
-  mission_state: MissionMissionState;
-  name: Name;
-  title: PropertiesTitle;
-}
-
-export type MissionSummaryArray = MissionSummary[];
+export type PropertiesName = string;
 
 export type MissionApprovalState = typeof MissionApprovalState[keyof typeof MissionApprovalState];
 
@@ -346,6 +335,19 @@ export const MissionMissionState = {
   completed: 'completed',
   failed: 'failed',
 } as const;
+
+export interface MissionSummary {
+  account_count: number;
+  completed_milestones_count: number;
+  description: PropertiesDescription;
+  like_count: number;
+  milestones_count: number;
+  mission_state: MissionMissionState;
+  name: PropertiesName;
+  title: PropertiesTitle;
+}
+
+export type MissionSummaryArray = MissionSummary[];
 
 export interface Mission {
   approval_state: MissionApprovalState;
@@ -441,7 +443,7 @@ export type Motivation = number;
 /**
  * The number of weeks until the project is completed
  */
-export type WeeksTillCompletion = number;
+export type CompletionWeeks = number;
 
 /**
  * The project the user is working on
@@ -449,12 +451,12 @@ export type WeeksTillCompletion = number;
 export type Project = string;
 
 export interface DiaryPatch {
+  completion_weeks?: CompletionWeeks;
   goals?: Goals;
   learnings?: Learnings;
   motivation?: Motivation;
   obstacles?: Obstacles;
   project?: Project;
-  weeks_till_completion?: WeeksTillCompletion;
 }
 
 /**
@@ -463,13 +465,13 @@ export interface DiaryPatch {
 export type EntryDate = string;
 
 export interface DiaryPost {
+  completion_weeks: CompletionWeeks;
   entry_date: EntryDate;
   goals: Goals;
   learnings: Learnings;
   motivation: Motivation;
   obstacles: Obstacles;
   project: Project;
-  weeks_till_completion: WeeksTillCompletion;
 }
 
 export interface DiaryGoal {
@@ -479,8 +481,14 @@ export interface DiaryGoal {
 
 export interface Diary {
   account_id: string;
+  /** The number of weeks until the project is completed */
+  completion_weeks: number;
   /** The time the diary entry was created */
   create_time: string;
+  /** Whether the currently used access token can edit / delete the diary entry */
+  editable_diary: boolean;
+  /** Whether the currently used access token can edit the goals */
+  editable_goal_completion: boolean;
   /** The date of the start of the week on which the diary entry is based */
   entry_date: string;
   goals: DiaryGoal[];
@@ -495,8 +503,6 @@ export interface Diary {
   project: string;
   /** The time the diary entry was last updated */
   update_time: string;
-  /** The number of weeks until the project is completed */
-  weeks_till_completion: number;
 }
 
 export type GetAccountResponse = Account | AccountPublic;
@@ -513,6 +519,12 @@ export type NickName = string;
 
 export type Name = string;
 
+export interface AccountUpdate {
+  email: Email;
+  name: Name;
+  nick_name: NickName;
+}
+
 export interface AccountPublic {
   email?: Email;
   name: Name;
@@ -527,7 +539,7 @@ export interface Account {
   /** @maxLength 255 */
   email: string;
   last_login_time: string;
-  readonly name: string;
+  name: string;
   /** @maxLength 255 */
   nick_name: string;
   purge_time?: string;
@@ -591,6 +603,20 @@ export const putAccount = (
  options?: SecondParameter<typeof customAxios>,) => {
       return customAxios<Account>(
       {url: `/accounts`, method: 'PUT'
+    },
+      options);
+    }
+  
+/**
+ * @summary Batch update accounts
+ */
+export const batchUpdateAccounts = (
+    accountUpdate: AccountUpdate[],
+ options?: SecondParameter<typeof customAxios>,) => {
+      return customAxios<Account[]>(
+      {url: `/accounts:batchUpdate`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: accountUpdate
     },
       options);
     }
@@ -1061,6 +1087,7 @@ if(uploadFileBody.file !== undefined) {
 export type GetSessionResult = NonNullable<Awaited<ReturnType<typeof getSession>>>
 export type GetAccountsResult = NonNullable<Awaited<ReturnType<typeof getAccounts>>>
 export type PutAccountResult = NonNullable<Awaited<ReturnType<typeof putAccount>>>
+export type BatchUpdateAccountsResult = NonNullable<Awaited<ReturnType<typeof batchUpdateAccounts>>>
 export type GetAccountResult = NonNullable<Awaited<ReturnType<typeof getAccount>>>
 export type GetDiariesResult = NonNullable<Awaited<ReturnType<typeof getDiaries>>>
 export type CreateDiaryResult = NonNullable<Awaited<ReturnType<typeof createDiary>>>

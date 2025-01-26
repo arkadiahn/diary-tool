@@ -126,8 +126,12 @@ export function authMiddleware(wrappedMiddleware: (request: NextRequest) => Next
 				if (sessionResponse.ok) {
 					response.headers.set("Set-Cookie", sessionResponse.headers.get("Set-Cookie") ?? "");
 					return response;
+				} else {
+					console.log("error session response", await sessionResponse.text());
 				}
-			} catch {}
+			} catch {
+				console.log("error setting cookies");
+			}
 		}
 
 		return setResponseCookies(response);

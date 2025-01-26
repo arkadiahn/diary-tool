@@ -1,30 +1,11 @@
 "use client";
 
-import { getAccounts, getAccount, getDiaries, createDiary } from '@/api/missionboard';
-import { useState, useEffect } from 'react';
+import { createDiary } from '@/api/missionboard';
+import { useState } from 'react';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { Input, Textarea, Select, SelectItem, Button, Card, CardBody } from "@heroui/react";
 import { Session } from "@/auth/models";
-
-interface DiaryGoal {
-  title: string;
-  completed: boolean;
-}
-
-interface DiaryEntry {
-  name: string;
-  account_id: string;
-  entry_date: string;
-  project: string;
-  weeks_till_completion: number;
-  motivation: number;
-  learnings: string;
-  obstacles: string;
-  goals: DiaryGoal[];
-  create_time: string;
-  update_time: string;
-}
 
 interface DiaryPageProps {
   session: Session | null;
@@ -55,14 +36,12 @@ export default function DiaryPage({ session }: DiaryPageProps) {
     "ft_transcendence"
   ];
 
-  // const [diaries, setDiaries] = useState<DiaryEntry[]>([]);
-  // const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [newEntry, setNewEntry] = useState({
     entry_date: format(new Date(), 'yyyy-MM-dd'),
     project: '',
-    weeks_till_completion: 1,
+    completion_weeks: 1,
     motivation: 5,
     learnings: '',
     obstacles: '',
@@ -71,32 +50,15 @@ export default function DiaryPage({ session }: DiaryPageProps) {
 
   const router = useRouter();
 
-  useEffect(() => {
-    // const fetchDiaries = async () => {
-    //   try {
-    //     const response = await getDiaries("me");
-    //     setDiaries(response.data);
-    //   } catch {
-    //     setError('Failed to fetch diaries');
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // };
-
-    // fetchDiaries();
-  }, [session]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Filter out goals with empty strings before submission
       const filteredGoals = newEntry.goals.filter(g => g.title.trim() !== '');
       await createDiary("me", {
         ...newEntry,
         goals: filteredGoals
       });
       
-      // Redirect to overview page after successful submission
       router.push('/');
     } catch (error) {
       console.log(error);
@@ -104,13 +66,6 @@ export default function DiaryPage({ session }: DiaryPageProps) {
     }
   };
 
-  useEffect(() => {
-    if (!session) {
-      router.push(`${process.env.NEXT_PUBLIC_AUTH_URL}?redirect=${window.location.href}`);
-    }
-  }, [session]);
-
-  // if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!session) {
     return null;
@@ -142,8 +97,8 @@ export default function DiaryPage({ session }: DiaryPageProps) {
                 type="number"
                 label="Expected weeks until completion"
                 min={1}
-                value={newEntry.weeks_till_completion.toString()}
-                onChange={e => setNewEntry({ ...newEntry, weeks_till_completion: parseInt(e.target.value) })}
+                value={newEntry.completion_weeks.toString()}
+                onChange={e => setNewEntry({ ...newEntry, completion_weeks: parseInt(e.target.value) })}
                 isRequired
               />
 
