@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { NextURL } from "next/dist/server/web/next-url";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
 import { Session } from "./models";
 import * as jose from 'jose';
 
@@ -18,7 +18,8 @@ const buildRealUrl = (request: NextRequest): NextURL => {
 	return url;
 }
 
-const decodeJWTToken = async (token: string, issuer: string): Promise<jose.JWTPayload | null> => {
+const decodeJWTToken = async (token?: string, issuer?: string): Promise<jose.JWTPayload | null> => {
+	if (!token || !issuer) return null;
 	try {
 		const jwks = await fetch(`${issuer}/protocol/openid-connect/certs`, {
 			next: { revalidate: 30 },
@@ -52,7 +53,7 @@ const setResponseCookies = (response: NextResponse, tokenData?: TokenData) => {
 	response.cookies.set("refresh", tokenData?.refresh_token ?? "", {
 		httpOnly: true,
 		secure: process.env.NODE_ENV === "production",
-		sameSite: "lax",
+		sameSite: "strict",
 		maxAge: tokenData?.refresh_expires_in ?? 0,
 		domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
 		priority: "high"
@@ -77,6 +78,7 @@ export async function auth(redirectUrl?: string): Promise<Session | null> {
 		if (!response.ok) throw new Error("Unauthorized");
 
 		const decodedPayload = await response.json();
+		// @todo better way to "parse" session?
 		return {
 			expires: decodedPayload.exp,
 			user: {
@@ -208,15 +210,12 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
 		const sessionToken = request.cookies.get(process.env.SESSION_COOKIE_NAME)?.value;
 		const refreshToken = request.cookies.get("refresh")?.value;
 
-		// if no session token, delete session
-		if (!sessionToken) return setResponseCookies(unauthorizedResponse);
-
-		// if no refresh token, delete session
-		if (!refreshToken) return setResponseCookies(unauthorizedResponse);
-
 		// if session token is valid, return session data
 		const decodedSessionToken = await decodeJWTToken(sessionToken, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER);
 		if (decodedSessionToken) return NextResponse.json(decodedSessionToken);
+
+		// if no refresh token, delete session
+		if (!refreshToken) return setResponseCookies(unauthorizedResponse);
 
 		// if session token is expired, use refresh token to get new session token
 		const decodedRefreshToken = await decodeJWTToken(refreshToken, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER);
