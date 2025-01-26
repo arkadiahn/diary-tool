@@ -104,10 +104,15 @@ export default function DiaryPage({ session }: DiaryPageProps) {
     }
   };
 
+  useEffect(() => {
+    if (!session) {
+      router.push(`${process.env.NEXT_PUBLIC_AUTH_URL}?redirect=${window.location.href}`);
+    }
+  }, [session]);
+
   // if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!session) {
-    window.location.href = `${process.env.NEXT_PUBLIC_AUTH_URL}?redirect=${window.location.href}`;
     return null;
   }
 
