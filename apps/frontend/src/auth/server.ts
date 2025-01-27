@@ -18,17 +18,22 @@ const buildRealUrl = (request: NextRequest): NextURL => {
 	return url;
 }
 
-const decodeJWTToken = async (token?: string, issuer?: string): Promise<jose.JWTPayload | null> => {
+const decodeJWTToken = async (token?: string, issuer?: string, refreshToken: boolean = false): Promise<jose.JWTPayload | null> => {
 	if (!token || !issuer) return null;
 	try {
+		if (refreshToken) {
+			return (await jose.decodeJwt(token));
+		}
+
 		const jwks = await fetch(`${issuer}/protocol/openid-connect/certs`, {
-			next: { revalidate: 30 },
+			next: { revalidate: 120 },
 			cache: "force-cache"
 		}).then(res => res.json());
 
 		return (await jose.jwtVerify(token, jose.createLocalJWKSet(jwks), {
-			issuer,
-			clockTolerance: 5
+			algorithms: ["RS256"],
+			clockTolerance: 5,
+			issuer
 		})).payload;
 	} catch {
 		return null;
@@ -42,8 +47,8 @@ interface TokenData {
 	refresh_expires_in: number;
 }
 const setResponseCookies = (response: NextResponse, tokenData?: TokenData) => {
-	response.cookies.set(process.env.SESSION_COOKIE_NAME, tokenData?.access_token ?? "", {
-		httpOnly: true,
+	response.cookies.set("session", tokenData?.access_token ?? "", {
+		httpOnly: false,
 		secure: process.env.NODE_ENV === "production",
 		sameSite: "lax",
 		maxAge: tokenData?.expires_in ?? 0,
@@ -65,7 +70,11 @@ const setResponseCookies = (response: NextResponse, tokenData?: TokenData) => {
 /* -------------------------------------------------------------------------- */
 /*                                SSR Functions                               */
 /* -------------------------------------------------------------------------- */
+// @todo maybe add scopes check for routes?
+// @todo enforce cache for session data
 export async function auth(redirectUrl?: string): Promise<Session | null> {
+	const requestId = (await headers()).get("x-request-id") ?? crypto.randomUUID();
+
 	try {
 		const response = await fetch(`${process.env.NEXT_PUBLIC_AUTH_URL}/api/session`, {
 			headers: {
@@ -73,13 +82,13 @@ export async function auth(redirectUrl?: string): Promise<Session | null> {
 					cookie => `${cookie.name}=${cookie.value}`
 				).join("; ")
 			},
-			cache: "no-store"
+			cache: "reload"
 		});
 		if (!response.ok) throw new Error("Unauthorized");
 
 		const decodedPayload = await response.json();
 		// @todo better way to "parse" session?
-		return {
+		const sessionData: Session = {
 			expires: decodedPayload.exp,
 			user: {
 				id: decodedPayload.sub,
@@ -89,8 +98,10 @@ export async function auth(redirectUrl?: string): Promise<Session | null> {
 				picture: decodedPayload.picture,
 				scopes: decodedPayload.scope.split(' ')
 			}
-		} as Session;
+		};
+		return sessionData;
 	} catch (error) {
+		console.log(error);
 		if (redirectUrl) redirect(redirectUrl);
 		return null;
 	}
@@ -106,15 +117,30 @@ export function authMiddleware(wrappedMiddleware: (request: NextRequest) => Next
 		const code = searchParams.get("code");
 	
 		if (!searchParams.has("session_state") && !code && !searchParams.has("iss")) {
-			return wrappedMiddleware(request);
+			const sessionResponse = await fetch(`${process.env.NEXT_PUBLIC_AUTH_URL}/api/session`, { 
+				headers: {
+					cookie: request.cookies.getAll().map(
+						cookie => `${cookie.name}=${cookie.value}`
+					).join("; ")
+				},
+				cache: "no-store" 
+			});
+
+			const wrappedResponse = wrappedMiddleware(request);
+
+			if (sessionResponse.ok) {
+				wrappedResponse.headers.set("Set-Cookie", sessionResponse.headers.get("Set-Cookie") ?? "");
+			}
+			wrappedResponse.headers.set("x-request-id", crypto.randomUUID());
+			return wrappedResponse;
 		}
 
 		const redirectUrl = buildRealUrl(request);
 		["session_state", "code", "iss"].forEach(param => redirectUrl.searchParams.delete(param));
 		const response = NextResponse.redirect(redirectUrl);
 
-		if (code) {
-			try {
+		try {
+			if (code) {
 				const sessionResponse = await fetch(
 					`${process.env.NEXT_PUBLIC_AUTH_URL}/api/session?${new URLSearchParams({
 						code,
@@ -122,15 +148,18 @@ export function authMiddleware(wrappedMiddleware: (request: NextRequest) => Next
 					})}`,
 					{ cache: "no-store" }
 				);
-				
+			
 				if (sessionResponse.ok) {
 					response.headers.set("Set-Cookie", sessionResponse.headers.get("Set-Cookie") ?? "");
+					response.headers.set("x-request-id", crypto.randomUUID());
 					return response;
 				}
-			} catch {}
-		}
+			}
+		} catch {}
 
-		return setResponseCookies(response);
+		const responseWithCookies = setResponseCookies(response);
+		responseWithCookies.headers.set("x-request-id", crypto.randomUUID());
+		return responseWithCookies;
 	};
 }
 
@@ -207,7 +236,7 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
 		}
 
 		/* -------------------------- Existing Session Auth ------------------------- */
-		const sessionToken = request.cookies.get(process.env.SESSION_COOKIE_NAME)?.value;
+		const sessionToken = request.cookies.get("session")?.value;
 		const refreshToken = request.cookies.get("refresh")?.value;
 
 		// if session token is valid, return session data
@@ -218,7 +247,7 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
 		if (!refreshToken) return setResponseCookies(unauthorizedResponse);
 
 		// if session token is expired, use refresh token to get new session token
-		const decodedRefreshToken = await decodeJWTToken(refreshToken, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER);
+		const decodedRefreshToken = await decodeJWTToken(refreshToken, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER, true);
 		if (decodedRefreshToken) {
 			const tokenResponse = await fetch(`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/token`, {
 				method: "POST",
@@ -226,7 +255,8 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
 				body: new URLSearchParams({
 					refresh_token: refreshToken,
 					grant_type: "refresh_token",
-					client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID
+					client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID,
+					client_secret: process.env.KEYCLOAK_SECRET
 				}),
 				cache: "no-store"
 			});

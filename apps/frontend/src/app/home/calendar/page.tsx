@@ -1,7 +1,7 @@
 import MainPageLayout from "../src/components/layout/mainPageLayout";
 import CalendarLayout from "./layout/calendarLayout";
-import { ScrollShadow } from "@heroui/react";
 import { getEvents } from "@/api/missionboard";
+import { ScrollShadow } from "@heroui/react";
 
 
 /* -------------------------------------------------------------------------- */

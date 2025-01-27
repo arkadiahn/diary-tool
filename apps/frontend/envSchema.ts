@@ -6,7 +6,6 @@ const envSchema = z.object({
 	NEXT_PUBLIC_COOKIE_DOMAIN: z.string(),
 	TOP_LEVEL_DOMAIN: z.string(),
 
-	SESSION_COOKIE_NAME: z.string(),
 	KEYCLOAK_SECRET: z.string(),
 
 	NEXT_PUBLIC_FRONTEND_URL: z.string().url(),

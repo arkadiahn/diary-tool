@@ -314,18 +314,7 @@ export interface MissionPost {
   title: PropertiesTitle;
 }
 
-export interface MissionSummary {
-  account_count: number;
-  completed_milestones_count: number;
-  description: PropertiesDescription;
-  like_count: number;
-  milestones_count: number;
-  mission_state: MissionMissionState;
-  name: Name;
-  title: PropertiesTitle;
-}
-
-export type MissionSummaryArray = MissionSummary[];
+export type PropertiesName = string;
 
 export type MissionApprovalState = typeof MissionApprovalState[keyof typeof MissionApprovalState];
 
@@ -346,6 +335,19 @@ export const MissionMissionState = {
   completed: 'completed',
   failed: 'failed',
 } as const;
+
+export interface MissionSummary {
+  account_count: number;
+  completed_milestones_count: number;
+  description: PropertiesDescription;
+  like_count: number;
+  milestones_count: number;
+  mission_state: MissionMissionState;
+  name: PropertiesName;
+  title: PropertiesTitle;
+}
+
+export type MissionSummaryArray = MissionSummary[];
 
 export interface Mission {
   approval_state: MissionApprovalState;
@@ -513,6 +515,12 @@ export type NickName = string;
 
 export type Name = string;
 
+export interface AccountUpdate {
+  email: Email;
+  name: Name;
+  nick_name: NickName;
+}
+
 export interface AccountPublic {
   email?: Email;
   name: Name;
@@ -527,7 +535,7 @@ export interface Account {
   /** @maxLength 255 */
   email: string;
   last_login_time: string;
-  readonly name: string;
+  name: string;
   /** @maxLength 255 */
   nick_name: string;
   purge_time?: string;
@@ -591,6 +599,20 @@ export const putAccount = (
  options?: SecondParameter<typeof customAxios>,) => {
       return customAxios<Account>(
       {url: `/accounts`, method: 'PUT'
+    },
+      options);
+    }
+  
+/**
+ * @summary Batch update accounts
+ */
+export const batchUpdateAccounts = (
+    accountUpdate: AccountUpdate[],
+ options?: SecondParameter<typeof customAxios>,) => {
+      return customAxios<Account[]>(
+      {url: `/accounts:batchUpdate`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: accountUpdate
     },
       options);
     }
@@ -1061,6 +1083,7 @@ if(uploadFileBody.file !== undefined) {
 export type GetSessionResult = NonNullable<Awaited<ReturnType<typeof getSession>>>
 export type GetAccountsResult = NonNullable<Awaited<ReturnType<typeof getAccounts>>>
 export type PutAccountResult = NonNullable<Awaited<ReturnType<typeof putAccount>>>
+export type BatchUpdateAccountsResult = NonNullable<Awaited<ReturnType<typeof batchUpdateAccounts>>>
 export type GetAccountResult = NonNullable<Awaited<ReturnType<typeof getAccount>>>
 export type GetDiariesResult = NonNullable<Awaited<ReturnType<typeof getDiaries>>>
 export type CreateDiaryResult = NonNullable<Awaited<ReturnType<typeof createDiary>>>
