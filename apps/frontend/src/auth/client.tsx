@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useState, useContext, useEffect } from 'react';
+import { createContext, useState, useContext, useEffect, useMemo } from 'react';
 import { createStore, StoreApi, useStore } from 'zustand';
 import { Session } from './models';
 
@@ -27,7 +27,7 @@ type SessionStore = {
 const SessionStoreContext = createContext<StoreApi<SessionStore> | null>(null);
 
 export const SessionProvider = ({ children, initialSession = null }: { children: React.ReactNode, initialSession: Session | null }) => {
-	const channel = new BroadcastChannel("session-channel");
+	const channel = useMemo(() => new BroadcastChannel("session-channel"), []);
 	const [store] = useState(() =>
 		createStore<SessionStore>(() => ({
 			session: initialSession
@@ -92,7 +92,7 @@ export const SessionProvider = ({ children, initialSession = null }: { children:
 
 	/* ----------------------------- Session Channel ---------------------------- */
 	useEffect(() => {
-		channel.postMessage(store.getState().session);
+		channel.postMessage(initialSession);
 		
 		channel.onmessage = (event) => {
 			if (loggedIn(event.data) !== loggedIn(store.getState().session)) {
@@ -106,7 +106,7 @@ export const SessionProvider = ({ children, initialSession = null }: { children:
 			unsubscribe();
 			channel.close();
 		}
-	}, [channel, store]);
+	}, [channel, store, initialSession]);
 
 
 	return (
