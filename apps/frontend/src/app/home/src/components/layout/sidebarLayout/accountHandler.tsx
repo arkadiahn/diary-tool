@@ -1,6 +1,5 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
 import CustomIcon from "@/components/CustomIcon";
 import { signIn, signOut } from "@/auth/client";
 import { Session } from "@/auth/models";
@@ -16,9 +15,6 @@ interface AccountHandlerProps {
 	session: Session | null;
 }
 export default function AccountHandler({ session }: AccountHandlerProps) {
-	const pathname = usePathname();
-	const router = useRouter();
-
 	return (
 		<>
 			{session && (

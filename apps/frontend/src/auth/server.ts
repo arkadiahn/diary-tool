@@ -95,7 +95,7 @@ const addMiddlewareCookies = (request: NextRequest, response: NextResponse, setC
 /*                                SSR Functions                               */
 /* -------------------------------------------------------------------------- */
 // @todo maybe add scopes check for routes?
-export async function auth(redirectUrl?: string): Promise<Session | null> {
+export async function auth(redirectUrl?: string): Promise<{ session: Session | null }> {
 	try {
 		const decodedPayload = await decodeJWTToken((await cookies()).get("session")?.value, process.env.KEYCLOAK_ISSUER, true);
 		if (!decodedPayload) throw new Error("Unauthorized");
@@ -112,10 +112,10 @@ export async function auth(redirectUrl?: string): Promise<Session | null> {
 				scopes: (decodedPayload.scope! as string).split(' ')
 			}
 		};
-		return sessionData;
+		return { session: sessionData };
 	} catch {
 		if (redirectUrl) redirect(redirectUrl);
-		return null;
+		return { session: null };
 	}
 }
 
