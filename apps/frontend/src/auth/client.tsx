@@ -106,7 +106,7 @@ export const SessionProvider = ({ children, initialSession = null }: { children:
 			unsubscribe();
 			channel.close();
 		}
-	}, []);
+	}, [channel, store]);
 
 
 	return (
