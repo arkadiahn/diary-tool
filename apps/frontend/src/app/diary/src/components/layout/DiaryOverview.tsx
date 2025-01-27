@@ -33,7 +33,10 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
       if (!session) {
         console.log("setting example data");
         setIsExample(true);
-        setDiaries(example_entries);
+        const sortedDiaries = example_entries.sort((a, b) => 
+          new Date(a.entry_date).getTime() - new Date(b.entry_date).getTime()
+        );
+        setDiaries(sortedDiaries);
         setLoading(false);
         return;
       }
@@ -42,12 +45,15 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
         if (diaries.length === 0) {
           setHasEntryThisWeek(false);
           setIsExample(true);
-          setDiaries(example_entries);
+          const sortedDiaries = example_entries.sort((a, b) => 
+            new Date(a.entry_date).getTime() - new Date(b.entry_date).getTime()
+          );
+          setDiaries(sortedDiaries);
           setLoading(false);
           return;
         }
         const sortedDiaries = diaries.sort((a, b) => 
-          new Date(b.entry_date).getTime() - new Date(a.entry_date).getTime()
+          new Date(a.entry_date).getTime() - new Date(b.entry_date).getTime()
         );
         setDiaries(sortedDiaries);
         const lastEntry = sortedDiaries.at(-1)!;
