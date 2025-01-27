@@ -212,14 +212,14 @@ export type R400Response = {
   message: string;
 };
 
+export type R500Response = {
+  message: string;
+};
+
 /**
  * Forbidden
  */
 export type R403Response = void;
-
-export type R500Response = {
-  message: string;
-};
 
 /**
  * Unauthorized
@@ -284,18 +284,6 @@ export type DescriptionSkills = string;
  */
 export type DescriptionGoal = string;
 
-export type GetMissionResponse = MissionArray | MissionSummaryArray;
-
-/**
- * @maxLength 1000
- */
-export type PropertiesDescription = string;
-
-/**
- * @maxLength 255
- */
-export type PropertiesTitle = string;
-
 export interface MissionPatch {
   description?: PropertiesDescription;
   description_goal?: DescriptionGoal;
@@ -313,6 +301,18 @@ export interface MissionPost {
   kickoff_time: KickoffTime;
   title: PropertiesTitle;
 }
+
+export type GetMissionResponse = MissionArray | MissionSummaryArray;
+
+/**
+ * @maxLength 1000
+ */
+export type PropertiesDescription = string;
+
+/**
+ * @maxLength 255
+ */
+export type PropertiesTitle = string;
 
 export type PropertiesName = string;
 
@@ -507,6 +507,8 @@ export interface Diary {
 
 export type GetAccountResponse = Account | AccountPublic;
 
+export type GetAccountsResponse = AccountArray | AccountPublicArray;
+
 /**
  * @maxLength 255
  */
@@ -548,17 +550,6 @@ export interface Account {
 
 export type AccountArray = Account[];
 
-export type GetAccountsResponse = AccountArray | AccountPublicArray;
-
-export interface AuthSession {
-  email: string;
-  imageURI: string;
-  intra42?: string;
-  name: string;
-  nickName: string;
-  scopes: string[];
-}
-
 
 
 
@@ -566,18 +557,6 @@ type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
 
 
   /**
- * @summary Get the current session
- */
-export const getSession = (
-    
- options?: SecondParameter<typeof customAxios>,) => {
-      return customAxios<AuthSession>(
-      {url: `/auth/session`, method: 'GET'
-    },
-      options);
-    }
-  
-/**
  * Pagination not supported for now!
 Returns a list of accounts.
 default page size 30.
@@ -1084,7 +1063,6 @@ if(uploadFileBody.file !== undefined) {
       options);
     }
   
-export type GetSessionResult = NonNullable<Awaited<ReturnType<typeof getSession>>>
 export type GetAccountsResult = NonNullable<Awaited<ReturnType<typeof getAccounts>>>
 export type PutAccountResult = NonNullable<Awaited<ReturnType<typeof putAccount>>>
 export type BatchUpdateAccountsResult = NonNullable<Awaited<ReturnType<typeof batchUpdateAccounts>>>

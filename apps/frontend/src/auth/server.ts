@@ -18,24 +18,35 @@ const buildRealUrl = (request: NextRequest): NextURL => {
 	return url;
 }
 
-const decodeJWTToken = async (token?: string, issuer?: string, refreshToken: boolean = false): Promise<jose.JWTPayload | null> => {
+const decodeJWTToken = async (token?: string, issuer?: string, skipValidation: boolean = false): Promise<jose.JWTPayload | null> => {
 	if (!token || !issuer) return null;
 	try {
-		if (refreshToken) {
-			return (await jose.decodeJwt(token));
+		if (skipValidation) {
+			const decodedToken = await jose.decodeJwt(token);
+			if (decodedToken.iss !== issuer) throw new Error("Unauthorized");
+			return decodedToken;
 		}
 
 		const jwks = await fetch(`${issuer}/protocol/openid-connect/certs`, {
-			next: { revalidate: 120 },
+			next: { revalidate: 240 },
 			cache: "force-cache"
 		}).then(res => res.json());
-
-		return (await jose.jwtVerify(token, jose.createLocalJWKSet(jwks), {
+		const decodedToken = await jose.jwtVerify(token, jose.createLocalJWKSet(jwks), {
 			algorithms: ["RS256"],
 			clockTolerance: 5,
 			issuer
-		})).payload;
-	} catch {
+		});
+
+		const userinfo = await fetch(`${issuer}/protocol/openid-connect/userinfo`, {
+			headers: {
+				Authorization: `Bearer ${token}`
+			},
+			cache: "no-store"
+		});
+		if (!userinfo.ok) throw new Error("Unauthorized");
+
+		return decodedToken.payload;
+	} catch (error) {
 		return null;
 	}
 }
@@ -71,37 +82,27 @@ const setResponseCookies = (response: NextResponse, tokenData?: TokenData) => {
 /*                                SSR Functions                               */
 /* -------------------------------------------------------------------------- */
 // @todo maybe add scopes check for routes?
-// @todo enforce cache for session data
 export async function auth(redirectUrl?: string): Promise<Session | null> {
 	const requestId = (await headers()).get("x-request-id") ?? crypto.randomUUID();
 
 	try {
-		const response = await fetch(`${process.env.NEXT_PUBLIC_AUTH_URL}/api/session`, {
-			headers: {
-				cookie: (await cookies()).getAll().map(
-					cookie => `${cookie.name}=${cookie.value}`
-				).join("; ")
-			},
-			cache: "reload"
-		});
-		if (!response.ok) throw new Error("Unauthorized");
+		const decodedPayload = await decodeJWTToken((await cookies()).get("session")?.value, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER, true);
+		if (!decodedPayload) throw new Error("Unauthorized");
 
-		const decodedPayload = await response.json();
 		// @todo better way to "parse" session?
 		const sessionData: Session = {
-			expires: decodedPayload.exp,
+			expires: decodedPayload.exp!,
 			user: {
-				id: decodedPayload.sub,
-				name: decodedPayload.name,
-				preferred_username: decodedPayload.preferred_username,
-				email: decodedPayload.email,
-				picture: decodedPayload.picture,
-				scopes: decodedPayload.scope.split(' ')
+				id: decodedPayload.sub!,
+				name: decodedPayload.name! as string,
+				preferred_username: decodedPayload.preferred_username! as string,
+				email: decodedPayload.email! as string,
+				picture: decodedPayload.picture! as string,
+				scopes: (decodedPayload.scope! as string).split(' ')
 			}
 		};
 		return sessionData;
-	} catch (error) {
-		console.log(error);
+	} catch {
 		if (redirectUrl) redirect(redirectUrl);
 		return null;
 	}
@@ -184,7 +185,8 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
 		const urlParams = new URLSearchParams({
 			client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID!,
 			redirect_uri: redirectUrl,
-			response_type: "code"
+			response_type: "code",
+			scope: "openid"
 		});
 		return NextResponse.redirect(
 			`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/auth?${urlParams}`

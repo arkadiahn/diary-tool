@@ -10,6 +10,6 @@ export interface User {
 }
 
 export interface Session {
-	expires: string;
+	expires: number;
 	user: User;
 }
