@@ -4,7 +4,7 @@ import { createDiary, Diary, updateDiary } from '@/api/missionboard';
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
-import { Input, Textarea, Select, SelectItem, Button, Card, CardBody } from "@heroui/react";
+import { Input, Textarea, Select, SelectItem, Button, Card, CardBody, Slider } from "@heroui/react";
 import { Session } from "@/auth/models";
 
 interface DiaryPageProps {
@@ -55,7 +55,7 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
     e.preventDefault();
     try {
       const filteredGoals = newEntry.goals.filter(g => g.title.trim() !== '');
-      
+
       if (initialDiary) {
         // Handle update
         const [_, accountId, __, diaryId] = initialDiary.name.split('/');
@@ -70,7 +70,7 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
           goals: filteredGoals
         });
       }
-      
+
       router.push('/');
     } catch (error) {
       console.log(error);
@@ -93,7 +93,7 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
           </h2>
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 gap-6">
-              
+
               <Select
                 label="Project you are currently working on"
                 selectedKeys={newEntry.project ? [newEntry.project] : []}
@@ -115,6 +115,40 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
                 onChange={e => setNewEntry({ ...newEntry, completion_weeks: parseInt(e.target.value) })}
                 isRequired
               />
+
+              <div className="flex items-center gap-4 w-full">
+                <Slider
+                  label="Motivation"
+                  step={1}
+                  maxValue={10}
+                  minValue={1}
+                  size="md"
+                  color="success"
+                  value={newEntry.motivation || 5}
+                  onChange={value => setNewEntry({ ...newEntry, motivation: value as number })}
+                  className="flex-1"
+                  showSteps={true}
+                  aria-label="Motivation level"
+                  renderThumb={(props) => (
+                    <div
+                      {...props}
+                      className="group p-2 top-1/2 bg-transparent cursor-grab data-[dragging=true]:cursor-grabbing"
+                    >
+                      <span className={`flex items-center justify-center w-8 h-8 ${newEntry.motivation === 10 ? 'text-6xl' : 'text-4xl'}`} role="img" aria-label="mood">
+                        {newEntry.motivation === 1 ? "😭" :
+                         newEntry.motivation === 2 ? "😢" :
+                         newEntry.motivation === 3 ? "😞" :
+                         newEntry.motivation === 4 ? "😕" :
+                         newEntry.motivation === 5 ? "😐" :
+                         newEntry.motivation === 6 ? "🙂" :
+                         newEntry.motivation === 7 ? "😊" :
+                         newEntry.motivation === 8 ? "😄" :
+                         newEntry.motivation === 9 ? "🤩" : "🤯"}
+                      </span>
+                    </div>
+                  )}
+                />
+              </div>
 
               <Textarea
                 label="Biggest learnings last week"

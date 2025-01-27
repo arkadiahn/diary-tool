@@ -19,10 +19,6 @@ const menuItems = [
     {
         name: "Home",
         path: "/"
-    },
-    {
-        name: "New",
-        path: "/new"
     }
 ];
 
