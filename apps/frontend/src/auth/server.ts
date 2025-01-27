@@ -2,11 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { NextURL } from "next/dist/server/web/next-url";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import setCookie from "set-cookie-parser";
 import { Session } from "./models";
 import * as jose from 'jose';
 
-
-//@todo remove rewrite headers
 
 /* -------------------------------------------------------------------------- */
 /*                                   Helpers                                  */
@@ -78,6 +77,19 @@ const setResponseCookies = (response: NextResponse, tokenData?: TokenData) => {
 	return response;
 }
 
+const addMiddlewareCookies = (request: NextRequest, response: NextResponse, setCookies: string[]) => {
+	if (setCookies.length > 0) {
+		const allCookies = request.cookies.getAll();
+		const cookies = setCookie.parse(setCookies, { decodeValues: true, map: true });
+		allCookies.push(...Object.keys(cookies).map(key => ({name: key, value: cookies[key].value})));
+
+		response.headers.set("Set-Cookie", setCookies.join("; "));
+		response.headers.set("x-middleware-override-headers", "cookie");
+		response.headers.set("x-middleware-request-cookie", allCookies.map(cookie => `${cookie.name}=${cookie.value}`).join("; "));
+	}
+	return response;
+}
+
 
 /* -------------------------------------------------------------------------- */
 /*                                SSR Functions                               */
@@ -134,8 +146,7 @@ export function authMiddleware(wrappedMiddleware: (request: NextRequest) => Next
 			const wrappedResponse = wrappedMiddleware(request);
 
 			if (sessionResponse && sessionResponse.ok) {
-				wrappedResponse.headers.set("Set-Cookie", sessionResponse.headers.get("Set-Cookie") ?? "");
-				wrappedResponse.headers.set("Cookie", sessionResponse.headers.get("Set-Cookie") ?? "");
+				addMiddlewareCookies(request, wrappedResponse, sessionResponse.headers.getSetCookie());
 			}
 			return wrappedResponse;
 		}
@@ -143,7 +154,6 @@ export function authMiddleware(wrappedMiddleware: (request: NextRequest) => Next
 		const redirectUrl = buildRealUrl(request);
 		["session_state", "code", "iss"].forEach(param => redirectUrl.searchParams.delete(param));
 		const response = NextResponse.redirect(redirectUrl);
-
 		try {
 			if (code) {
 				const sessionResponse = await fetch(
@@ -155,8 +165,7 @@ export function authMiddleware(wrappedMiddleware: (request: NextRequest) => Next
 				);
 			
 				if (sessionResponse.ok) {
-					response.headers.set("Set-Cookie", sessionResponse.headers.get("Set-Cookie") ?? "");
-					return response;
+					return addMiddlewareCookies(request, response, sessionResponse.headers.getSetCookie());
 				}
 			}
 		} catch {}
