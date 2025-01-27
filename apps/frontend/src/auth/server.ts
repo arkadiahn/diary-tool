@@ -2,11 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { NextURL } from "next/dist/server/web/next-url";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import setCookie from "set-cookie-parser";
 import { Session } from "./models";
 import * as jose from 'jose';
 
-
-//@todo remove rewrite headers
 
 /* -------------------------------------------------------------------------- */
 /*                                   Helpers                                  */
@@ -37,6 +36,7 @@ const decodeJWTToken = async (token?: string, issuer?: string, skipValidation: b
 			issuer
 		});
 
+		//@todo find other solution to check session token since this takes too long
 		const userinfo = await fetch(`${issuer}/protocol/openid-connect/userinfo`, {
 			headers: {
 				Authorization: `Bearer ${token}`
@@ -63,7 +63,7 @@ const setResponseCookies = (response: NextResponse, tokenData?: TokenData) => {
 		secure: process.env.NODE_ENV === "production",
 		sameSite: "lax",
 		maxAge: tokenData?.expires_in ?? 0,
-		domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
+		domain: process.env.COOKIE_DOMAIN,
 		priority: "high"
 	});
 	response.cookies.set("refresh", tokenData?.refresh_token ?? "", {
@@ -71,9 +71,22 @@ const setResponseCookies = (response: NextResponse, tokenData?: TokenData) => {
 		secure: process.env.NODE_ENV === "production",
 		sameSite: "strict",
 		maxAge: tokenData?.refresh_expires_in ?? 0,
-		domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
+		domain: process.env.COOKIE_DOMAIN,
 		priority: "high"
 	});
+	return response;
+}
+
+const addMiddlewareCookies = (request: NextRequest, response: NextResponse, setCookies: string[]) => {
+	if (setCookies.length > 0) {
+		const allCookies = request.cookies.getAll();
+		const cookies = setCookie.parse(setCookies, { decodeValues: true, map: true });
+		allCookies.push(...Object.keys(cookies).map(key => ({name: key, value: cookies[key].value})));
+
+		response.headers.set("Set-Cookie", setCookies.join("; "));
+		response.headers.set("x-middleware-override-headers", "cookie");
+		response.headers.set("x-middleware-request-cookie", allCookies.map(cookie => `${cookie.name}=${cookie.value}`).join("; "));
+	}
 	return response;
 }
 
@@ -83,10 +96,8 @@ const setResponseCookies = (response: NextResponse, tokenData?: TokenData) => {
 /* -------------------------------------------------------------------------- */
 // @todo maybe add scopes check for routes?
 export async function auth(redirectUrl?: string): Promise<Session | null> {
-	const requestId = (await headers()).get("x-request-id") ?? crypto.randomUUID();
-
 	try {
-		const decodedPayload = await decodeJWTToken((await cookies()).get("session")?.value, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER, true);
+		const decodedPayload = await decodeJWTToken((await cookies()).get("session")?.value, process.env.KEYCLOAK_ISSUER, true);
 		if (!decodedPayload) throw new Error("Unauthorized");
 
 		// @todo better way to "parse" session?
@@ -117,35 +128,36 @@ export function authMiddleware(wrappedMiddleware: (request: NextRequest) => Next
 		const { searchParams } = request.nextUrl;
 		const code = searchParams.get("code");
 	
+		const requestCookies = request.cookies.getAll();
 		if (!searchParams.has("session_state") && !code && !searchParams.has("iss")) {
-			const sessionResponse = await fetch(`${process.env.NEXT_PUBLIC_AUTH_URL}/api/session`, { 
-				headers: {
-					cookie: request.cookies.getAll().map(
-						cookie => `${cookie.name}=${cookie.value}`
-					).join("; ")
-				},
-				cache: "no-store" 
-			});
+
+			let sessionResponse: Response | null = null;
+			if (requestCookies.some(cookie => cookie.name === "session" || cookie.name === "refresh")) {
+				sessionResponse = await fetch(`${buildRealUrl(request).origin}/api/session`, { 
+					headers: {
+						cookie: requestCookies.map(
+							cookie => `${cookie.name}=${cookie.value}`
+						).join("; ")
+					},
+					cache: "no-store" 
+				});
+			}
+
 			const wrappedResponse = wrappedMiddleware(request);
 
-			if (sessionResponse.ok) {
-				wrappedResponse.headers.set("Set-Cookie", sessionResponse.headers.get("Set-Cookie") ?? "");
-				console.log("sessionResponse", await sessionResponse.text());
-			} else {
-				console.log("sessionResponse ERROR", await sessionResponse.text());
+			if (sessionResponse && sessionResponse.ok) {
+				addMiddlewareCookies(request, wrappedResponse, sessionResponse.headers.getSetCookie());
 			}
-			wrappedResponse.headers.set("x-request-id", crypto.randomUUID());
 			return wrappedResponse;
 		}
 
 		const redirectUrl = buildRealUrl(request);
 		["session_state", "code", "iss"].forEach(param => redirectUrl.searchParams.delete(param));
 		const response = NextResponse.redirect(redirectUrl);
-
 		try {
 			if (code) {
 				const sessionResponse = await fetch(
-					`${process.env.NEXT_PUBLIC_AUTH_URL}/api/session?${new URLSearchParams({
+					`${buildRealUrl(request).origin}/api/session?${new URLSearchParams({
 						code,
 						redirect_url: redirectUrl.href
 					})}`,
@@ -153,21 +165,12 @@ export function authMiddleware(wrappedMiddleware: (request: NextRequest) => Next
 				);
 			
 				if (sessionResponse.ok) {
-					response.headers.set("Set-Cookie", sessionResponse.headers.get("Set-Cookie") ?? "");
-					response.headers.set("x-request-id", crypto.randomUUID());
-					return response;
-				} else {
-					console.log("error session response", await sessionResponse.text());
+					return addMiddlewareCookies(request, response, sessionResponse.headers.getSetCookie());
 				}
 			}
-			console.log("no error");
-		} catch (error) {
-			console.log("error session response", error);
-		}
+		} catch {}
 
-		const responseWithCookies = setResponseCookies(response);
-		responseWithCookies.headers.set("x-request-id", crypto.randomUUID());
-		return responseWithCookies;
+		return setResponseCookies(response);
 	};
 }
 
@@ -188,13 +191,13 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
 		if (!redirectUrl) return referer ? NextResponse.redirect(referer) : unauthorizedResponse;
 
 		const urlParams = new URLSearchParams({
-			client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID!,
+			client_id: process.env.KEYCLOAK_CLIENT_ID!,
 			redirect_uri: redirectUrl,
 			response_type: "code",
 			scope: "openid"
 		});
 		return NextResponse.redirect(
-			`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/auth?${urlParams}`
+			`${process.env.KEYCLOAK_ISSUER}/protocol/openid-connect/auth?${urlParams}`
 		);
 	}
 
@@ -204,12 +207,12 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
 		const referer = request.headers.get("Referer");
 		if (!redirectUrl) return referer ? NextResponse.redirect(referer) : unauthorizedResponse;
 
-		await fetch(`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/logout`, {
+		await fetch(`${process.env.KEYCLOAK_ISSUER}/protocol/openid-connect/logout`, {
 			method: "POST",
 			headers: { "Content-Type": "application/x-www-form-urlencoded" },
 			body: new URLSearchParams({
 				refresh_token: request.cookies.get("refresh")?.value ?? "",
-				client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID,
+				client_id: process.env.KEYCLOAK_CLIENT_ID,
 				client_secret: process.env.KEYCLOAK_SECRET
 			}),
 			cache: "no-store"
@@ -224,13 +227,13 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
 		const redirectUrl = request.nextUrl.searchParams.get("redirect_url");
 		const code = request.nextUrl.searchParams.get("code");
 		if (code && redirectUrl) {
-			const tokenResponse = await fetch(`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/token`, {
+			const tokenResponse = await fetch(`${process.env.KEYCLOAK_ISSUER}/protocol/openid-connect/token`, {
 				method: "POST",
 				headers: { "Content-Type": "application/x-www-form-urlencoded" },
 				body: new URLSearchParams({
 					code,
 					grant_type: "authorization_code",
-					client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID,
+					client_id: process.env.KEYCLOAK_CLIENT_ID,
 					redirect_uri: redirectUrl,
 					client_secret: process.env.KEYCLOAK_SECRET
 				}),
@@ -240,7 +243,7 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
 			
 			const tokenData = await tokenResponse.json();
 			return setResponseCookies(NextResponse.json(
-				await decodeJWTToken(tokenData.access_token, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER)
+				await decodeJWTToken(tokenData.access_token, process.env.KEYCLOAK_ISSUER)
 			), tokenData);
 		}
 
@@ -249,22 +252,22 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
 		const refreshToken = request.cookies.get("refresh")?.value;
 
 		// if session token is valid, return session data
-		const decodedSessionToken = await decodeJWTToken(sessionToken, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER);
+		const decodedSessionToken = await decodeJWTToken(sessionToken, process.env.KEYCLOAK_ISSUER);
 		if (decodedSessionToken) return NextResponse.json(decodedSessionToken);
 
 		// if no refresh token, delete session
 		if (!refreshToken) return setResponseCookies(unauthorizedResponse);
 
 		// if session token is expired, use refresh token to get new session token
-		const decodedRefreshToken = await decodeJWTToken(refreshToken, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER, true);
+		const decodedRefreshToken = await decodeJWTToken(refreshToken, process.env.KEYCLOAK_ISSUER, true);
 		if (decodedRefreshToken) {
-			const tokenResponse = await fetch(`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/token`, {
+			const tokenResponse = await fetch(`${process.env.KEYCLOAK_ISSUER}/protocol/openid-connect/token`, {
 				method: "POST",
 				headers: { "Content-Type": "application/x-www-form-urlencoded" },
 				body: new URLSearchParams({
 					refresh_token: refreshToken,
 					grant_type: "refresh_token",
-					client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID,
+					client_id: process.env.KEYCLOAK_CLIENT_ID,
 					client_secret: process.env.KEYCLOAK_SECRET
 				}),
 				cache: "no-store"
@@ -273,7 +276,7 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
 			
 			const tokenData = await tokenResponse.json();
 			return setResponseCookies(NextResponse.json(
-				await decodeJWTToken(tokenData.access_token, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER)
+				await decodeJWTToken(tokenData.access_token, process.env.KEYCLOAK_ISSUER)
 			), tokenData);
 		}
 

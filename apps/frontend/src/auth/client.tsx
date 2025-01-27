@@ -46,7 +46,7 @@ export const SessionProvider = ({ children, initialSession = null }: { children:
 	useEffect(() => {
 		if (store.getState().session) {
 			const interval = setInterval(async () => {
-				const sessionResponse = await fetch(`${process.env.NEXT_PUBLIC_AUTH_URL}/api/session`, {
+				const sessionResponse = await fetch("/api/session", {
 					credentials: "include",
 					cache: "no-store"
 				})
