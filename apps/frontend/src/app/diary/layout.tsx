@@ -1,6 +1,9 @@
 import { siteConfig } from "./src/constants/siteConfig";
-import Navbar from "./src/layout/navbar";
 import { Metadata } from "next";
+
+import Navbar from "./src/layout/navbar";
+import Footer from "./src/layout/footer";
+
 
 /* -------------------------------------------------------------------------- */
 /*                                  Metadata                                  */
@@ -20,9 +23,12 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<>
+		<div className="h-dvh flex flex-col">
 			<Navbar />
-			{children}
-		</>
+			<main className="flex-1 pb-8">
+				{children}
+			</main>
+			<Footer />
+		</div>
 	);
 }

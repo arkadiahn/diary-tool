@@ -8,12 +8,14 @@ export interface CustomIconProps {
     width?: number;
     height?: number;
     className?: string;
+	onClick?: () => void;
 }
 export default function CustomIcon({
     icon,
     width,
     height,
     className,
+	onClick,
 }: CustomIconProps) {
     const getViewBoxLength = (length?: number) => {
         if (!length) return "";
@@ -26,6 +28,7 @@ export default function CustomIcon({
             height={height}
             className={className}
             viewBox={`0 0${getViewBoxLength(icon.width)}${getViewBoxLength(icon.height)}`}
+            onClick={onClick}
             // biome-ignore lint/security/noDangerouslySetInnerHtml: cant be avoided for ssr
             dangerouslySetInnerHTML={{ __html: icon.body }}
         />
