@@ -443,7 +443,7 @@ export type Motivation = number;
 /**
  * The number of weeks until the project is completed
  */
-export type WeeksTillCompletion = number;
+export type CompletionWeeks = number;
 
 /**
  * The project the user is working on
@@ -451,12 +451,12 @@ export type WeeksTillCompletion = number;
 export type Project = string;
 
 export interface DiaryPatch {
+  completion_weeks?: CompletionWeeks;
   goals?: Goals;
   learnings?: Learnings;
   motivation?: Motivation;
   obstacles?: Obstacles;
   project?: Project;
-  weeks_till_completion?: WeeksTillCompletion;
 }
 
 /**
@@ -465,13 +465,13 @@ export interface DiaryPatch {
 export type EntryDate = string;
 
 export interface DiaryPost {
+  completion_weeks: CompletionWeeks;
   entry_date: EntryDate;
   goals: Goals;
   learnings: Learnings;
   motivation: Motivation;
   obstacles: Obstacles;
   project: Project;
-  weeks_till_completion: WeeksTillCompletion;
 }
 
 export interface DiaryGoal {
@@ -481,8 +481,14 @@ export interface DiaryGoal {
 
 export interface Diary {
   account_id: string;
+  /** The number of weeks until the project is completed */
+  completion_weeks: number;
   /** The time the diary entry was created */
   create_time: string;
+  /** Whether the currently used access token can edit / delete the diary entry */
+  editable_diary: boolean;
+  /** Whether the currently used access token can edit the goals */
+  editable_goal_completion: boolean;
   /** The date of the start of the week on which the diary entry is based */
   entry_date: string;
   goals: DiaryGoal[];
@@ -497,8 +503,6 @@ export interface Diary {
   project: string;
   /** The time the diary entry was last updated */
   update_time: string;
-  /** The number of weeks until the project is completed */
-  weeks_till_completion: number;
 }
 
 export type GetAccountResponse = Account | AccountPublic;

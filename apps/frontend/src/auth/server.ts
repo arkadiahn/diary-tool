@@ -153,6 +153,8 @@ export function authMiddleware(wrappedMiddleware: (request: NextRequest) => Next
 					response.headers.set("Set-Cookie", sessionResponse.headers.get("Set-Cookie") ?? "");
 					response.headers.set("x-request-id", crypto.randomUUID());
 					return response;
+				} else {
+					console.log("error session response", await sessionResponse.text());
 				}
 			}
 		} catch {}

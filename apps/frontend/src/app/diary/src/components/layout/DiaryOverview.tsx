@@ -1,6 +1,6 @@
 "use client";
 
-import { getDiaries } from '@/api/missionboard';
+import { Diary, getDiaries, updateDiary } from '@/api/missionboard';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@heroui/react";
@@ -11,68 +11,47 @@ import { Session } from "@/auth/models";
 import dynamic from 'next/dynamic';
 import example_entries from './example_entries.json';
 
-interface DiaryGoal {
-  title: string;
-  completed: boolean;
-}
-
-interface DiaryEntry {
-  name: string;
-  account_id: string;
-  entry_date: string;
-  project: string;
-  weeks_till_completion: number;
-  motivation: number;
-  learnings: string;
-  obstacles: string;
-  goals: DiaryGoal[];
-  create_time: string;
-  update_time: string;
-}
-
 interface DiaryOverviewProps {
   session: Session | null;
 }
 
-// Import ApexCharts dynamically to avoid SSR issues
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 export default function DiaryOverview({ session }: DiaryOverviewProps) {
-  const [diaries, setDiaries] = useState<DiaryEntry[]>([]);
+  const [diaries, setDiaries] = useState<Diary[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isExample, setIsExample] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasEntryThisWeek, setHasEntryThisWeek] = useState(false);
   const router = useRouter();
-
   const isAdmin = session?.user?.scopes.includes('diary.admin');
-
-  // Get Sunday of current week
-  const getSundayOfCurrentWeek = () => {
-    const today = new Date();
-    const dayOfWeek = today.getDay(); // 0 is Sunday, 1 is Monday, ..., 6 is Saturday
-    const diff = dayOfWeek === 0 ? 0 : 7 - dayOfWeek; // Days until next Sunday
-    const sunday = new Date(today);
-    sunday.setDate(today.getDate() + diff);
-    return sunday.toISOString().split('T')[0];
-  };
 
   useEffect(() => {
     const fetchDiaries = async () => {
-      var diaries: DiaryEntry[] = [];
-      console.log(session);
+      var diaries: Diary[] = [];
       try {
         diaries = (await getDiaries("me")).data;
       } catch {
         setError('Failed to fetch diaries');
         diaries = example_entries;
+        setIsExample(true);
       } finally {
-        const thisWeekSunday = getSundayOfCurrentWeek();
-        const hasEntry = diaries.some(diary => diary.entry_date === thisWeekSunday);
+        if (diaries.length === 0) {
+          setHasEntryThisWeek(false);
+          setDiaries(example_entries);
+          setLoading(false);
+          return;
+        }
+        
         const sortedDiaries = diaries.sort((a, b) => 
           new Date(b.entry_date).getTime() - new Date(a.entry_date).getTime()
         );
-        setHasEntryThisWeek(hasEntry);
         setDiaries(sortedDiaries);
+
+        const lastEntry = sortedDiaries.at(-1)!;
+        const newEntryDate = new Date(lastEntry.entry_date);
+        newEntryDate.setDate(newEntryDate.getDate() + 1);
+        setHasEntryThisWeek(new Date() > newEntryDate);
         setLoading(false);
       }
     };
@@ -80,13 +59,8 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
     fetchDiaries();
   }, [session]);
 
-  const isCurrentWeekEntry = (entryDate: string) => {
-    const sundayOfWeek = getSundayOfCurrentWeek();
-    return entryDate === sundayOfWeek;
-  };
-
-  const handleGoalChange = (diaryId: string, goalIndex: number, checked: boolean) => {
-    const updatedDiaries = diaries.map(diary => {
+  const handleGoalChange = async (diaryId: string, goalIndex: number, checked: boolean) => {
+    const updatedDiaries = diaries.map(async diary => {
       if (diary.name === diaryId) {
         const updatedDiary = {
           ...diary,
@@ -95,11 +69,19 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
           )
         };
         console.log('Updated diary:', updatedDiary);
+        // patch request
+        const response = await fetch(`/api/v1/${updatedDiary.name}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedDiary),
+        });
         return updatedDiary;
       }
       return diary;
     });
-    setDiaries(updatedDiaries);
+    setDiaries(await Promise.all(updatedDiaries));
   };
 
   // Helper function to find project change points
@@ -224,7 +206,7 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
 
   const weeksSeries = [{
     name: 'Weeks till completion',
-    data: diaries.map(diary => diary.weeks_till_completion)
+    data: diaries.map(diary => diary.completion_weeks)
   }];
 
   const completionSeries = [{
@@ -261,7 +243,28 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
   return (
     <div className="w-full px-4 sm:px-6 lg:px-10">
       {error && <div>Error: {error}</div>}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+      {isExample && (
+        <div className="mb-6">
+            <Card 
+              isPressable
+              onPress={() => router.push('/entries/new')}
+              className="bg-success-50 dark:bg-success-100 w-full"
+            >
+              <CardBody className="py-2">
+                <span className="text-success text-lg font-semibold">
+                  + Create Your First Entry
+                </span>
+              </CardBody>
+            </Card>
+          <div className="bg-warning-50 dark:bg-warning-100 p-4 rounded-lg mb-4">
+            <p className="text-warning text-lg font-medium mb-2">Example Data</p>
+            <p className="text-warning-700 dark:text-warning-200 mt-2">
+              The data below shows example entries to help you understand how your diary will look.
+            </p>
+          </div>
+        </div>
+      )}
+      <div className={`grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8 ${isExample ? 'opacity-60' : ''}`}>
         <Card className="w-full col-span-1 lg:col-span-3 xl:col-span-1">
           <CardHeader>
             <h3 className="text-xl font-bold">Motivation Over Time</h3>
@@ -311,7 +314,7 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
         </Card>
       </div>
 
-      <div className="space-y-2 max-w-3xl mx-auto">
+      <div className={`space-y-2 max-w-3xl mx-auto ${isExample ? 'opacity-40' : ''}`}>
         {!hasEntryThisWeek && (
           <Card 
             isPressable
@@ -337,7 +340,7 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
                 </span>
               </div>
               <div className="flex gap-1">
-                {isCurrentWeekEntry(diary.entry_date) && (
+                {diary.editable_diary && (
                   <Button
                     color="primary"
                     variant="light"
@@ -347,7 +350,7 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
                     Edit
                   </Button>
                 )}
-                {isAdmin && (
+                {diary.editable_diary && (
                   <Button
                     color="danger"
                     variant="light"
@@ -381,7 +384,7 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
                     <TableBody>
                       <TableRow>
                         <TableCell className="font-semibold pr-4 w-1/3">Weeks till completion:</TableCell>
-                        <TableCell>{diary.weeks_till_completion}</TableCell>
+                        <TableCell>{diary.completion_weeks}</TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="font-semibold pr-4">Motivation:</TableCell>
