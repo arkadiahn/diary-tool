@@ -23,16 +23,16 @@ export default function RootLayout({
 }>) {
   return (
     <html suppressHydrationWarning lang="en">
-      <body
-	  	suppressHydrationWarning
-        className={`${openSans.className} antialiased`}
-      >
-		<SessionProviderWrapper>
-			<Providers>
-				{children}
-			</Providers>
-		</SessionProviderWrapper>
-      </body>
+		<body
+			suppressHydrationWarning
+			className={`${openSans.className} antialiased`}
+		>
+			<SessionProviderWrapper>
+				<Providers>
+					{children}
+				</Providers>
+			</SessionProviderWrapper>
+			</body>
     </html>
   );
 }

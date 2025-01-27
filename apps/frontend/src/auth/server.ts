@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import setCookie from "set-cookie-parser";
 import { Session } from "./models";
 import * as jose from 'jose';
+import React from "react";
 
 
 /* -------------------------------------------------------------------------- */
@@ -97,7 +98,7 @@ const addMiddlewareCookies = (request: NextRequest, response: NextResponse, setC
 // @todo maybe add scopes check for routes?
 export async function auth(redirectUrl?: string): Promise<{ session: Session | null }> {
 	try {
-		const decodedPayload = await decodeJWTToken((await cookies()).get("session")?.value, process.env.KEYCLOAK_ISSUER, true);
+		const decodedPayload = await decodeJWTToken((await cookies()).get("session")?.value, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER, true);
 		if (!decodedPayload) throw new Error("Unauthorized");
 
 		// @todo better way to "parse" session?
@@ -145,7 +146,7 @@ export function authMiddleware(wrappedMiddleware: (request: NextRequest) => Next
 
 			const wrappedResponse = wrappedMiddleware(request);
 
-			if (sessionResponse && sessionResponse.ok) {
+			if (sessionResponse) {
 				addMiddlewareCookies(request, wrappedResponse, sessionResponse.headers.getSetCookie());
 			}
 			return wrappedResponse;
@@ -191,13 +192,13 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
 		if (!redirectUrl) return referer ? NextResponse.redirect(referer) : unauthorizedResponse;
 
 		const urlParams = new URLSearchParams({
-			client_id: process.env.KEYCLOAK_CLIENT_ID!,
+			client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID!,
 			redirect_uri: redirectUrl,
 			response_type: "code",
 			scope: "openid"
 		});
 		return NextResponse.redirect(
-			`${process.env.KEYCLOAK_ISSUER}/protocol/openid-connect/auth?${urlParams}`
+			`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/auth?${urlParams}`
 		);
 	}
 
@@ -207,12 +208,12 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
 		const referer = request.headers.get("Referer");
 		if (!redirectUrl) return referer ? NextResponse.redirect(referer) : unauthorizedResponse;
 
-		await fetch(`${process.env.KEYCLOAK_ISSUER}/protocol/openid-connect/logout`, {
+		await fetch(`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/logout`, {
 			method: "POST",
 			headers: { "Content-Type": "application/x-www-form-urlencoded" },
 			body: new URLSearchParams({
 				refresh_token: request.cookies.get("refresh")?.value ?? "",
-				client_id: process.env.KEYCLOAK_CLIENT_ID,
+				client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID,
 				client_secret: process.env.KEYCLOAK_SECRET
 			}),
 			cache: "no-store"
@@ -227,13 +228,13 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
 		const redirectUrl = request.nextUrl.searchParams.get("redirect_url");
 		const code = request.nextUrl.searchParams.get("code");
 		if (code && redirectUrl) {
-			const tokenResponse = await fetch(`${process.env.KEYCLOAK_ISSUER}/protocol/openid-connect/token`, {
+			const tokenResponse = await fetch(`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/token`, {
 				method: "POST",
 				headers: { "Content-Type": "application/x-www-form-urlencoded" },
 				body: new URLSearchParams({
 					code,
 					grant_type: "authorization_code",
-					client_id: process.env.KEYCLOAK_CLIENT_ID,
+					client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID,
 					redirect_uri: redirectUrl,
 					client_secret: process.env.KEYCLOAK_SECRET
 				}),
@@ -243,7 +244,7 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
 			
 			const tokenData = await tokenResponse.json();
 			return setResponseCookies(NextResponse.json(
-				await decodeJWTToken(tokenData.access_token, process.env.KEYCLOAK_ISSUER)
+				await decodeJWTToken(tokenData.access_token, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER)
 			), tokenData);
 		}
 
@@ -252,22 +253,22 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
 		const refreshToken = request.cookies.get("refresh")?.value;
 
 		// if session token is valid, return session data
-		const decodedSessionToken = await decodeJWTToken(sessionToken, process.env.KEYCLOAK_ISSUER);
+		const decodedSessionToken = await decodeJWTToken(sessionToken, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER);
 		if (decodedSessionToken) return NextResponse.json(decodedSessionToken);
 
 		// if no refresh token, delete session
 		if (!refreshToken) return setResponseCookies(unauthorizedResponse);
 
 		// if session token is expired, use refresh token to get new session token
-		const decodedRefreshToken = await decodeJWTToken(refreshToken, process.env.KEYCLOAK_ISSUER, true);
+		const decodedRefreshToken = await decodeJWTToken(refreshToken, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER, true);
 		if (decodedRefreshToken) {
-			const tokenResponse = await fetch(`${process.env.KEYCLOAK_ISSUER}/protocol/openid-connect/token`, {
+			const tokenResponse = await fetch(`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/token`, {
 				method: "POST",
 				headers: { "Content-Type": "application/x-www-form-urlencoded" },
 				body: new URLSearchParams({
 					refresh_token: refreshToken,
 					grant_type: "refresh_token",
-					client_id: process.env.KEYCLOAK_CLIENT_ID,
+					client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID,
 					client_secret: process.env.KEYCLOAK_SECRET
 				}),
 				cache: "no-store"
@@ -276,12 +277,18 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
 			
 			const tokenData = await tokenResponse.json();
 			return setResponseCookies(NextResponse.json(
-				await decodeJWTToken(tokenData.access_token, process.env.KEYCLOAK_ISSUER)
+				await decodeJWTToken(tokenData.access_token, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER)
 			), tokenData);
 		}
 
 		// if refresh token is invalid, delete session token
 		return setResponseCookies(unauthorizedResponse);
+	}
+
+	if (path[0] == "silent") {
+		return NextResponse.json({
+			idk: "What are you even looking for here xD"
+		}, { status: 200 });
 	}
 
 	return unauthorizedResponse;

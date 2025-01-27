@@ -37,9 +37,40 @@ export const SessionProvider = ({ children, initialSession = null }: { children:
 	const loggedIn = (session: Session | null) => session !== null;
 
 
-	// @todo search way to implement this
-	// (1. is initalSession is null check if user is logged in in keycloak)
-	// - if yes, set session / login
+	/* ------------------------------ Silent Login ------------------------------ */
+	useEffect(() => {
+		if (!store.getState().session) {
+			const iframe = document.createElement('iframe');
+			const params = new URLSearchParams({
+				client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID!,
+				redirect_uri: window.location.origin + "/api/silent",
+				response_type: "code",
+				prompt: "none",
+				scope: "openid"
+			});
+			iframe.src = `${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/auth?${params}`;
+			iframe.className = 'hidden';
+			iframe.onload = async() => {
+				const iframeUrl = new URL(iframe.contentWindow?.location.href ?? "");
+				iframe.remove();
+				if (iframeUrl.searchParams.get("code")) {
+					await fetch(`/api/session?${new URLSearchParams({ 
+						code: iframeUrl.searchParams.get("code") ?? "",
+						redirect_url: window.location.origin + "/api/silent"
+					})}`, {
+						credentials: "include",
+						cache: "no-store"
+					});
+					window.location.href = window.location.href;
+				}
+			};
+			document.body.appendChild(iframe);
+
+			return () => {
+				iframe.remove();
+			};
+		}
+	}, [store]);
 
 
 	/* ----------------------------- Periodic Check ----------------------------- */

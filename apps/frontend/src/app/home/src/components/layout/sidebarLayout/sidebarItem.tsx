@@ -41,7 +41,7 @@ export default function SidebarItem({ leading, label, href, trailing, selected: 
 			{...(Component === Button && { disableRipple: true, onPress: onClick })}
 		>
 			{leading}
-			<p className="truncate font-bold text-sm sm:text-[12px] lg:text-sm">{label}</p>
+			{label && <p className="truncate font-bold text-sm sm:text-[12px] lg:text-sm">{label}</p>}
 			<div className="items-center justify-center flex sm:hidden lg:flex">
 				{trailing}
 			</div>
