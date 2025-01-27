@@ -83,7 +83,7 @@ const addMiddlewareCookies = (request: NextRequest, response: NextResponse, setC
 		const cookies = setCookie.parse(setCookies, { decodeValues: true, map: true });
 		allCookies.push(...Object.keys(cookies).map(key => ({name: key, value: cookies[key].value})));
 
-		response.headers.set("Set-Cookie", setCookies.join("; "));
+		response.headers.set("Set-Cookie", setCookies.join(", "));
 		response.headers.set("x-middleware-override-headers", "cookie");
 		response.headers.set("x-middleware-request-cookie", allCookies.map(cookie => `${cookie.name}=${cookie.value}`).join("; "));
 	}
