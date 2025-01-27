@@ -135,6 +135,7 @@ export function authMiddleware(wrappedMiddleware: (request: NextRequest) => Next
 
 			if (sessionResponse && sessionResponse.ok) {
 				wrappedResponse.headers.set("Set-Cookie", sessionResponse.headers.get("Set-Cookie") ?? "");
+				wrappedResponse.headers.set("Cookie", sessionResponse.headers.get("Set-Cookie") ?? "");
 			}
 			return wrappedResponse;
 		}
