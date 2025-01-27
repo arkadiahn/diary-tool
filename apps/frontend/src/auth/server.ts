@@ -126,11 +126,13 @@ export function authMiddleware(wrappedMiddleware: (request: NextRequest) => Next
 				},
 				cache: "no-store" 
 			});
-
 			const wrappedResponse = wrappedMiddleware(request);
 
 			if (sessionResponse.ok) {
 				wrappedResponse.headers.set("Set-Cookie", sessionResponse.headers.get("Set-Cookie") ?? "");
+				console.log("sessionResponse", await sessionResponse.text());
+			} else {
+				console.log("sessionResponse ERROR", await sessionResponse.text());
 			}
 			wrappedResponse.headers.set("x-request-id", crypto.randomUUID());
 			return wrappedResponse;
@@ -158,7 +160,10 @@ export function authMiddleware(wrappedMiddleware: (request: NextRequest) => Next
 					console.log("error session response", await sessionResponse.text());
 				}
 			}
-		} catch {}
+			console.log("no error");
+		} catch (error) {
+			console.log("error session response", error);
+		}
 
 		const responseWithCookies = setResponseCookies(response);
 		responseWithCookies.headers.set("x-request-id", crypto.randomUUID());

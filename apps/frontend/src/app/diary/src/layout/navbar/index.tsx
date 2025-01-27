@@ -21,8 +21,8 @@ const menuItems = [
         path: "/"
     },
     {
-        name: "My Entries",
-        path: "/entries"
+        name: "New",
+        path: "/new"
     }
 ];
 

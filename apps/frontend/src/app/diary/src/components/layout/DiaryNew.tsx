@@ -1,6 +1,6 @@
 "use client";
 
-import { createDiary } from '@/api/missionboard';
+import { createDiary, Diary, updateDiary } from '@/api/missionboard';
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
@@ -9,9 +9,10 @@ import { Session } from "@/auth/models";
 
 interface DiaryPageProps {
   session: Session | null;
+  initialDiary?: Diary;  // Optional prop for editing
 }
 
-export default function DiaryPage({ session }: DiaryPageProps) {
+export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
   const PROJECT_OPTIONS = [
     "Libft",
     "born2beroot",
@@ -39,13 +40,13 @@ export default function DiaryPage({ session }: DiaryPageProps) {
   const [error, setError] = useState<string | null>(null);
 
   const [newEntry, setNewEntry] = useState({
-    entry_date: format(new Date(), 'yyyy-MM-dd'),
-    project: '',
-    completion_weeks: 1,
-    motivation: 5,
-    learnings: '',
-    obstacles: '',
-    goals: [{ title: '', completed: false }]
+    entry_date: initialDiary ? format(new Date(initialDiary.entry_date), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'),
+    project: initialDiary?.project || '',
+    completion_weeks: initialDiary?.completion_weeks || 1,
+    motivation: initialDiary?.motivation || 5,
+    learnings: initialDiary?.learnings || '',
+    obstacles: initialDiary?.obstacles || '',
+    goals: initialDiary?.goals || [{ title: '', completed: false }]
   });
 
   const router = useRouter();
@@ -54,15 +55,26 @@ export default function DiaryPage({ session }: DiaryPageProps) {
     e.preventDefault();
     try {
       const filteredGoals = newEntry.goals.filter(g => g.title.trim() !== '');
-      await createDiary("me", {
-        ...newEntry,
-        goals: filteredGoals
-      });
+      
+      if (initialDiary) {
+        // Handle update
+        const [_, accountId, __, diaryId] = initialDiary.name.split('/');
+        await updateDiary(accountId, diaryId, {
+          ...newEntry,
+          goals: filteredGoals
+        });
+      } else {
+        // Handle create
+        await createDiary("me", {
+          ...newEntry,
+          goals: filteredGoals
+        });
+      }
       
       router.push('/');
     } catch (error) {
       console.log(error);
-      setError('Failed to create diary entry');
+      setError(initialDiary ? 'Failed to update diary entry' : 'Failed to create diary entry');
     }
   };
 
@@ -76,13 +88,15 @@ export default function DiaryPage({ session }: DiaryPageProps) {
 
       <Card>
         <CardBody className="px-8 py-6">
-          <h2 className="text-2xl font-bold mb-6">New Entry</h2>
+          <h2 className="text-2xl font-bold mb-6">
+            {initialDiary ? 'Edit Entry' : 'New Entry'}
+          </h2>
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 gap-6">
               
               <Select
                 label="Project you are currently working on"
-                value={newEntry.project}
+                selectedKeys={newEntry.project ? [newEntry.project] : []}
                 onChange={e => setNewEntry({ ...newEntry, project: e.target.value })}
                 isRequired
               >
@@ -160,7 +174,7 @@ export default function DiaryPage({ session }: DiaryPageProps) {
                   color="success"
                   size="lg"
                 >
-                  Create Entry
+                  {initialDiary ? 'Update Entry' : 'Create Entry'}
                 </Button>
               </div>
             </div>

@@ -3,8 +3,5 @@ import { auth } from "@/auth/server";
 
 export default async function HomePage() {
 	const session = await auth();
-	if (session) {
-		return <DiaryOverview session={session} />;
-	}
-	return <></>;
+	return <DiaryOverview session={session} />;
 }

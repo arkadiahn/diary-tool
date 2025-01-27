@@ -1,6 +1,6 @@
 "use client";
 
-import { Diary, getDiaries, updateDiary } from '@/api/missionboard';
+import { deleteDiary, Diary, getDiaries, updateDiary } from '@/api/missionboard';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@heroui/react";
@@ -10,6 +10,7 @@ import { ApexOptions } from 'apexcharts';
 import { Session } from "@/auth/models";
 import dynamic from 'next/dynamic';
 import example_entries from './example_entries.json';
+import LoginButton from '../../layout/navbar/loginButton';
 
 interface DiaryOverviewProps {
   session: Session | null;
@@ -29,29 +30,35 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
   useEffect(() => {
     const fetchDiaries = async () => {
       var diaries: Diary[] = [];
+      if (!session) {
+        console.log("setting example data");
+        setIsExample(true);
+        setDiaries(example_entries);
+        setLoading(false);
+        return;
+      }
       try {
         diaries = (await getDiaries("me")).data;
-      } catch {
-        setError('Failed to fetch diaries');
-        diaries = example_entries;
-        setIsExample(true);
-      } finally {
         if (diaries.length === 0) {
           setHasEntryThisWeek(false);
+          setIsExample(true);
           setDiaries(example_entries);
           setLoading(false);
           return;
         }
-        
         const sortedDiaries = diaries.sort((a, b) => 
           new Date(b.entry_date).getTime() - new Date(a.entry_date).getTime()
         );
         setDiaries(sortedDiaries);
-
         const lastEntry = sortedDiaries.at(-1)!;
         const newEntryDate = new Date(lastEntry.entry_date);
         newEntryDate.setDate(newEntryDate.getDate() + 1);
-        setHasEntryThisWeek(new Date() > newEntryDate);
+        console.log(newEntryDate)
+        console.log(new Date())
+        setHasEntryThisWeek(new Date() < newEntryDate);
+      } catch {
+        setError('Failed to fetch diaries');
+      } finally {
         setLoading(false);
       }
     };
@@ -68,15 +75,8 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
             idx === goalIndex ? { ...goal, completed: checked } : goal
           )
         };
-        console.log('Updated diary:', updatedDiary);
-        // patch request
-        const response = await fetch(`/api/v1/${updatedDiary.name}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(updatedDiary),
-        });
+        const [_, accountID, __, diaryID] = diary.name.split('/');
+        await updateDiary(accountID, diaryID, updatedDiary);
         return updatedDiary;
       }
       return diary;
@@ -245,9 +245,10 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
       {error && <div>Error: {error}</div>}
       {isExample && (
         <div className="mb-6">
+          {session ? (
             <Card 
               isPressable
-              onPress={() => router.push('/entries/new')}
+              onPress={() => router.push('/new')}
               className="bg-success-50 dark:bg-success-100 w-full"
             >
               <CardBody className="py-2">
@@ -256,6 +257,9 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
                 </span>
               </CardBody>
             </Card>
+          ) : (
+            <LoginButton />
+          )}
           <div className="bg-warning-50 dark:bg-warning-100 p-4 rounded-lg mb-4">
             <p className="text-warning text-lg font-medium mb-2">Example Data</p>
             <p className="text-warning-700 dark:text-warning-200 mt-2">
@@ -318,7 +322,7 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
         {!hasEntryThisWeek && (
           <Card 
             isPressable
-            onPress={() => router.push('/entries/new')}
+            onPress={() => router.push('/new')}
             className="bg-success-50 dark:bg-success-100 w-full"
           >
             <CardBody className="py-2">
@@ -345,7 +349,7 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
                     color="primary"
                     variant="light"
                     size="sm"
-                    onPress={() => router.push(`/edit/${diary.name}`)}
+                    onPress={() => router.push(`/new?edit=${diary.name}`)}
                   >
                     Edit
                   </Button>
@@ -356,9 +360,10 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
                     variant="light"
                     size="sm"
                     onPress={() => {
+                      const [_, accountId, __, diaryId] = diary.name.split('/');
                       if (window.confirm('Are you sure you want to delete this entry?')) {
-                        // TODO: Implement delete functionality
-                        console.log('Delete diary:', diary.name);
+                        deleteDiary(accountId, diaryId);
+                        router.refresh();
                       }
                     }}
                   >
