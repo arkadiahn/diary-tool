@@ -9,7 +9,7 @@ import ThemeSwitch from "./themeSwitch";
 export default function Footer() {
     return (
 		<footer className="flex w-full flex-col sticky bottom-0">
-			<div className="mx-auto w-full max-w-7xl px-4 py-5 md:flex md:items-center md:justify-between lg:px-8 bg-background dark:bg-content1 shadow-2xl rounded-t-xl">
+			<div className="mx-auto w-full max-w-7xl px-3 py-3 md:flex md:items-center md:justify-between lg:px-8 bg-background dark:bg-content1 shadow-2xl rounded-t-xl">
                 <div className="flex flex-col items-center justify-center gap-2 md:order-2 md:items-end">
                     <ThemeSwitch />
                 </div>

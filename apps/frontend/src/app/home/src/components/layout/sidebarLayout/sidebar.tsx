@@ -109,9 +109,7 @@ export default function Sidebar({ items, adminItems, logoItem, session, children
 						<Divider />
 
 						<div className="w-full">
-							<AccountHandler
-								session={session}
-							/>
+							<AccountHandler />
 						</div>
 
 					</div>
