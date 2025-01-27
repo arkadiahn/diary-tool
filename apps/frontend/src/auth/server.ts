@@ -83,8 +83,6 @@ const setResponseCookies = (response: NextResponse, tokenData?: TokenData) => {
 /* -------------------------------------------------------------------------- */
 // @todo maybe add scopes check for routes?
 export async function auth(redirectUrl?: string): Promise<Session | null> {
-	const requestId = (await headers()).get("x-request-id") ?? crypto.randomUUID();
-
 	try {
 		const decodedPayload = await decodeJWTToken((await cookies()).get("session")?.value, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER, true);
 		if (!decodedPayload) throw new Error("Unauthorized");
@@ -117,22 +115,26 @@ export function authMiddleware(wrappedMiddleware: (request: NextRequest) => Next
 		const { searchParams } = request.nextUrl;
 		const code = searchParams.get("code");
 	
+		const requestCookies = request.cookies.getAll();
 		if (!searchParams.has("session_state") && !code && !searchParams.has("iss")) {
-			const sessionResponse = await fetch(`${process.env.NEXT_PUBLIC_AUTH_URL}/api/session`, { 
-				headers: {
-					cookie: request.cookies.getAll().map(
-						cookie => `${cookie.name}=${cookie.value}`
-					).join("; ")
-				},
-				cache: "no-store" 
-			});
+
+			let sessionResponse: Response | null = null;
+			if (requestCookies.some(cookie => cookie.name === "session" || cookie.name === "refresh")) {
+				sessionResponse = await fetch(`${process.env.NEXT_PUBLIC_AUTH_URL}/api/session`, { 
+					headers: {
+						cookie: requestCookies.map(
+							cookie => `${cookie.name}=${cookie.value}`
+						).join("; ")
+					},
+					cache: "no-store" 
+				});
+			}
 
 			const wrappedResponse = wrappedMiddleware(request);
 
-			if (sessionResponse.ok) {
+			if (sessionResponse && sessionResponse.ok) {
 				wrappedResponse.headers.set("Set-Cookie", sessionResponse.headers.get("Set-Cookie") ?? "");
 			}
-			wrappedResponse.headers.set("x-request-id", crypto.randomUUID());
 			return wrappedResponse;
 		}
 
@@ -152,17 +154,12 @@ export function authMiddleware(wrappedMiddleware: (request: NextRequest) => Next
 			
 				if (sessionResponse.ok) {
 					response.headers.set("Set-Cookie", sessionResponse.headers.get("Set-Cookie") ?? "");
-					response.headers.set("x-request-id", crypto.randomUUID());
 					return response;
-				} else {
-					console.log("error session response", await sessionResponse.text());
 				}
 			}
 		} catch {}
 
-		const responseWithCookies = setResponseCookies(response);
-		responseWithCookies.headers.set("x-request-id", crypto.randomUUID());
-		return responseWithCookies;
+		return setResponseCookies(response);
 	};
 }
 
