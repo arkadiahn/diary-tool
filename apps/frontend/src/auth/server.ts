@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { NextURL } from "next/dist/server/web/next-url";
-import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import setCookie from "set-cookie-parser";
+import { cookies } from "next/headers";
 import { Session } from "./models";
 import * as jose from 'jose';
-import React from "react";
 
 
 /* -------------------------------------------------------------------------- */
@@ -47,7 +46,7 @@ const decodeJWTToken = async (token?: string, issuer?: string, skipValidation: b
 		if (!userinfo.ok) throw new Error("Unauthorized");
 
 		return decodedToken.payload;
-	} catch (error) {
+	} catch {
 		return null;
 	}
 }

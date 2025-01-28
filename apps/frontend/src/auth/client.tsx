@@ -1,7 +1,7 @@
 "use client";
 
-import { createContext, useState, useContext, useEffect } from 'react';
-import { createStore, StoreApi, useStore } from 'zustand';
+import { createContext, useState, useContext, useEffect, useCallback } from 'react';
+import { createStore, StoreApi, useStore} from 'zustand';
 import { Session } from './models';
 
 
@@ -33,7 +33,17 @@ export const SessionProvider = ({ children, initialSession = null }: { children:
 		}))
 	);
 
-	const loggedIn = (session: Session | null) => session !== null;
+	const checkSession = useCallback(async () => {
+		const sessionResponse = await fetch("/api/session", {
+			credentials: "include",
+			cache: "no-store"
+		})
+		if (sessionResponse.status === 401) {
+			signOut();
+		} else if (sessionResponse.ok && store.getState().session === null) {
+			window.location.reload();
+		}
+	}, [store]);
 
 
 	/* ------------------------------ Silent Login ------------------------------ */
@@ -76,38 +86,22 @@ export const SessionProvider = ({ children, initialSession = null }: { children:
 	useEffect(() => {
 		if (store.getState().session) {
 			const interval = setInterval(async () => {
-				const sessionResponse = await fetch("/api/session", {
-					credentials: "include",
-					cache: "no-store"
-				})
-				if (sessionResponse.status === 401) {
-					signOut();
-				}
+				await checkSession();
 			}, 15000);
 			return () => clearInterval(interval);
 		}
-	}, [store]);
+	}, [checkSession, store]);
 
 
-	/* ----------------------------- Session Channel ---------------------------- */
+	/* ------------------- Update Session On Visibility Change ------------------ */
 	useEffect(() => {
-		const channel = new BroadcastChannel("session-channel");
-
-		channel.postMessage(initialSession);
-		
-		channel.onmessage = (event) => {
-			if (loggedIn(event.data) !== loggedIn(store.getState().session)) {
-				window.location.reload();
-			}
-		};
-		
-		const unsubscribe = store.subscribe((state) => channel.postMessage(state.session));
-
+		document.addEventListener("visibilitychange", checkSession);
+		window.addEventListener("focus", checkSession);
 		return () => {
-			unsubscribe();
-			channel.close();
-		}
-	}, [store, initialSession]);
+			document.removeEventListener("visibilitychange", checkSession);
+			window.removeEventListener("focus", checkSession);
+		};
+	}, [checkSession]);
 
 
 	return (
