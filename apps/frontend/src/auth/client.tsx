@@ -39,9 +39,9 @@ export const SessionProvider = ({ children, initialSession = null }: { children:
 			cache: "no-store"
 		})
 		if (sessionResponse.status === 401) {
-			signOut();
+			return false;
 		} else if (sessionResponse.ok && store.getState().session === null) {
-			window.location.reload();
+			return true;
 		}
 	}, [store]);
 
@@ -86,7 +86,11 @@ export const SessionProvider = ({ children, initialSession = null }: { children:
 	useEffect(() => {
 		if (store.getState().session) {
 			const interval = setInterval(async () => {
-				await checkSession();
+				if (await checkSession()) {
+					window.location.reload();
+				} else {
+					signOut();
+				}
 			}, 15000);
 			return () => clearInterval(interval);
 		}
@@ -94,14 +98,19 @@ export const SessionProvider = ({ children, initialSession = null }: { children:
 
 
 	/* ------------------- Update Session On Visibility Change ------------------ */
-	useEffect(() => {
-		document.addEventListener("visibilitychange", checkSession);
-		window.addEventListener("focus", checkSession);
-		return () => {
-			document.removeEventListener("visibilitychange", checkSession);
-			window.removeEventListener("focus", checkSession);
-		};
+	const visibilityHandler = useCallback(async () => {
+		if (await checkSession()) {
+			window.location.reload();
+		}
 	}, [checkSession]);
+	useEffect(() => {
+		document.addEventListener("visibilitychange", visibilityHandler);
+		window.addEventListener("focus", visibilityHandler);
+		return () => {
+			document.removeEventListener("visibilitychange", visibilityHandler);
+			window.removeEventListener("focus", visibilityHandler);
+		};
+	}, [visibilityHandler]);
 
 
 	return (
