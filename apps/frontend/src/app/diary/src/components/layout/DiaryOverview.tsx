@@ -251,7 +251,7 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
       {error && <div>Error: {error}</div>}
       {isExample && (
         <div className="mb-6">
-          {session ? (
+          {session && (
             <Card 
               isPressable
               onPress={() => router.push('/new')}
@@ -263,11 +263,9 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
                 </span>
               </CardBody>
             </Card>
-          ) : (
-            <LoginButton />
           )}
           <div className="bg-warning-50 dark:bg-warning-100 p-4 rounded-lg mb-4">
-            <p className="text-warning text-lg font-medium mb-2">Example Data</p>
+            <p className="text-warning text-lg font-medium mb-2">Example Data log in to see your own</p>
             <p className="text-warning-700 dark:text-warning-200 mt-2">
               The data below shows example entries to help you understand how your diary will look.
             </p>
@@ -430,7 +428,7 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
                 <div className="flex gap-4">
                   <span className="font-semibold">Goals:</span>
                   <div className="flex flex-col gap-1">
-                    {diary.goals.slice(0, 2).map((goal, index) => (
+                    {diary.goals.map((goal, index) => (
                       <Checkbox
                         key={index}
                         isSelected={goal.completed}
@@ -441,11 +439,6 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
                         <span className="text-sm break-words">{goal.title}</span>
                       </Checkbox>
                     ))}
-                    {diary.goals.length > 2 && (
-                      <span className="text-xs text-default-500 pl-7">
-                        +{diary.goals.length - 2} more goals
-                      </span>
-                    )}
                   </div>
                 </div>
               </div>
