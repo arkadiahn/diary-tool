@@ -91,7 +91,7 @@ export const SessionProvider = ({ children, initialSession = null }: { children:
 				} else {
 					signOut();
 				}
-			}, 15000);
+			}, 30000);
 			return () => clearInterval(interval);
 		}
 	}, [checkSession, store]);
