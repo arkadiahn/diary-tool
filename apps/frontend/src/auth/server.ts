@@ -186,15 +186,16 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
 
 	/* ---------------------------------- LOGIN --------------------------------- */
 	if (path[0] == "login") {
-		const redirectUrl = request.nextUrl.searchParams.get("redirect_url");
+		// @todo if keycloak error redirect to original page
+		const redirectUri = request.nextUrl.searchParams.get("redirect_uri");
 		const referer = request.headers.get("Referer");
-		if (!redirectUrl) return referer ? NextResponse.redirect(referer) : unauthorizedResponse;
+		if (!redirectUri) return referer ? NextResponse.redirect(referer) : unauthorizedResponse;
 
 		const urlParams = new URLSearchParams({
 			client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID!,
-			redirect_uri: redirectUrl,
 			response_type: "code",
-			scope: "openid"
+			scope: "openid",
+			...Object.fromEntries(request.nextUrl.searchParams)
 		});
 		return NextResponse.redirect(
 			`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/auth?${urlParams}`
@@ -203,9 +204,10 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
 
 	/* --------------------------------- LOGOUT --------------------------------- */
 	if (path[0] == "logout") {
-		const redirectUrl = request.nextUrl.searchParams.get("redirect_url");
+		// @todo sanitize redirect_uri
+		const redirectUri = request.nextUrl.searchParams.get("redirect_uri");
 		const referer = request.headers.get("Referer");
-		if (!redirectUrl) return referer ? NextResponse.redirect(referer) : unauthorizedResponse;
+		if (!redirectUri) return referer ? NextResponse.redirect(referer) : unauthorizedResponse;
 
 		await fetch(`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/logout`, {
 			method: "POST",
@@ -217,7 +219,7 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
 			}),
 			cache: "no-store"
 		});
-		return setResponseCookies(NextResponse.redirect(redirectUrl));
+		return setResponseCookies(NextResponse.redirect(redirectUri));
 	}
 
 	/* --------------------------------- SESSION -------------------------------- */

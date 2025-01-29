@@ -5,7 +5,6 @@ import { HeroUIProvider } from "@heroui/react";
 import { ThemeProvider } from "next-themes";
 import { useRouter } from "next/navigation";
 import { Toaster } from "react-hot-toast";
-import { useEffect } from "react";
 
 
 export default function Providers({

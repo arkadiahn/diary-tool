@@ -9,11 +9,13 @@ import { Session } from './models';
 /*                                   Helpers                                  */
 /* -------------------------------------------------------------------------- */
 export const signIn = () => {
-	window.location.href = "/api/login?redirect_url=" + window.location.href;
+	const isDark = localStorage.getItem("theme") === "dark";
+	window.location.href = "/api/login?redirect_uri=" + window.location.href + "&dark=" + (isDark ? "true" : "false");
 }
 
 export const signOut = () => {
-	window.location.href = "/api/logout?redirect_url=" + window.location.href;
+	const isDark = localStorage.getItem("theme") === "dark";
+	window.location.href = "/api/logout?redirect_uri=" + window.location.href + "&dark=" + (isDark ? "true" : "false");
 }
 
 
