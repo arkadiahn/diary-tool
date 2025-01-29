@@ -9,13 +9,18 @@ import { Session } from './models';
 /*                                   Helpers                                  */
 /* -------------------------------------------------------------------------- */
 export const signIn = () => {
-	const isDark = localStorage.getItem("theme") === "dark";
-	window.location.href = "/api/login?redirect_uri=" + window.location.href + "&dark=" + (isDark ? "true" : "false");
+	const theme = localStorage.getItem("theme");
+	const urlParams = new URLSearchParams({
+		redirect_uri: window.location.href,
+		...(theme && ["dark", "light"].includes(theme) ? { 
+			dark: theme === "dark" ? "true" : "false"
+		} : {})
+	});
+	window.location.href = "/api/login?" + urlParams;
 }
 
 export const signOut = () => {
-	const isDark = localStorage.getItem("theme") === "dark";
-	window.location.href = "/api/logout?redirect_uri=" + window.location.href + "&dark=" + (isDark ? "true" : "false");
+	window.location.href = "/api/logout?redirect_uri=" + window.location.href;
 }
 
 
