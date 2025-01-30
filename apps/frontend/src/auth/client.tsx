@@ -50,6 +50,7 @@ export const SessionProvider = ({ children, initialSession = null }: { children:
 		} else if (sessionResponse.ok && store.getState().session === null) {
 			return true;
 		}
+		return null;
 	}, [store]);
 
 
@@ -93,10 +94,11 @@ export const SessionProvider = ({ children, initialSession = null }: { children:
 	useEffect(() => {
 		if (store.getState().session) {
 			const interval = setInterval(async () => {
-				if (await checkSession()) {
-					window.location.reload();
-				} else {
+				const check = await checkSession();
+				if (check === false) {
 					signOut();
+				} else if (check === true) {
+					window.location.reload();
 				}
 			}, 30000);
 			return () => clearInterval(interval);
