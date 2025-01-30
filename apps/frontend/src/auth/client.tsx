@@ -12,9 +12,7 @@ export const signIn = () => {
 	const theme = localStorage.getItem("theme");
 	const urlParams = new URLSearchParams({
 		redirect_uri: window.location.href,
-		...(theme && ["dark", "light"].includes(theme) ? { 
-			dark: theme === "dark" ? "true" : "false"
-		} : {})
+		theme: theme ?? "system"
 	});
 	window.location.href = "/api/login?" + urlParams;
 }
