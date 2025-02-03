@@ -88,20 +88,20 @@ export const SessionProvider = ({ children, initialSession = null }: { children:
 	}, [store]);
 
 
-	/* ----------------------------- Periodic Check ----------------------------- */
-	useEffect(() => {
-		if (store.getState().session) {
-			const interval = setInterval(async () => {
-				const check = await checkSession();
-				if (check === false) {
-					signOut();
-				} else if (check === true) {
-					window.location.reload();
-				}
-			}, 30000);
-			return () => clearInterval(interval);
-		}
-	}, [checkSession, store]);
+	// /* ----------------------------- Periodic Check ----------------------------- */
+	// useEffect(() => {
+	// 	if (store.getState().session) {
+	// 		const interval = setInterval(async () => {
+	// 			const check = await checkSession();
+	// 			if (check === false) {
+	// 				signOut();
+	// 			} else if (check === true) {
+	// 				window.location.reload();
+	// 			}
+	// 		}, 30000);
+	// 		return () => clearInterval(interval);
+	// 	}
+	// }, [checkSession, store]);
 
 
 	/* ------------------- Update Session On Visibility Change ------------------ */

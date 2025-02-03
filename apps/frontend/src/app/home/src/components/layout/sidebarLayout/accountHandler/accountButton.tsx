@@ -17,7 +17,7 @@ export default function AccountButton({ type }: AccountButtonProps) {
 		<SidebarItem
 			onClick={() => type === "login" ? signIn() : signOut()}
 			leading={<CustomIcon className="w-[22px]" icon={type === "login" ? icRoundLogin : icRoundLogout} width={22} />}
-			trailing={<h1 className="font-bold">{type === "login" ? "Login" : "Logout"}</h1>}
+			label={type === "login" ? "Login" : "Logout"}
 		/>
 	)
 }

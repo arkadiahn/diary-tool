@@ -14,7 +14,7 @@ export default function Providers({
 
     return (
 		<HeroUIProvider navigate={router.push}>
-			<ThemeProvider attribute="class" defaultTheme="light">
+			<ThemeProvider attribute="class" defaultTheme="system">
 				<NuqsAdapter>
 					<Toaster />
 					{children}

@@ -31,6 +31,7 @@ export default function CustomIcon({
             onClick={onClick}
             // biome-ignore lint/security/noDangerouslySetInnerHtml: cant be avoided for ssr
             dangerouslySetInnerHTML={{ __html: icon.body }}
+			suppressHydrationWarning
         />
     );
 }

@@ -17,7 +17,7 @@ const buildRealUrl = (request: NextRequest): NextURL => {
 	return url;
 }
 
-const decodeJWTToken = async (token?: string, issuer?: string, skipValidation: boolean = false): Promise<jose.JWTPayload | null> => {
+const decodeJWTToken = async (token?: string, issuer?: string, skipValidation: boolean = false, skipKeycloakCheck: boolean = false): Promise<jose.JWTPayload | null> => {
 	if (!token || !issuer) return null;
 	try {
 		if (skipValidation) {
@@ -36,14 +36,15 @@ const decodeJWTToken = async (token?: string, issuer?: string, skipValidation: b
 			issuer
 		});
 
-		//@todo find other solution to check session token since this takes too long
-		const userinfo = await fetch(`${issuer}/protocol/openid-connect/userinfo`, {
-			headers: {
-				Authorization: `Bearer ${token}`
-			},
-			cache: "no-store"
-		});
-		if (!userinfo.ok) throw new Error("Unauthorized");
+		if (!skipKeycloakCheck) {
+			const userinfo = await fetch(`${issuer}/protocol/openid-connect/userinfo`, {
+				headers: {
+					Authorization: `Bearer ${token}`
+				},
+				cache: "no-store"
+			});
+			if (!userinfo.ok) throw new Error("Unauthorized");
+		}
 
 		return decodedToken.payload;
 	} catch {
@@ -97,7 +98,7 @@ const addMiddlewareCookies = (request: NextRequest, response: NextResponse, setC
 // @todo maybe add scopes check for routes?
 export async function auth(redirectUrl?: string): Promise<{ session: Session | null }> {
 	try {
-		const decodedPayload = await decodeJWTToken((await cookies()).get("session")?.value, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER, true);
+		const decodedPayload = await decodeJWTToken((await cookies()).get("session")?.value, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER, true, true);
 		if (!decodedPayload) throw new Error("Unauthorized");
 
 		// @todo better way to "parse" session?
@@ -254,14 +255,14 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
 		const refreshToken = request.cookies.get("refresh")?.value;
 
 		// if session token is valid, return session data
-		const decodedSessionToken = await decodeJWTToken(sessionToken, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER);
+		const decodedSessionToken = await decodeJWTToken(sessionToken, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER, false, false);
 		if (decodedSessionToken) return NextResponse.json(decodedSessionToken);
 
 		// if no refresh token, delete session
 		if (!refreshToken) return setResponseCookies(unauthorizedResponse);
 
 		// if session token is expired, use refresh token to get new session token
-		const decodedRefreshToken = await decodeJWTToken(refreshToken, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER, true);
+		const decodedRefreshToken = await decodeJWTToken(refreshToken, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER, true, true);
 		if (decodedRefreshToken) {
 			const tokenResponse = await fetch(`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/token`, {
 				method: "POST",
@@ -278,7 +279,7 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
 			
 			const tokenData = await tokenResponse.json();
 			return setResponseCookies(NextResponse.json(
-				await decodeJWTToken(tokenData.access_token, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER)
+				await decodeJWTToken(tokenData.access_token, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER, false, true)
 			), tokenData);
 		}
 

@@ -8,6 +8,7 @@ import Footer from "../footer";
 
 /* ---------------------------------- Icons --------------------------------- */
 import solarSidebarMinimalistic from "@iconify/icons-solar/sidebar-minimalistic-linear";
+import ThemeSwitch from "./themeSwitch";
 
 
 export type SidebarItemProps = {
@@ -68,7 +69,7 @@ export default function Sidebar({ items, adminItems, logoItem, session, children
 				<nav className="h-full p-[var(--spacing)] -translate-x-full sm:translate-x-0 peer-checked:translate-x-0 transition-transform duration-300">
 
 					{/* Sidebar Content */}
-					<div className="h-full rounded-xl bg-background shadow-small flex flex-col items-center gap-[var(--spacing)] p-[var(--spacing)]">
+					<div className="h-full rounded-xl bg-background dark:bg-content1 shadow-small flex flex-col items-center gap-[var(--spacing)] p-[var(--spacing)]">
 
 						<div className="hidden sm:flex justify-center items-center">
 							{logoItem}
@@ -105,6 +106,8 @@ export default function Sidebar({ items, adminItems, logoItem, session, children
 								/>
 							))}
 						</ScrollShadow>
+
+						<ThemeSwitch />
 
 						<Divider />
 
