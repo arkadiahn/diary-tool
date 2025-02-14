@@ -1,22 +1,18 @@
+import path from "node:path";
 import { heroui } from "@heroui/react";
 import scrollbar from "tailwind-scrollbar";
 import type { Config } from "tailwindcss";
-import path from "node:path";
-
 
 export default {
-	content: [
-		// Components
-		"./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-		// App
-		"./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-		// @heroui
-		path.join(
-			require.resolve("@heroui/theme"),
-			"../../dist/**/*.{js,ts,jsx,tsx}",
-		),
-	],
-	theme: {
+    content: [
+        // Components
+        "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+        // App
+        "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+        // @heroui
+        path.join(require.resolve("@heroui/theme"), "../../dist/**/*.{js,ts,jsx,tsx}"),
+    ],
+    theme: {
         extend: {
             animation: {
                 wiggle: "wiggle 1.5s ease-in-out",
@@ -39,6 +35,6 @@ export default {
             },
         },
     },
-	darkMode: ["class"],
-	plugins: [heroui(), scrollbar({})],
+    darkMode: ["class"],
+    plugins: [heroui(), scrollbar({})],
 } satisfies Config;

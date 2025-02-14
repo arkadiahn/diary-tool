@@ -1,20 +1,20 @@
+import { type Mission, getMission } from "@/api/missionboard";
 import MissionEdit from "../../../src/components/missionEdit";
-import { getMission, Mission } from "@/api/missionboard";
 
 interface EditMissionPageProps {
-    params: Promise<{	
+    params: Promise<{
         id: string;
     }>;
 }
 
 export default async function EditMissionPage({ params }: EditMissionPageProps) {
-	const { id } = await params;
-	let mission: Mission | undefined = undefined;
+    const { id } = await params;
+    let mission: Mission | undefined = undefined;
 
-	try {
-		const { data } = await getMission(id);
-		mission = data;
-	} catch {} 
+    try {
+        const { data } = await getMission(id);
+        mission = data;
+    } catch {}
 
-	return <MissionEdit data={mission!} />;
+    return <MissionEdit data={mission!} />;
 }

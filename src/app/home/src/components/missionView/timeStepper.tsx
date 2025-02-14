@@ -1,12 +1,11 @@
 "use client";
 
+import { type ButtonProps, Tooltip, cn } from "@heroui/react";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { type ButtonProps, cn, Tooltip } from "@heroui/react";
 import { LazyMotion, domAnimation, m } from "framer-motion";
 import React from "react";
 
-export interface MinimalRowStepsProps
-    extends React.HTMLAttributes<HTMLDivElement> {
+export interface MinimalRowStepsProps extends React.HTMLAttributes<HTMLDivElement> {
     /**
      * The label of the steps.
      */
@@ -42,10 +41,10 @@ export interface MinimalRowStepsProps
      */
     stepClassName?: string;
 
-	milestoneInfo?: {
-		description: string;
-		timestamp: string;
-	}[];
+    milestoneInfo?: {
+        description: string;
+        timestamp: string;
+    }[];
 }
 
 const TimeStepper = React.forwardRef<HTMLDivElement, MinimalRowStepsProps>(
@@ -58,7 +57,7 @@ const TimeStepper = React.forwardRef<HTMLDivElement, MinimalRowStepsProps>(
             hideProgressBars = false,
             stepClassName,
             className,
-			milestoneInfo,
+            milestoneInfo,
             ...props
         },
         ref,
@@ -80,38 +79,31 @@ const TimeStepper = React.forwardRef<HTMLDivElement, MinimalRowStepsProps>(
             switch (color) {
                 case "primary":
                     userColor = "[--step-color:var(--heroui-primary)]";
-                    fgColor =
-                        "[--step-fg-color:var(--heroui-primary-foreground)]";
+                    fgColor = "[--step-fg-color:var(--heroui-primary-foreground)]";
                     break;
                 case "secondary":
                     userColor = "[--step-color:var(--heroui-secondary)]";
-                    fgColor =
-                        "[--step-fg-color:var(--heroui-secondary-foreground)]";
+                    fgColor = "[--step-fg-color:var(--heroui-secondary-foreground)]";
                     break;
                 case "success":
                     userColor = "[--step-color:var(--heroui-success)]";
-                    fgColor =
-                        "[--step-fg-color:var(--heroui-success-foreground)]";
+                    fgColor = "[--step-fg-color:var(--heroui-success-foreground)]";
                     break;
                 case "warning":
                     userColor = "[--step-color:var(--heroui-warning)]";
-                    fgColor =
-                        "[--step-fg-color:var(--heroui-warning-foreground)]";
+                    fgColor = "[--step-fg-color:var(--heroui-warning-foreground)]";
                     break;
                 case "danger":
                     userColor = "[--step-color:var(--heroui-error)]";
-                    fgColor =
-                        "[--step-fg-color:var(--heroui-error-foreground)]";
+                    fgColor = "[--step-fg-color:var(--heroui-error-foreground)]";
                     break;
                 case "default":
                     userColor = "[--step-color:var(--heroui-default)]";
-                    fgColor =
-                        "[--step-fg-color:var(--heroui-default-foreground)]";
+                    fgColor = "[--step-fg-color:var(--heroui-default-foreground)]";
                     break;
                 default:
                     userColor = "[--step-color:var(--heroui-primary)]";
-                    fgColor =
-                        "[--step-fg-color:var(--heroui-primary-foreground)]";
+                    fgColor = "[--step-fg-color:var(--heroui-primary-foreground)]";
                     break;
             }
 
@@ -122,153 +114,115 @@ const TimeStepper = React.forwardRef<HTMLDivElement, MinimalRowStepsProps>(
         }, [color]);
 
         return (
-            (<nav
-                aria-label="Progress"
-                className="flex w-full items-center"
-                ref={ref}
-            >
+            <nav aria-label="Progress" className="flex w-full items-center" ref={ref}>
                 {label && (
                     // biome-ignore lint/a11y/noLabelWithoutControl: <explanation>
-                    (<label className="w-28 text-small font-medium text-default-foreground lg:text-medium">
+                    <label className="w-28 text-small font-medium text-default-foreground lg:text-medium">
                         {label}
-                    </label>)
+                    </label>
                 )}
-                <ol
-                    className={cn(
-                        "flex w-full items-center",
-                        colors,
-                        className,
-                    )}
-                >
+                <ol className={cn("flex w-full items-center", colors, className)}>
                     {Array.from({ length: stepsCount })?.map((_, stepIdx) => {
                         const status =
-                            currentStep === stepIdx
-                                ? "active"
-                                : currentStep < stepIdx
-                                  ? "inactive"
-                                  : "complete";
+                            currentStep === stepIdx ? "active" : currentStep < stepIdx ? "inactive" : "complete";
 
                         return (
                             <li
                                 // biome-ignore lint/suspicious/noArrayIndexKey: idk
                                 key={stepIdx}
-                                className={cn(
-                                    "relative flex items-center",
-                                    stepIdx !== stepsCount - 1 ? "flex-1" : "",
-                                )}
+                                className={cn("relative flex items-center", stepIdx !== stepsCount - 1 ? "flex-1" : "")}
                             >
-                                <div
-                                    className={cn(
-                                        "flex items-center",
-                                        stepClassName,
-                                    )}
-                                    {...props}
-                                >
-									<Tooltip
-										// content={milestoneInfo?.[stepIdx].description || ""}
-										content={
-											<div>
-												<p>{milestoneInfo?.[stepIdx].description || ""}</p>
-												<p className="text-xs">{milestoneInfo?.[stepIdx].timestamp ? 
-													new Intl.DateTimeFormat('de-DE', {
-														dateStyle: 'medium'
-													}).format(new Date(milestoneInfo[stepIdx].timestamp))
-													: ""}
-												</p>
-											</div>
-										}
-										placement={stepIdx < Math.floor(stepsCount / 2) || stepsCount === 1 ? "right" : "left"}
-										isDisabled={!milestoneInfo}
-										closeDelay={120}
-										showArrow
-									>
-										{/* Circle */}
-										<div className="relative">
-											<LazyMotion features={domAnimation}>
-												<m.div
-													animate={status}
-													className="relative"
-												>
-													<m.div
-														className={cn(
-															"relative flex h-[26px] w-[26px] items-center justify-center rounded-full border-medium text-large font-semibold text-default-foreground",
-															{"cursor-help": milestoneInfo},
-															{
-																"shadow-lg":
-																	status ===
-																	"complete",
-															},
-														)}
-														initial={false}
-														transition={{
-															duration: 0.25,
-														}}
-														variants={{
-															inactive: {
-																backgroundColor:
-																	"transparent",
-																borderColor:
-																	"var(--inactive-border-color)",
-																color: "var(--inactive-color)",
-															},
-															active: {
-																backgroundColor:
-																	"transparent",
-																borderColor:
-																	"var(--active-border-color)",
-																color: "var(--active-color)",
-															},
-															complete: {
-																backgroundColor:
-																	"var(--complete-background-color)",
-																borderColor:
-																	"var(--complete-border-color)",
-															},
-														}}
-													>
-														<div className="flex items-center justify-center">
-															{status ===
-															"complete" ? (
-																<Icon
-																	icon="solar:clock-circle-linear"
-																	className="h-5 w-5 text-[var(--active-fg-color)]"
-																/>
-															) : (
-																<span />
-															)}
-														</div>
-													</m.div>
-												</m.div>
-											</LazyMotion>
-										</div>
-									</Tooltip>
+                                <div className={cn("flex items-center", stepClassName)} {...props}>
+                                    <Tooltip
+                                        // content={milestoneInfo?.[stepIdx].description || ""}
+                                        content={
+                                            <div>
+                                                <p>{milestoneInfo?.[stepIdx].description || ""}</p>
+                                                <p className="text-xs">
+                                                    {milestoneInfo?.[stepIdx].timestamp
+                                                        ? new Intl.DateTimeFormat("de-DE", {
+                                                              dateStyle: "medium",
+                                                          }).format(new Date(milestoneInfo[stepIdx].timestamp))
+                                                        : ""}
+                                                </p>
+                                            </div>
+                                        }
+                                        placement={
+                                            stepIdx < Math.floor(stepsCount / 2) || stepsCount === 1 ? "right" : "left"
+                                        }
+                                        isDisabled={!milestoneInfo}
+                                        closeDelay={120}
+                                        showArrow={true}
+                                    >
+                                        {/* Circle */}
+                                        <div className="relative">
+                                            <LazyMotion features={domAnimation}>
+                                                <m.div animate={status} className="relative">
+                                                    <m.div
+                                                        className={cn(
+                                                            "relative flex h-[26px] w-[26px] items-center justify-center rounded-full border-medium text-large font-semibold text-default-foreground",
+                                                            { "cursor-help": milestoneInfo },
+                                                            {
+                                                                "shadow-lg": status === "complete",
+                                                            },
+                                                        )}
+                                                        initial={false}
+                                                        transition={{
+                                                            duration: 0.25,
+                                                        }}
+                                                        variants={{
+                                                            inactive: {
+                                                                backgroundColor: "transparent",
+                                                                borderColor: "var(--inactive-border-color)",
+                                                                color: "var(--inactive-color)",
+                                                            },
+                                                            active: {
+                                                                backgroundColor: "transparent",
+                                                                borderColor: "var(--active-border-color)",
+                                                                color: "var(--active-color)",
+                                                            },
+                                                            complete: {
+                                                                backgroundColor: "var(--complete-background-color)",
+                                                                borderColor: "var(--complete-border-color)",
+                                                            },
+                                                        }}
+                                                    >
+                                                        <div className="flex items-center justify-center">
+                                                            {status === "complete" ? (
+                                                                <Icon
+                                                                    icon="solar:clock-circle-linear"
+                                                                    className="h-5 w-5 text-[var(--active-fg-color)]"
+                                                                />
+                                                            ) : (
+                                                                <span />
+                                                            )}
+                                                        </div>
+                                                    </m.div>
+                                                </m.div>
+                                            </LazyMotion>
+                                        </div>
+                                    </Tooltip>
                                 </div>
 
                                 {/* Progress Bar - moved outside the circle div */}
-                                {stepIdx < stepsCount - 1 &&
-                                    !hideProgressBars && (
+                                {stepIdx < stepsCount - 1 && !hideProgressBars && (
+                                    <div aria-hidden="true" className="flex-1">
                                         <div
-                                            aria-hidden="true"
-                                            className="flex-1"
-                                        >
-                                            <div
-                                                className={cn(
-                                                    "h-0.5 w-full bg-default-200 transition-colors duration-300",
-                                                    "relative after:absolute after:left-0 after:top-0 after:block after:h-full after:w-0 after:bg-[var(--active-border-color)] after:transition-[width] after:duration-300 after:content-['']",
-                                                    {
-                                                        "after:w-full":
-                                                            stepIdx <
-                                                            currentStep,
-                                                    },
-                                                )}
-                                            />
-                                        </div>
-                                    )}
+                                            className={cn(
+                                                "h-0.5 w-full bg-default-200 transition-colors duration-300",
+                                                "relative after:absolute after:left-0 after:top-0 after:block after:h-full after:w-0 after:bg-[var(--active-border-color)] after:transition-[width] after:duration-300 after:content-['']",
+                                                {
+                                                    "after:w-full": stepIdx < currentStep,
+                                                },
+                                            )}
+                                        />
+                                    </div>
+                                )}
                             </li>
                         );
                     })}
                 </ol>
-            </nav>)
+            </nav>
         );
     },
 );

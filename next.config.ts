@@ -1,26 +1,25 @@
 import type { NextConfig } from "next";
 import envSchema from "./envSchema";
 
-
 /* -------------------------------------------------------------------------- */
 /*                                 Check ENVs                                 */
 /* -------------------------------------------------------------------------- */
 try {
-	envSchema.parse(process.env);
+    envSchema.parse(process.env);
 } catch (error) {
-	console.error("Missing required environment variables:", error);
-	process.exit(1);
+    console.error("Missing required environment variables:", error);
+    process.exit(1);
 }
 
 /* -------------------------------------------------------------------------- */
 /*                                 Next Config                                */
 /* -------------------------------------------------------------------------- */
 const nextConfig: NextConfig = {
-	output: "standalone",
-	devIndicators: {
-		buildActivityPosition: "top-right"
-	},
-	async rewrites() {
+    output: "standalone",
+    devIndicators: {
+        buildActivityPosition: "top-right",
+    },
+    async rewrites() {
         if (process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID && process.env.NEXT_PUBLIC_UMAMI_URL) {
             return [
                 {

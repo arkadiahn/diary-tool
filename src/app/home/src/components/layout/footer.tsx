@@ -27,15 +27,11 @@ export default function Footer({ className }: FooterProps) {
     }, []);
 
     return (
-        <footer
-            className={cn("flex mt-auto h-10 items-center justify-center", className)}
-        >
+        <footer className={cn("flex mt-auto h-10 items-center justify-center", className)}>
             <p className="lg:text-lg font-bold uppercase">
                 Learn How To
                 <span className="px-2">·</span>
-                <span className="text-sky-500 animate-wiggle inline-block">
-                    Play
-                </span>
+                <span className="text-sky-500 animate-wiggle inline-block">Play</span>
                 <span className="px-2">·</span>
                 <span className="text-teal-500 font-mono relative inline-flex items-start">
                     <span
@@ -47,9 +43,7 @@ export default function Footer({ className }: FooterProps) {
                     </span>
                 </span>
                 <span className="px-2">·</span>
-                <span className="text-orange-500 animate-flip inline-block">
-                    Change
-                </span>
+                <span className="text-orange-500 animate-flip inline-block">Change</span>
             </p>
         </footer>
     );

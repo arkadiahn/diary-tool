@@ -1,9 +1,5 @@
-import {
-    useRadio,
-    useRadioGroupContext,
-    VisuallyHidden,
-} from "@heroui/react";
 import CustomIcon from "@/components/CustomIcon";
+import { VisuallyHidden, useRadio, useRadioGroupContext } from "@heroui/react";
 import { cn } from "@heroui/react";
 
 /* ---------------------------------- Types --------------------------------- */
@@ -14,31 +10,19 @@ import type React from "react";
 /* -------------------------------------------------------------------------- */
 /*                               ThemeRadioItem                               */
 /* -------------------------------------------------------------------------- */
-export const ThemeRadioItem = ({
-    icon,
-    ...props
-}: RadioProps & { icon: IconifyIcon }) => {
-    const {
-        Component,
-        isSelected: isSelfSelected,
-        getBaseProps,
-        getInputProps,
-        getWrapperProps,
-    } = useRadio(props);
+export const ThemeRadioItem = ({ icon, ...props }: RadioProps & { icon: IconifyIcon }) => {
+    const { Component, isSelected: isSelfSelected, getBaseProps, getInputProps, getWrapperProps } = useRadio(props);
 
     const groupContext = useRadioGroupContext();
 
-    const isSelected =
-        isSelfSelected || groupContext.groupState.selectedValue === props.value;
+    const isSelected = isSelfSelected || groupContext.groupState.selectedValue === props.value;
 
     const wrapperProps = getWrapperProps();
 
     return (
         <Component {...getBaseProps()} data-selected={isSelected}>
             <VisuallyHidden>
-                <input
-                    {...(getInputProps() as React.InputHTMLAttributes<HTMLInputElement>)}
-                />
+                <input {...(getInputProps() as React.InputHTMLAttributes<HTMLInputElement>)} />
             </VisuallyHidden>
             <div
                 {...(wrapperProps as React.HTMLAttributes<HTMLDivElement>)}
@@ -50,12 +34,7 @@ export const ThemeRadioItem = ({
                     },
                 )}
             >
-                <CustomIcon
-                    width={18}
-                    height={18}
-                    icon={icon}
-                    className="text-default-500"
-                />
+                <CustomIcon width={18} height={18} icon={icon} className="text-default-500" />
             </div>
         </Component>
     );

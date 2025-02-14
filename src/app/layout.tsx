@@ -3,7 +3,6 @@ import Providers from "@/components/providers";
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
 
-
 /* -------------------------------------------------------------------------- */
 /*                                    Fonts                                   */
 /* -------------------------------------------------------------------------- */
@@ -12,27 +11,21 @@ const openSans = Open_Sans({
     weight: "400",
 });
 
-
 /* -------------------------------------------------------------------------- */
 /*                                   Layout                                   */
 /* -------------------------------------------------------------------------- */
 export default function RootLayout({
-  children,
+    children,
 }: Readonly<{
-  children: React.ReactNode;
+    children: React.ReactNode;
 }>) {
-  return (
-    <html suppressHydrationWarning lang="en">
-		<body
-			suppressHydrationWarning
-			className={`${openSans.className} antialiased`}
-		>
-			<SessionProviderWrapper>
-				<Providers>
-					{children}
-				</Providers>
-			</SessionProviderWrapper>
-			</body>
-    </html>
-  );
+    return (
+        <html suppressHydrationWarning={true} lang="en">
+            <body suppressHydrationWarning={true} className={`${openSans.className} antialiased`}>
+                <SessionProviderWrapper>
+                    <Providers>{children}</Providers>
+                </SessionProviderWrapper>
+            </body>
+        </html>
+    );
 }

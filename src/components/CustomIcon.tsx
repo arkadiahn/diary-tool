@@ -8,17 +8,13 @@ export interface CustomIconProps {
     width?: number;
     height?: number;
     className?: string;
-	onClick?: () => void;
+    onClick?: () => void;
 }
-export default function CustomIcon({
-    icon,
-    width,
-    height,
-    className,
-	onClick,
-}: CustomIconProps) {
+export default function CustomIcon({ icon, width, height, className, onClick }: CustomIconProps) {
     const getViewBoxLength = (length?: number) => {
-        if (!length) return "";
+        if (!length) {
+            return "";
+        }
         return ` ${length}`;
     };
 
@@ -29,9 +25,10 @@ export default function CustomIcon({
             className={className}
             viewBox={`0 0${getViewBoxLength(icon.width)}${getViewBoxLength(icon.height)}`}
             onClick={onClick}
+            onKeyUp={onClick}
             // biome-ignore lint/security/noDangerouslySetInnerHtml: cant be avoided for ssr
             dangerouslySetInnerHTML={{ __html: icon.body }}
-			suppressHydrationWarning
+            suppressHydrationWarning={true}
         />
     );
 }

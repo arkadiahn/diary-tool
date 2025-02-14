@@ -1,10 +1,10 @@
 "use client";
 
 import type { RadioGroupProps } from "@heroui/react";
-import { cn, RadioGroup } from "@heroui/react";
-import { ThemeRadioItem } from "./RadioItem";
+import { RadioGroup, cn } from "@heroui/react";
 import { useTheme } from "next-themes";
 import React from "react";
+import { ThemeRadioItem } from "./RadioItem";
 
 /* ---------------------------------- Icons --------------------------------- */
 import monitorLinear from "@iconify/icons-solar/monitor-linear";
@@ -19,13 +19,7 @@ interface CustomRadioGroupProps extends Omit<RadioGroupProps, "children"> {
     setTheme?: (theme: string) => void;
     theme?: string;
 }
-const CustomRadioGroup = ({
-    theme,
-    setTheme,
-    classNames,
-    ref,
-    ...props
-}: CustomRadioGroupProps) => {
+const CustomRadioGroup = ({ theme, setTheme, classNames, ref, ...props }: CustomRadioGroupProps) => {
     return (
         <RadioGroup
             as="div"
@@ -51,37 +45,22 @@ const CustomRadioGroup = ({
 /* -------------------------------------------------------------------------- */
 /*                                 ThemeSwitch                                */
 /* -------------------------------------------------------------------------- */
-const ThemeSwitchComponent = React.forwardRef<
-    HTMLDivElement,
-    Omit<RadioGroupProps, "children">
->(({ classNames = {}, ...props }, ref) => {
-    const [mounted, setMounted] = React.useState(false);
-    const { theme, setTheme } = useTheme();
+const ThemeSwitchComponent = React.forwardRef<HTMLDivElement, Omit<RadioGroupProps, "children">>(
+    ({ classNames = {}, ...props }, ref) => {
+        const [mounted, setMounted] = React.useState(false);
+        const { theme, setTheme } = useTheme();
 
-    React.useEffect(() => {
-        setMounted(true);
-    }, []);
+        React.useEffect(() => {
+            setMounted(true);
+        }, []);
 
-    if (!mounted)
-        return (
-            <CustomRadioGroup
-                theme={""}
-                classNames={classNames}
-                ref={ref}
-                {...props}
-            />
-        );
+        if (!mounted) {
+            return <CustomRadioGroup theme={""} classNames={classNames} ref={ref} {...props} />;
+        }
 
-    return (
-        <CustomRadioGroup
-            theme={theme}
-            setTheme={setTheme}
-            classNames={classNames}
-            ref={ref}
-            {...props}
-        />
-    );
-});
+        return <CustomRadioGroup theme={theme} setTheme={setTheme} classNames={classNames} ref={ref} {...props} />;
+    },
+);
 ThemeSwitchComponent.displayName = "ThemeSwitch";
 
 export default ThemeSwitchComponent;
