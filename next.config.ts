@@ -16,6 +16,7 @@ try {
 /*                                 Next Config                                */
 /* -------------------------------------------------------------------------- */
 const nextConfig: NextConfig = {
+	output: "standalone",
 	devIndicators: {
 		buildActivityPosition: "top-right"
 	},
