@@ -128,6 +128,8 @@ export function authMiddleware(wrappedMiddleware: (request: NextRequest) => Next
 	return async (request: NextRequest) => {
 		const { searchParams } = request.nextUrl;
 		const code = searchParams.get("code");
+
+		console.log("request", buildRealUrl(request).origin);
 	
 		const requestCookies = request.cookies.getAll();
 		if (!searchParams.has("session_state") && !code && !searchParams.has("iss")) {

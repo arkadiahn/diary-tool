@@ -5,6 +5,7 @@ import { authMiddleware } from "./auth/server";
 /*                                 Middleware                                 */
 /* -------------------------------------------------------------------------- */
 export default authMiddleware((request: NextRequest) => {
+	// @todo only localhost
 	if (request.nextUrl.pathname.startsWith("/health")) {
 		return NextResponse.json({ status: "ok" });
 	}
