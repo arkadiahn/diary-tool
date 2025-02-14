@@ -5,6 +5,10 @@ import { authMiddleware } from "./auth/server";
 /*                                 Middleware                                 */
 /* -------------------------------------------------------------------------- */
 export default authMiddleware((request: NextRequest) => {
+	if (request.nextUrl.pathname.startsWith("/health")) {
+		return NextResponse.json({ status: "ok" });
+	}
+
 	let host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
 	host = host?.replace(process.env.TOP_LEVEL_DOMAIN, "") ?? host;
 	const subdomains = host?.includes(".") ? host?.split(".") : [];
