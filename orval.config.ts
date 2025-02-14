@@ -1,7 +1,7 @@
 /** @type {import('orval').OrvalConfig} */
 module.exports = {
 	missionboard: {
-		input: "../../../backend/openapi.yaml",
+		input: "../backend/openapi.yaml",
 		output: {
 			httpClient: "fetch",
 			target: "./src/api/missionboard.ts",
