@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authMiddleware } from "./auth/server";
 
+// @todo implement logging
+
 /* -------------------------------------------------------------------------- */
 /*                                 Middleware                                 */
 /* -------------------------------------------------------------------------- */
 export default authMiddleware((request: NextRequest) => {
-	// @todo only localhost
-	if (request.nextUrl.pathname.startsWith("/health")) {
+	if (request.nextUrl.pathname === "/health") {
 		return NextResponse.json({ status: "ok" });
 	}
 
