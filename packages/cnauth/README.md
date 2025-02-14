@@ -1,1 +1,0 @@
-# CNAuth - Custom Next Auth 🔐
