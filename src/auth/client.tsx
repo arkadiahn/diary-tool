@@ -108,10 +108,13 @@ export const SessionProvider = ({
 
     /* ------------------- Update Session On Visibility Change ------------------ */
     const visibilityHandler = useCallback(async () => {
-        if (await checkSession()) {
+        const sessionAvailable = await checkSession();
+        if (sessionAvailable) {
             window.location.reload();
+        } else if (sessionAvailable === false && store.getState().session) {
+            signOut();
         }
-    }, [checkSession]);
+    }, [checkSession, store]);
     useEffect(() => {
         document.addEventListener("visibilitychange", visibilityHandler);
         window.addEventListener("focus", visibilityHandler);
