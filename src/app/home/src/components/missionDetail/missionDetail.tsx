@@ -5,7 +5,7 @@ import CustomIcon from "@/components/CustomIcon";
 import { BreadcrumbItem, Breadcrumbs, Button, Tooltip } from "@heroui/react";
 import { Chip } from "@heroui/react";
 import { useRouter } from "next/navigation";
-import MissionState from "../common/missionState";
+import MissionState from "../../../missions/MissionState";
 
 import icCalendarEventFill from "@iconify/icons-ri/calendar-event-fill";
 import icGithubFill from "@iconify/icons-ri/github-fill";

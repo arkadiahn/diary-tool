@@ -4,8 +4,8 @@ import { type MissionSummary, likeMission } from "@/api/missionboard";
 import { Card, CardBody } from "@heroui/react";
 import { Button } from "@heroui/react";
 import { useRouter } from "next/navigation";
-import MissionState from "../common/missionState";
-import TimeStepper from "./timeStepper";
+import MissionState from "./MissionState";
+import TimeStepper from "./TimeStepper";
 
 interface MissionCardProps {
     data: MissionSummary;

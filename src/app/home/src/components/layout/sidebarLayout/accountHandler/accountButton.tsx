@@ -10,11 +10,13 @@ import icRoundLogout from "@iconify/icons-ic/round-logout";
 
 interface AccountButtonProps {
     type: "login" | "logout";
+    className?: string;
 }
-export default function AccountButton({ type }: AccountButtonProps) {
+export default function AccountButton({ type, className }: AccountButtonProps) {
     return (
         <SidebarItem
-            onClick={() => (type === "login" ? signIn() : signOut())}
+            className={className}
+            onPress={() => (type === "login" ? signIn() : signOut())}
             leading={
                 <CustomIcon className="w-[22px]" icon={type === "login" ? icRoundLogin : icRoundLogout} width={22} />
             }

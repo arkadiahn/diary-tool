@@ -108,6 +108,7 @@ export const SessionProvider = ({
 
     /* ------------------- Update Session On Visibility Change ------------------ */
     const visibilityHandler = useCallback(async () => {
+        // @todo refresh if session details changed
         const sessionAvailable = await checkSession();
         if (sessionAvailable) {
             window.location.reload();

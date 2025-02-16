@@ -36,5 +36,24 @@ export default {
         },
     },
     darkMode: ["class"],
-    plugins: [heroui(), scrollbar({})],
+    plugins: [
+        heroui({
+            prefix: "ui",
+            themes: {
+                dark: {
+                    colors: {
+                        background: "#121212",
+                    },
+                },
+            },
+            layout: {
+                radius: {
+                    small: "0.20rem",
+                    medium: "0.35rem",
+                    large: "0.55rem",
+                },
+            },
+        }),
+        scrollbar({}),
+    ],
 } satisfies Config;

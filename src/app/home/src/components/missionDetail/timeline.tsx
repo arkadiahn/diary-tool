@@ -1,5 +1,5 @@
 import { getMissionMilestones } from "@/api/missionboard";
-import TimeStepper from "../missionView/timeStepper";
+import TimeStepper from "../../../missions/TimeStepper";
 
 interface TimelineProps {
     name: string;

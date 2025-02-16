@@ -8,7 +8,6 @@ import SidebarItem from "./sidebarItem";
 
 /* ---------------------------------- Icons --------------------------------- */
 import solarSidebarMinimalistic from "@iconify/icons-solar/sidebar-minimalistic-linear";
-import ThemeSwitch from "./themeSwitch";
 
 export type SidebarItemProps = {
     icon: IconifyIcon;
@@ -18,17 +17,18 @@ export type SidebarItemProps = {
 interface SidebarProps {
     items: SidebarItemProps[];
     adminItems: SidebarItemProps[];
-    logoItem: React.ReactNode;
+    sidebarLogo: React.ReactNode;
+    headerLogo: React.ReactNode;
     session: Session | null;
     children: React.ReactNode;
 }
-export default function Sidebar({ items, adminItems, logoItem, session, children }: SidebarProps) {
+export default function Sidebar({ items, adminItems, sidebarLogo, headerLogo, session, children }: SidebarProps) {
     const admin = session?.user.scopes.includes("admin") || false;
 
     return (
         <div className="h-dvh max-w-dvw flex flex-col sm:flex-row">
             {/* Header */}
-            <header className="sticky top-0 h-[60px] flex items-center justify-between px-4 py-1 bg-background shadow-md sm:hidden">
+            <header className="sticky top-0 h-[60px] flex items-center gap-3 px-4 py-1 backdrop-blur-lg shadow-md sm:hidden dark:border-b-1 dark:border-white/5">
                 <label
                     htmlFor="sidebar-toggle"
                     className="cursor-pointer active:text-foreground/80 active:scale-95 transition-transform duration-100"
@@ -36,7 +36,8 @@ export default function Sidebar({ items, adminItems, logoItem, session, children
                 >
                     <CustomIcon className="w-[26px]" icon={solarSidebarMinimalistic} width={26} />
                 </label>
-                {logoItem}
+                {headerLogo}
+                <AccountHandler className="ml-auto" forceSmall={true} />
             </header>
 
             {/* Sidebar Wrapper */}
@@ -61,8 +62,8 @@ export default function Sidebar({ items, adminItems, logoItem, session, children
                 {/* Sidebar */}
                 <nav className="h-full p-[var(--spacing)] -translate-x-full sm:translate-x-0 peer-checked:translate-x-0 transition-transform duration-300">
                     {/* Sidebar Content */}
-                    <div className="h-full rounded-xl bg-background dark:bg-content1 shadow-small flex flex-col items-center gap-[var(--spacing)] p-[var(--spacing)]">
-                        <div className="hidden sm:flex justify-center items-center">{logoItem}</div>
+                    <div className="h-full rounded-large bg-background dark:bg-content1 shadow-small flex flex-col items-center gap-[var(--spacing)] p-[var(--spacing)]">
+                        <div className="hidden sm:flex justify-center items-center">{sidebarLogo}</div>
 
                         <Divider className="hidden sm:block" />
 
@@ -97,11 +98,8 @@ export default function Sidebar({ items, adminItems, logoItem, session, children
                                 ))}
                         </ScrollShadow>
 
-                        <ThemeSwitch />
-
-                        <Divider />
-
-                        <div className="w-full">
+                        <Divider className="hidden sm:block" />
+                        <div className="w-full hidden sm:block">
                             <AccountHandler />
                         </div>
                     </div>
@@ -110,7 +108,7 @@ export default function Sidebar({ items, adminItems, logoItem, session, children
 
             <div className="h-[calc(100dvh-60px)] sm:h-dvh flex-1 flex flex-col">
                 <main className="flex-1 overflow-hidden">{children}</main>
-                <Footer />
+                {/* <Footer /> */}
             </div>
         </div>
     );

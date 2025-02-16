@@ -35,6 +35,14 @@ const nextConfig: NextConfig = {
         return [];
     },
     productionBrowserSourceMaps: true,
+    images: {
+        remotePatterns: [
+            {
+                protocol: "https",
+                hostname: "picsum.photos",
+            },
+        ],
+    },
 };
 
 export default nextConfig;

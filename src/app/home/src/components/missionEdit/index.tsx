@@ -8,7 +8,7 @@ import icGithubFill from "@iconify/icons-ri/github-fill";
 import { parseDate } from "@internationalized/date";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import MissionState from "../common/missionState";
+import MissionState from "../../../missions/MissionState";
 
 function ProjectLeaderChip({ account }: { account: string }) {
     const [accountData, setAccountData] = useState<AccountPublic | null>(null);

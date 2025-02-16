@@ -3,6 +3,7 @@
 import { Button, cn } from "@heroui/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type React from "react";
 
 interface SidebarItemProps {
     leading: React.ReactNode;
@@ -10,23 +11,25 @@ interface SidebarItemProps {
     href?: string;
     trailing?: React.ReactNode;
     selected?: boolean;
-    onClick?: () => void;
+    onPress?: () => void;
     className?: string;
     admin?: boolean;
 }
-export default function SidebarItem({
+
+const SidebarItem = ({
     leading,
     label,
     href,
     trailing,
     selected: selectedProp,
-    onClick,
+    onPress,
     className,
     admin,
-}: SidebarItemProps) {
+    ...props
+}: SidebarItemProps) => {
     const pathname = usePathname();
 
-    const Component = href || onClick ? Button : "div";
+    const Component = href || onPress ? Button : "div";
     const selected =
         selectedProp || (href !== undefined && (href.length !== 1 ? pathname.startsWith(href) : pathname === href));
 
@@ -44,12 +47,15 @@ export default function SidebarItem({
                 { "text-orange-500 hover:text-orange-500": admin }, // if admin
             )}
             variant="light"
-            {...(Component !== Button && { onClick: onClick })}
-            {...(Component === Button && { disableRipple: true, onPress: onClick })}
+            {...props}
+            {...(Component !== Button && { onClick: onPress })}
+            {...(Component === Button && { disableRipple: true, onPress: onPress })}
         >
             {leading}
             {label && <p className="truncate font-bold text-sm sm:text-[12px] lg:text-sm">{label}</p>}
-            <div className="items-center justify-center flex sm:hidden lg:flex">{trailing}</div>
+            {trailing && <div className="items-center justify-center flex sm:hidden lg:flex">{trailing}</div>}
         </Component>
     );
-}
+};
+
+export default SidebarItem;

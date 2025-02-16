@@ -13,7 +13,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         <HeroUIProvider navigate={router.push}>
             <ThemeProvider attribute="class" defaultTheme="system">
                 <NuqsAdapter>
-                    <Toaster />
+                    <Toaster position="top-right" />
                     {children}
                 </NuqsAdapter>
             </ThemeProvider>

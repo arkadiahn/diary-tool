@@ -2,8 +2,8 @@ import { Card } from "@heroui/react";
 
 import type { Event } from "@/api/missionboard";
 
-import EventCard from "../components/eventCard";
-import EventGroup from "../components/eventGroup";
+import EventCard from "./EventCard";
+import EventGroup from "./EventGroup";
 
 /* -------------------------------------------------------------------------- */
 /*                                   Helpers                                  */
