@@ -23,7 +23,7 @@ interface SidebarProps {
     children: React.ReactNode;
 }
 export default function Sidebar({ items, adminItems, sidebarLogo, headerLogo, session, children }: SidebarProps) {
-    const admin = session?.user.scopes.includes("admin") || false;
+    const admin = session?.user.scopes.includes("mission.admin") || false;
 
     return (
         <div className="h-dvh max-w-dvw flex flex-col sm:flex-row">
@@ -48,7 +48,7 @@ export default function Sidebar({ items, adminItems, sidebarLogo, headerLogo, se
                         "--spacing": "8px",
                     } as React.CSSProperties
                 }
-                className={cn("fixed sm:sticky z-[100] top-[60px] sm:top-0 h-[calc(100dvh-60px)] sm:h-dvh w-fit")}
+                className={cn("fixed sm:sticky z-[50] top-[60px] sm:top-0 h-[calc(100dvh-60px)] sm:h-dvh w-fit")}
                 // role="navigation"
             >
                 <input type="checkbox" id="sidebar-toggle" className="peer hidden" />

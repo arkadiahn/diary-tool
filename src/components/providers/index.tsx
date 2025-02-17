@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "react-hot-toast";
 
+
 export default function Providers({ children }: { children: React.ReactNode }) {
     const router = useRouter();
 

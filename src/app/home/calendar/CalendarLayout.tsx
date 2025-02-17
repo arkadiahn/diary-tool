@@ -34,7 +34,7 @@ export default function CalendarLayout({ events }: { events: Event[] }) {
     }
 
     return (
-        <div className="grid grid-cols-1 gap-4 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 gap-4 mx-auto">
             {Object.entries(groupedEvents).map(([date, dateEvents]) => (
                 <EventGroup date={date} key={date}>
                     {dateEvents.map((event) => (

@@ -9,10 +9,16 @@ import { default as NextImage } from "next/image";
 import MainPageLayout from "../../src/components/MainPageLayout";
 import PageBreadcrumbs from "./PageBreadcrumbs";
 import ShareButton from "./ShareButton";
+import { remark } from "remark";
+import html from "remark-html";
 
 export default async function CalendarEventPage({ params }: { params: Promise<{ name: string }> }) {
     const { name } = await params;
     const { data: event } = await getEvent(name);
+
+	// @todo make the parsed html render correctly (css)
+	const processedContent = await remark().use(html).process(event.description);
+	const descriptionHtml = processedContent.toString();
 
     return (
         <MainPageLayout>
@@ -59,7 +65,7 @@ export default async function CalendarEventPage({ params }: { params: Promise<{ 
                     <Divider />
                 </div>
 
-                <p className="whitespace-pre-wrap text-default-600">{event.description}</p>
+				<div dangerouslySetInnerHTML={{ __html: descriptionHtml }} />
 
                 <div className="flex flex-row gap-2 mt-auto">
                     {event.link && (
