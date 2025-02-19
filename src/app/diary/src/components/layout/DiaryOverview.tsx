@@ -290,7 +290,7 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
             <div className={`grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8 ${isExample ? "opacity-60" : ""}`}>
                 <Card className="w-full col-span-1 lg:col-span-3 xl:col-span-1">
                     <CardHeader>
-                        <h3 className="text-xl font-bold">Motivation Over Time</h3>
+                        <h3 className="text-xl font-medium">Motivation Over Time</h3>
                     </CardHeader>
                     <CardBody>
                         <div className="w-full h-[400px] overflow-hidden">
@@ -306,7 +306,7 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
 
                 <Card className="w-full col-span-1 lg:col-span-3 xl:col-span-1">
                     <CardHeader>
-                        <h3 className="text-xl font-bold">Weeks Till Completion</h3>
+                        <h3 className="text-xl font-medium">Weeks Till Completion</h3>
                     </CardHeader>
                     <CardBody>
                         <div className="w-full h-[400px] overflow-hidden">
@@ -317,7 +317,7 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
 
                 <Card className="w-full col-span-1 lg:col-span-3 xl:col-span-1">
                     <CardHeader>
-                        <h3 className="text-xl font-bold">Task Completion Rate</h3>
+                        <h3 className="text-xl font-medium">Task Completion Rate</h3>
                     </CardHeader>
                     <CardBody>
                         <div className="w-full h-[400px] overflow-hidden">

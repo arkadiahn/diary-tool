@@ -193,7 +193,7 @@ export default function MissionEdit({ data }: MissionEditProps) {
                     </div>
                     <div className="space-y-4">
                         <div className="space-y-2">
-                            <h3 className="text-md font-bold">Searched Skills</h3>
+                            <h3 className="text-md font-medium">Searched Skills</h3>
                             <div className="flex flex-wrap gap-1 justify-end mb-2 min-h-[40px]">
                                 {skills.length > 0 ? (
                                     skills.map((skill) => (

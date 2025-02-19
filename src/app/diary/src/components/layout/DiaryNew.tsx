@@ -90,7 +90,7 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
         <div className="container mx-auto px-4 py-8">
             <Card>
                 <CardBody className="px-8 py-6">
-                    <h2 className="text-2xl font-bold mb-6">{initialDiary ? "Edit Entry" : "New Entry"}</h2>
+                    <h2 className="text-2xl font-medium mb-6">{initialDiary ? "Edit Entry" : "New Entry"}</h2>
                     <form onSubmit={handleSubmit}>
                         <div className="grid grid-cols-1 gap-6">
                             <Select
@@ -180,7 +180,7 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
                             />
 
                             <div className="space-y-4">
-                                <label className="block text-sm font-bold">Your goals for next week</label>
+                                <label className="block text-sm font-medium">Your goals for next week</label>
                                 {newEntry.goals.map((goal, index) => (
                                     <div key={index} className="flex gap-2">
                                         <Input

@@ -28,11 +28,11 @@ export default function MissionCard({ data }: MissionCardProps) {
         <Card className="w-[300px]" isPressable={true} disableRipple={true} onPress={() => router.push(data.name)}>
             <CardBody className="space-y-4 flex flex-col items-center justify-center px-8">
                 <div className="w-full h-14 flex justify-between items-center mb-1 gap-2">
-                    <h2 className="text-2xl font-bold line-clamp-2">{data.title}</h2>
+                    <h2 className="text-2xl font-medium line-clamp-2">{data.title}</h2>
                     <MissionState state={data.mission_state} />
                 </div>
                 <div className="w-full h-[46px] space-y-1">
-                    <h4 className="text-xs font-bold text-default-500 flex items-center">Milestones</h4>
+                    <h4 className="text-xs font-medium text-default-500 flex items-center">Milestones</h4>
                     {data.milestones_count === 0 ? (
                         <p className="text-default-500">No milestones</p>
                     ) : (
@@ -40,13 +40,13 @@ export default function MissionCard({ data }: MissionCardProps) {
                     )}
                 </div>
                 <div className="w-full h-[72px] space-y-1">
-                    <h4 className="text-xs font-bold text-default-500 line-clamp-2">Description</h4>
+                    <h4 className="text-xs font-medium text-default-500 line-clamp-2">Description</h4>
                     <p className="max-w-full text-default-600 leading-relaxed">{data.description}</p>
                 </div>
                 <div className="w-full flex justify-between">
                     <div>
-                        <h4 className="text-xs font-bold text-default-500">Progress</h4>
-                        <h3 className="text-xl font-bold">
+                        <h4 className="text-xs font-medium text-default-500">Progress</h4>
+                        <h3 className="text-xl font-medium">
                             {data.milestones_count === 0
                                 ? "0"
                                 : Math.round((data.completed_milestones_count / data.milestones_count) * 100)}
@@ -54,7 +54,7 @@ export default function MissionCard({ data }: MissionCardProps) {
                         </h3>
                     </div>
                     <div>
-                        <h4 className="text-xs font-bold text-default-500">Likes</h4>
+                        <h4 className="text-xs font-medium text-default-500">Likes</h4>
                         <div className="flex items-center gap-1">
                             <Button
                                 as="div"

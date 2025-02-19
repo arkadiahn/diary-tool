@@ -13,7 +13,7 @@ export default function MainPageLayout({ children, title, description, className
             {(title || description) && (
                 <div className="p-1 w-full flex flex-col sm:flex-row items-start sm:items-center gap-4 shrink-0">
                     <div className="w-full max-w-7xl flex flex-col">
-                        {title && <h1 className="text-3xl font-bold text-default-900 lg:text-5xl">{title}</h1>}
+                        {title && <h1 className="text-3xl font-medium text-default-900 lg:text-5xl">{title}</h1>}
                         {description && <p className="text-medium text-default-400 lg:text-lg">{description}</p>}
                     </div>
                     {headerItems}

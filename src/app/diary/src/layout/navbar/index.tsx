@@ -28,7 +28,7 @@ export default async function NavbarComponent(props: NavbarProps) {
                         height={50}
                         className="w-9"
                     />
-                    <span className="ml-2 font-bold text-lg md:text-xl">{siteConfig.name}</span>
+                    <span className="ml-2 font-medium text-lg md:text-xl">{siteConfig.name}</span>
                 </NavbarBrand>
 
                 {/* Account Section */}

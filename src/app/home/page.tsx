@@ -75,7 +75,7 @@ export default function Home() {
     return (
         <MainPageLayout className="justify-center gap-16">
             <header>
-                <h1 className="text-7xl font-bold text-center">Home</h1>
+                <h1 className="text-7xl font-medium text-center">Home</h1>
             </header>
             <main>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-7xl mx-auto">

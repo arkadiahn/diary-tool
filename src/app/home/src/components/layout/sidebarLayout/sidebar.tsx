@@ -81,7 +81,7 @@ export default function Sidebar({ items, adminItems, sidebarLogo, headerLogo, se
                                     <div className="" />
                                     <div className="w-full flex items-center gap-2 px-2 sm:px-0 lg:px-2">
                                         <Divider className="flex-1" />
-                                        <span className="text-sm sm:text-xs lg:text-sm font-bold">Admin</span>
+                                        <span className="text-sm sm:text-xs lg:text-sm font-medium">Admin</span>
                                         <Divider className="flex-1" />
                                     </div>
                                 </>

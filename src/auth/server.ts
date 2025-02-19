@@ -103,20 +103,16 @@ const addMiddlewareCookies = (request: NextRequest, response: NextResponse, setC
 /* -------------------------------------------------------------------------- */
 // @todo maybe add scopes check for routes?
 export async function auth(redirectUrl?: string, requiredScopes?: string[]): Promise<{ session: Session | null }> {
+    const requestHeaders = await headers();
+    const requestCookies = await cookies();
     try {
-        const requestCookies = await cookies();
-        const requestHeaders = await headers();
-        const decodedAccessPayload = await decodeJWTToken(
-            requestCookies.get("session")?.value,
-            process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER,
-            true,
-        );
+        const decodedAccessPayload = await jose.decodeJwt(requestCookies.get("session")?.value ?? "");
         const decodedIdPayload = JSON.parse(Buffer.from(requestHeaders.get("x-id") ?? "", "base64").toString("utf-8"));
         if (!decodedIdPayload || !decodedAccessPayload) {
             throw new Error("Unauthorized");
         }
 
-        // @todo better way to "parse" session?
+        // @todo better way to "parse/validate" session?
         const sessionData: Session = {
             expires: decodedAccessPayload.exp!,
             user: {
@@ -136,7 +132,8 @@ export async function auth(redirectUrl?: string, requiredScopes?: string[]): Pro
         }
 
         return { session: sessionData };
-    } catch {
+    } catch (error) {
+        console.error(error);
         if (redirectUrl) {
             redirect(redirectUrl);
         }

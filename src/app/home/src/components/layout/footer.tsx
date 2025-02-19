@@ -28,7 +28,7 @@ export default function Footer({ className }: FooterProps) {
 
     return (
         <footer className={cn("flex mt-auto h-10 items-center justify-center", className)}>
-            <p className="lg:text-lg font-bold uppercase">
+            <p className="lg:text-lg font-medium uppercase">
                 Learn How To
                 <span className="px-2">·</span>
                 <span className="text-sky-500 animate-wiggle inline-block">Play</span>

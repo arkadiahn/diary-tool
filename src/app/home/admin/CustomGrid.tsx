@@ -76,7 +76,7 @@ function CustomGrid<T>({
     return (
         <>
             <div className="flex justify-between items-center w-full mb-4">
-                <h1 className="text-2xl font-bold">{tableTitle}</h1>
+                <h1 className="text-2xl font-medium">{tableTitle}</h1>
                 {onCreate && (
                     <Button
                         size="sm"

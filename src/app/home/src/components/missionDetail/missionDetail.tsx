@@ -36,7 +36,7 @@ export default function MissionDetailView({ data, timelineComponent }: MissionDe
                 <div className="bg-content1 rounded-large p-6 shadow-small">
                     <div className="flex justify-between items-center mb-2">
                         <div className="flex gap-2 items-center">
-                            <h1 className="text-2xl font-bold">{data.title}</h1>
+                            <h1 className="text-2xl font-medium">{data.title}</h1>
                             <MissionState state={data.mission_state} />
                             <button
                                 type="button"
@@ -87,17 +87,17 @@ export default function MissionDetailView({ data, timelineComponent }: MissionDe
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <div className="space-y-2">
-                                <h3 className="text-md font-bold">Description</h3>
+                                <h3 className="text-md font-medium">Description</h3>
                                 <p>{data.description}</p>
                             </div>
                             <div className="mt-4 space-y-2">
-                                <h3 className="text-md font-bold">Goal</h3>
+                                <h3 className="text-md font-medium">Goal</h3>
                                 <p>{data.description_goal}</p>
                             </div>
                         </div>
                         <div className="space-y-4 flex flex-col items-end text-right">
                             <div className="space-y-2">
-                                <h3 className="text-md font-bold">Needed Skills</h3>
+                                <h3 className="text-md font-medium">Needed Skills</h3>
                                 <div className="flex flex-wrap gap-1 justify-end">
                                     {data.description_skills.split(", ").map((skill) => (
                                         <Chip key={skill} className="text-xs" color="primary">
@@ -109,7 +109,7 @@ export default function MissionDetailView({ data, timelineComponent }: MissionDe
                         </div>
                     </div>
                     <div className="w-full space-y-2 mt-4">
-                        <h3 className="text-md font-bold">Timeline</h3>
+                        <h3 className="text-md font-medium">Timeline</h3>
                         {timelineComponent}
                     </div>
                 </div>

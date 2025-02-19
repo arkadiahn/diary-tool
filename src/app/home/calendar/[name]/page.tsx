@@ -35,7 +35,7 @@ export default async function CalendarEventPage({ params }: { params: Promise<{ 
 
                 <div className="space-y-1">
                     <div className="flex flex-row items-center justify-between gap-2">
-                        <h2 className="text-2xl md:text-3xl font-bold">{event.title}</h2>
+                        <h2 className="text-2xl md:text-3xl font-medium">{event.title}</h2>
 
                         <Chip size="sm" color="primary">
                             {event.topic}
