@@ -10,7 +10,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     const router = useRouter();
 
     return (
-        <HeroUIProvider navigate={router.push}>
+        <HeroUIProvider navigate={router.push} locale="en-GB" disableRipple={true}>
             <ThemeProvider attribute="class" defaultTheme="system">
                 <NuqsAdapter>
                     <Toaster position="top-right" />

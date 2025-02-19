@@ -64,11 +64,13 @@ export const SessionProvider = ({
                 prompt: "none",
                 scope: "openid",
             });
-            iframe.src = `${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/auth?${params}`;
-            iframe.className = "hidden";
-            iframe.onload = async () => {
-                const iframeUrl = new URL(iframe.contentWindow?.location.href ?? "");
-                iframe.remove();
+            const iframeEl = document.createElement("iframe");
+            iframeEl.src = `${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/auth?${params}`;
+            iframeEl.className = "hidden";
+            iframeEl.setAttribute("sandbox", "allow-same-origin allow-scripts");
+            iframeEl.onload = async () => {
+                const iframeUrl = new URL(iframeEl.contentWindow?.location.href ?? "");
+                iframeEl.remove();
                 if (iframeUrl.searchParams.get("code")) {
                     await fetch(
                         `/api/session?${new URLSearchParams({

@@ -12,6 +12,19 @@ The API tries to follow the [Google API Design Guide](https://google.aip.dev/gen
 Exceptions are the following:
 - filter parameters only support '=' and '!='
 
+Auth endpoints:
+- [Account](https://keycloak-service-production.up.railway.app/realms/os/account)
+- [Login](https://oauth2-proxy-development.up.railway.app/oauth2/sign_in)
+- [Login with redirect](https://oauth2-proxy-development.up.railway.app/oauth2/sign_in?rd=http://www.google.de)
+  - rd need to be whitelisted
+- [Logout](https://oauth2-proxy-development.up.railway.app/oauth2/sign_out)
+
+logout keycloak:
+- [keycloak logout](https://keycloak-service-production.up.railway.app/realms/os/protocol/openid-connect/logout/logout-confirm)
+
+Other auth endpoints:
+- https://oauth2-proxy.github.io/oauth2-proxy/features/endpoints/
+
  * OpenAPI spec version: 0.1
  */
 import { customAxios } from './customAxios';
@@ -238,6 +251,7 @@ export interface MissionAccount {
 }
 
 export interface MissionMilestonePatch {
+  completed?: boolean;
   /** @maxLength 1000 */
   description?: string;
   end_time?: string;
@@ -556,7 +570,16 @@ export type AccountArray = Account[];
 type SecondParameter<T extends (...args: any) => any> = Parameters<T>[1];
 
 
-  /**
+  export const getHealth = (
+    
+ options?: SecondParameter<typeof customAxios>,) => {
+      return customAxios<void>(
+      {url: `/health`, method: 'GET'
+    },
+      options);
+    }
+  
+/**
  * Pagination not supported for now!
 Returns a list of accounts.
 default page size 30.
@@ -1063,6 +1086,7 @@ if(uploadFileBody.file !== undefined) {
       options);
     }
   
+export type GetHealthResult = NonNullable<Awaited<ReturnType<typeof getHealth>>>
 export type GetAccountsResult = NonNullable<Awaited<ReturnType<typeof getAccounts>>>
 export type PutAccountResult = NonNullable<Awaited<ReturnType<typeof putAccount>>>
 export type BatchUpdateAccountsResult = NonNullable<Awaited<ReturnType<typeof batchUpdateAccounts>>>

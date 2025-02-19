@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "orval && next dev --port 80",
+        "dev": "orval && NODE_OPTIONS='--inspect' next dev --port 80",
         "build": "next build",
         "clean": "git clean -xdf .next .turbo node_modules",
         "lint": "biome lint",
@@ -13,7 +13,7 @@
         "orval": "orval"
     },
     "dependencies": {
-        "@heroui/react": "2.6.13",
+        "@heroui/react": "2.7.2",
         "@iconify-json/fluent-emoji": "^1.2.2",
         "@iconify/icons-fe": "^1.2.5",
         "@iconify/icons-flat-color-icons": "^1.2.5",
@@ -31,6 +31,8 @@
         "date-fns": "^4.1.0",
         "dotenv": "^16.4.7",
         "framer-motion": "^11.14.4",
+        "fuse.js": "^7.1.0",
+        "github-markdown-css": "^5.8.1",
         "jose": "^5.9.6",
         "js-cookie": "^3.0.5",
         "lru-cache": "^11.0.2",

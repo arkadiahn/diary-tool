@@ -6,9 +6,8 @@ import calendarMonth from "@iconify/icons-ic/outline-calendar-month";
 import locationOn from "@iconify/icons-ic/outline-location-on";
 import openInNew from "@iconify/icons-ic/outline-open-in-new";
 import { default as NextImage } from "next/image";
-import { remark } from "remark";
-import html from "remark-html";
 import MainPageLayout from "../../src/components/MainPageLayout";
+import MarkdownRenderer from "./MarkdownRenderer";
 import PageBreadcrumbs from "./PageBreadcrumbs";
 import ShareButton from "./ShareButton";
 
@@ -16,13 +15,9 @@ export default async function CalendarEventPage({ params }: { params: Promise<{ 
     const { name } = await params;
     const { data: event } = await getEvent(name);
 
-    // @todo make the parsed html render correctly (css)
-    const processedContent = await remark().use(html).process(event.description);
-    const descriptionHtml = processedContent.toString();
-
     return (
         <MainPageLayout>
-            <div className="min-h-full w-full max-w-7xl flex flex-col gap-4">
+            <div className="min-h-full w-full max-w-7xl flex flex-col gap-6">
                 <PageBreadcrumbs title={event.title} />
                 <Image
                     isBlurred={true}
@@ -38,7 +33,7 @@ export default async function CalendarEventPage({ params }: { params: Promise<{ 
                     }}
                 />
 
-                <div className="space-y-2">
+                <div className="space-y-1">
                     <div className="flex flex-row items-center justify-between gap-2">
                         <h2 className="text-2xl md:text-3xl font-bold">{event.title}</h2>
 
@@ -61,11 +56,9 @@ export default async function CalendarEventPage({ params }: { params: Promise<{ 
                             <span>{event.location}</span>
                         </div>
                     </div>
-
-                    <Divider />
                 </div>
 
-                <div dangerouslySetInnerHTML={{ __html: descriptionHtml }} />
+                <MarkdownRenderer markdown={event.description} />
 
                 <div className="flex flex-row gap-2 mt-auto">
                     {event.link && (

@@ -9,7 +9,7 @@ interface PageBreadcrumbsProps {
 
 export default function PageBreadcrumbs({ title }: PageBreadcrumbsProps) {
     return (
-        <Breadcrumbs size="lg" className="self-start font-semibold">
+        <Breadcrumbs size="lg" className="self-start font-medium">
             <BreadcrumbItem href="/calendar">Calendar</BreadcrumbItem>
             <BreadcrumbItem>{title}</BreadcrumbItem>
         </Breadcrumbs>

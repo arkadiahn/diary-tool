@@ -9,12 +9,12 @@ import EventGroup from "./EventGroup";
 /*                                   Helpers                                  */
 /* -------------------------------------------------------------------------- */
 const groupEventsByDate = (events: Event[]) => {
-    return events.reduce<Record<string, Event[]>>((groups, event) => {
-        const date = new Date(event.begin_time).toLocaleDateString();
-        if (!groups[date]) {
-            groups[date] = [];
-        }
-        groups[date].push(event);
+    const sortedEvents = [...events].sort(
+        (a, b) => new Date(a.begin_time).getTime() - new Date(b.begin_time).getTime(),
+    );
+    return sortedEvents.reduce<Record<string, Event[]>>((groups, event) => {
+        const date = new Date(event.begin_time).toLocaleDateString("de-DE");
+        (groups[date] ??= []).push(event);
         return groups;
     }, {});
 };

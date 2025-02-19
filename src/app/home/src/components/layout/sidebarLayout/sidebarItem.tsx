@@ -38,7 +38,7 @@ const SidebarItem = ({
             as={href ? Link : undefined}
             href={href}
             className={cn(
-                "flex items-center",
+                "flex items-center subpixel-antialiased",
                 "h-fit min-w-0 flex-row sm:flex-col lg:flex-row justify-start sm:justify-center lg:justify-start w-[var(--sidebar-item-width-expanded)] sm:w-full lg:w-[var(--sidebar-item-width-expanded)]",
                 className,
                 { "gap-2 sm:gap-1 lg:gap-2 p-2 text-default-500 hover:text-foreground": Component === Button }, // if button
@@ -52,7 +52,7 @@ const SidebarItem = ({
             {...(Component === Button && { disableRipple: true, onPress: onPress })}
         >
             {leading}
-            {label && <p className="truncate font-bold text-sm sm:text-[12px] lg:text-sm">{label}</p>}
+            {label && <p className="truncate font-medium text-sm sm:text-[12px] lg:text-sm">{label}</p>}
             {trailing && <div className="items-center justify-center flex sm:hidden lg:flex">{trailing}</div>}
         </Component>
     );

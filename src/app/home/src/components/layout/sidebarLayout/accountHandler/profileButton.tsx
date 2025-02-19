@@ -41,7 +41,7 @@ export default function ProfileButton({ session, className, forceSmall }: Profil
                     }
                 />
             </DropdownTrigger>
-            <DropdownMenu aria-label="Static Actions">
+            <DropdownMenu aria-label="Static Actions" disabledKeys={["settings"]}>
                 <DropdownItem
                     key="account"
                     onPress={() => window.open(`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/account`, "_blank")}

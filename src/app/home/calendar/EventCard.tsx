@@ -39,7 +39,7 @@ export default function EventCard({ event }: EventCardProps) {
         >
             <CardHeader className="flex gap-2 px-4 pt-4">
                 <div className="flex flex-col items-start gap-1 flex-grow">
-                    <h2 className="text-xl text-start font-bold line-clamp-1">{event.title}</h2>
+                    <h2 className="text-xl text-start font-medium line-clamp-1">{event.title}</h2>
                     <div className="flex flex-wrap items-center gap-2 text-default-500 text-sm">
                         <div className="flex items-center gap-1">
                             <CustomIcon icon={CalendarIcon} className="w-3.5 h-3.5" width={14} />

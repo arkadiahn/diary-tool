@@ -48,7 +48,7 @@ export default {
             },
             layout: {
                 radius: {
-                    small: "0.20rem",
+                    small: "0.22rem",
                     medium: "0.35rem",
                     large: "0.55rem",
                 },

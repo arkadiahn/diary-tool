@@ -1,6 +1,6 @@
 import * as jose from "jose";
 import type { NextURL } from "next/dist/server/web/next-url";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { type NextRequest, NextResponse } from "next/server";
 import setCookie from "set-cookie-parser";
@@ -23,7 +23,6 @@ const decodeJWTToken = async (
     token?: string,
     issuer?: string,
     skipValidation = false,
-    skipKeycloakCheck = false,
 ): Promise<jose.JWTPayload | null> => {
     if (!token || !issuer) {
         return null;
@@ -38,7 +37,7 @@ const decodeJWTToken = async (
         }
 
         const jwks = await fetch(`${issuer}/protocol/openid-connect/certs`, {
-            next: { revalidate: 240 },
+            next: { revalidate: 360 },
             cache: "force-cache",
         }).then((res) => res.json());
         const decodedToken = await jose.jwtVerify(token, jose.createLocalJWKSet(jwks), {
@@ -46,18 +45,6 @@ const decodeJWTToken = async (
             clockTolerance: 5,
             issuer,
         });
-
-        if (!skipKeycloakCheck) {
-            const userinfo = await fetch(`${issuer}/protocol/openid-connect/userinfo`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-                cache: "no-store",
-            });
-            if (!userinfo.ok) {
-                throw new Error("Unauthorized");
-            }
-        }
 
         return decodedToken.payload;
     } catch {
@@ -101,9 +88,13 @@ const addMiddlewareCookies = (request: NextRequest, response: NextResponse, setC
         response.headers.set("x-middleware-override-headers", "cookie");
         response.headers.set(
             "x-middleware-request-cookie",
-            allCookies.map((cookie) => `${cookie.name}=${cookie.value}`).join("; "),
+            allCookies
+                .filter((cookie) => cookie.name !== "refresh")
+                .map((cookie) => `${cookie.name}=${cookie.value}`)
+                .join("; "),
         );
     }
+    request.cookies.delete("refresh");
     return response;
 };
 
@@ -111,30 +102,39 @@ const addMiddlewareCookies = (request: NextRequest, response: NextResponse, setC
 /*                                SSR Functions                               */
 /* -------------------------------------------------------------------------- */
 // @todo maybe add scopes check for routes?
-export async function auth(redirectUrl?: string): Promise<{ session: Session | null }> {
+export async function auth(redirectUrl?: string, requiredScopes?: string[]): Promise<{ session: Session | null }> {
     try {
-        const decodedPayload = await decodeJWTToken(
-            (await cookies()).get("session")?.value,
+        const requestCookies = await cookies();
+        const requestHeaders = await headers();
+        const decodedAccessPayload = await decodeJWTToken(
+            requestCookies.get("session")?.value,
             process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER,
             true,
-            true,
         );
-        if (!decodedPayload) {
+        const decodedIdPayload = JSON.parse(Buffer.from(requestHeaders.get("x-id") ?? "", "base64").toString("utf-8"));
+        if (!decodedIdPayload || !decodedAccessPayload) {
             throw new Error("Unauthorized");
         }
 
         // @todo better way to "parse" session?
         const sessionData: Session = {
-            expires: decodedPayload.exp!,
+            expires: decodedAccessPayload.exp!,
             user: {
-                id: decodedPayload.sub!,
-                name: decodedPayload.name! as string,
-                preferred_username: decodedPayload.preferred_username! as string,
-                email: decodedPayload.email! as string,
-                picture: decodedPayload.picture! as string,
-                scopes: (decodedPayload.scope! as string).split(" "),
+                id: decodedAccessPayload.sub!,
+                name: decodedIdPayload.name! as string,
+                preferred_username: decodedIdPayload.preferred_username! as string,
+                email: decodedIdPayload.email! as string,
+                picture: decodedIdPayload.picture! as string,
+                scopes: (decodedAccessPayload.scope! as string).split(" "),
             },
         };
+
+        if (requiredScopes) {
+            if (!sessionData.user.scopes.some((scope) => requiredScopes.includes(scope))) {
+                throw new Error("Unauthorized");
+            }
+        }
+
         return { session: sessionData };
     } catch {
         if (redirectUrl) {
@@ -147,6 +147,7 @@ export async function auth(redirectUrl?: string): Promise<{ session: Session | n
 /* -------------------------------------------------------------------------- */
 /*                                 Middleware                                 */
 /* -------------------------------------------------------------------------- */
+// @todo rewrite middleware to not expose data to frontend and remove refresh token
 export function authMiddleware(wrappedMiddleware: (request: NextRequest) => NextResponse) {
     return async (request: NextRequest) => {
         const { searchParams } = request.nextUrl;
@@ -167,7 +168,9 @@ export function authMiddleware(wrappedMiddleware: (request: NextRequest) => Next
             const wrappedResponse = wrappedMiddleware(request);
 
             if (sessionResponse) {
+                const sessionData = await sessionResponse.json();
                 addMiddlewareCookies(request, wrappedResponse, sessionResponse.headers.getSetCookie());
+                wrappedResponse.headers.set("x-id", sessionData.id);
             }
             return wrappedResponse;
         }
@@ -188,7 +191,10 @@ export function authMiddleware(wrappedMiddleware: (request: NextRequest) => Next
                 );
 
                 if (sessionResponse.ok) {
-                    return addMiddlewareCookies(request, response, sessionResponse.headers.getSetCookie());
+                    const sessionData = await sessionResponse.json();
+                    addMiddlewareCookies(request, response, sessionResponse.headers.getSetCookie());
+                    response.headers.set("x-id", sessionData.id);
+                    return response;
                 }
             }
         } catch {}
@@ -276,10 +282,17 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
             }
 
             const tokenData = await tokenResponse.json();
+            const decodedToken = await decodeJWTToken(tokenData.access_token, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER);
+            const decodedIdToken = await decodeJWTToken(
+                tokenData.id_token,
+                process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER,
+                false,
+            );
             return setResponseCookies(
-                NextResponse.json(
-                    await decodeJWTToken(tokenData.access_token, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER),
-                ),
+                NextResponse.json({
+                    id: Buffer.from(JSON.stringify(decodedIdToken)).toString("base64"),
+                    accessClaims: decodedToken,
+                }),
                 tokenData,
             );
         }
@@ -289,14 +302,22 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
         const refreshToken = request.cookies.get("refresh")?.value;
 
         // if session token is valid, return session data
-        const decodedSessionToken = await decodeJWTToken(
-            sessionToken,
-            process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER,
-            false,
-            false,
-        );
+        const decodedSessionToken = await decodeJWTToken(sessionToken, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER, false);
         if (decodedSessionToken) {
-            return NextResponse.json(decodedSessionToken);
+            const userInfoResponse = await fetch(
+                `${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/userinfo`,
+                {
+                    headers: { Authorization: `Bearer ${sessionToken}` },
+                    cache: "no-store",
+                },
+            );
+            if (!userInfoResponse.ok) {
+                return setResponseCookies(unauthorizedResponse);
+            }
+            return NextResponse.json({
+                id: Buffer.from(await userInfoResponse.text()).toString("base64"),
+                accessClaims: decodedSessionToken,
+            });
         }
 
         // if no refresh token, delete session
@@ -305,12 +326,7 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
         }
 
         // if session token is expired, use refresh token to get new session token
-        const decodedRefreshToken = await decodeJWTToken(
-            refreshToken,
-            process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER,
-            true,
-            true,
-        );
+        const decodedRefreshToken = await decodeJWTToken(refreshToken, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER, true);
         if (decodedRefreshToken) {
             const tokenResponse = await fetch(
                 `${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/token`,
@@ -331,10 +347,21 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
             }
 
             const tokenData = await tokenResponse.json();
+            const decodedIdToken = await decodeJWTToken(
+                tokenData.id_token,
+                process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER,
+                false,
+            );
+            const decodedToken = await decodeJWTToken(
+                tokenData.access_token,
+                process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER,
+                false,
+            );
             return setResponseCookies(
-                NextResponse.json(
-                    await decodeJWTToken(tokenData.access_token, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER, false, true),
-                ),
+                NextResponse.json({
+                    id: Buffer.from(JSON.stringify(decodedIdToken)).toString("base64"),
+                    accessClaims: decodedToken,
+                }),
                 tokenData,
             );
         }

@@ -11,7 +11,7 @@ export default async function CalendarPage() {
 
     return (
         <MainPageLayout title="Calendar" description="Find your next event">
-            <ScrollShadow className="w-full flex-1 scrollbar-thin scrollbar-thumb-default-300 scrollbar-track-transparent pr-2">
+            <ScrollShadow className="w-full flex-1 scrollbar-thin scrollbar-thumb-default-300 scrollbar-track-transparent px-2 pb-5 -ml-2">
                 <CalendarLayout events={events} />
             </ScrollShadow>
         </MainPageLayout>
