@@ -1,5 +1,6 @@
 "use client";
 
+import type { Mission } from "@/api/missionboard";
 import { Button, Chip } from "@heroui/react";
 import { useEffect } from "react";
 import CustomGrid from "../CustomGrid";
@@ -8,8 +9,7 @@ import { AccountStoreProvider } from "./_accountStore";
 import { MilestoneStoreProvider } from "./_milestoneStore";
 import { MissionsStoreProvider, useMissionsStore } from "./_missionsStore";
 
-
-function StateRenderer(props: any) {
+function StateRenderer(props: { value: string }) {
     return (
         <div className="flex items-center justify-center h-full">
             <Chip
@@ -24,7 +24,7 @@ function StateRenderer(props: any) {
     );
 }
 
-function ApproveRenderer(props: any) {
+function ApproveRenderer(props: { value: string; data: Mission }) {
     const approveMission = useMissionsStore((state) => state.approveMission);
     const rejectMission = useMissionsStore((state) => state.rejectMission);
 
@@ -64,11 +64,11 @@ function AdminMissions() {
     return (
         <main className="h-full w-full flex flex-col items-center justify-center p-4">
             <CustomGrid
-                onEdit={(mission) => selectMission(mission)}
-                onCreate={() => selectMission(null)}
-                onDelete={(mission) => deleteMission(mission)}
+                onEdit={selectMission}
+                onCreate={selectMission}
+                onDelete={deleteMission}
                 tableTitle="Missions"
-                data={missions}
+                data={missions as Mission[]}
                 loading={loading}
                 columnDefs={[
                     { field: "name", sortable: true },
@@ -87,11 +87,21 @@ function AdminMissions() {
                         minWidth: 160,
                         cellRenderer: ApproveRenderer,
                         comparator: (valueA, valueB) => {
-                            if (valueA === valueB) return 0;
-                            if (valueA === "pending") return -1;
-                            if (valueB === "pending") return 1;
-                            if (valueA === "approved") return -1;
-                            if (valueB === "approved") return 1;
+                            if (valueA === valueB) {
+                                return 0;
+                            }
+                            if (valueA === "pending") {
+                                return -1;
+                            }
+                            if (valueB === "pending") {
+                                return 1;
+                            }
+                            if (valueA === "approved") {
+                                return -1;
+                            }
+                            if (valueB === "approved") {
+                                return 1;
+                            }
                             return 0;
                         },
                     },
@@ -137,8 +147,12 @@ function AdminMissions() {
                         sortable: true,
                         valueFormatter: (params) => (params.value ? new Date(params.value).toLocaleString() : ""),
                         comparator: (valueA, valueB) => {
-                            if (!valueA) return 1;
-                            if (!valueB) return -1;
+                            if (!valueA) {
+                                return 1;
+                            }
+                            if (!valueB) {
+                                return -1;
+                            }
                             const dateA = new Date(valueA).getTime();
                             const dateB = new Date(valueB).getTime();
                             return dateA - dateB;
@@ -150,8 +164,12 @@ function AdminMissions() {
                         sortable: true,
                         valueFormatter: (params) => (params.value ? new Date(params.value).toLocaleString() : ""),
                         comparator: (valueA, valueB) => {
-                            if (!valueA) return 1;
-                            if (!valueB) return -1;
+                            if (!valueA) {
+                                return 1;
+                            }
+                            if (!valueB) {
+                                return -1;
+                            }
                             const dateA = new Date(valueA).getTime();
                             const dateB = new Date(valueB).getTime();
                             return dateA - dateB;
@@ -166,8 +184,12 @@ function AdminMissions() {
                         sortIndex: 1,
                         valueFormatter: (params) => (params.value ? new Date(params.value).toLocaleString() : ""),
                         comparator: (valueA, valueB) => {
-                            if (!valueA) return 1;
-                            if (!valueB) return -1;
+                            if (!valueA) {
+                                return 1;
+                            }
+                            if (!valueB) {
+                                return -1;
+                            }
                             const dateA = new Date(valueA).getTime();
                             const dateB = new Date(valueB).getTime();
                             return dateA - dateB;

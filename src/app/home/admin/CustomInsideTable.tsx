@@ -1,7 +1,7 @@
 import { Spinner, Table, TableBody, TableColumn, TableHeader, type TableRowProps } from "@heroui/react";
 import { Button } from "@heroui/react";
 
-interface CustomInsideTableProps<T> {
+interface CustomInsideTableProps {
     children: React.ReactElement<TableRowProps<unknown>>[];
     loading: boolean;
     emptyContent: React.ReactNode;
@@ -9,18 +9,18 @@ interface CustomInsideTableProps<T> {
     header: string[];
     onAdd?: () => void;
 }
-export default function CustomInsideTable<T>({
+export default function CustomInsideTable<_T>({
     children,
     loading,
     emptyContent,
     title,
     header,
     onAdd,
-}: CustomInsideTableProps<T>) {
+}: CustomInsideTableProps) {
     return (
         <div className="flex flex-col gap-2">
             <div className="flex flex-row justify-between items-center">
-                <label>{title}</label>
+                <h2>{title}</h2>
                 {onAdd && (
                     <Button color="primary" variant="light" size="sm" onPress={onAdd}>
                         Add

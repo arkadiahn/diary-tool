@@ -20,7 +20,7 @@ export default function createCustomStore<T>(initializer: StateCreator<T, [], []
     const useStore = <TT,>(selector: (store: T) => TT): TT => {
         const storeContext = useContext(StoreContext);
         if (!storeContext) {
-            throw new Error(`[createCustomStore] useStore must be used within StoreProvider`);
+            throw new Error("[createCustomStore] useStore must be used within StoreProvider");
         }
         return useZustandStore(storeContext, selector);
     };

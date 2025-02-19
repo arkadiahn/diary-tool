@@ -23,6 +23,11 @@ export const customAxios = async <T>(
         },
     });
 
+	instance.interceptors.request.use((config) => {
+		console.log(config);
+		return config;
+	});
+
 	// @todo does this work (also for admins)
 	instance.interceptors.response.use(
 		(response) => response,

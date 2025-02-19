@@ -3,7 +3,6 @@ import CustomEditModal from "../CustomEditModal";
 import AccountsComponent from "./AccountsComponent";
 import { useAccountStore } from "./_accountStore";
 
-
 export default function EditMissionAccountModal() {
     const missionName = useAccountStore((state) => state.missionName);
     const addAccount = useAccountStore((state) => state.addAccount);

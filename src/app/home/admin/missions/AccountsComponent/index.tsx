@@ -1,9 +1,8 @@
 "use client";
 
 import { Autocomplete, AutocompleteItem } from "@heroui/react";
-import { useAccountsComponentStore } from "./_store";
 import { useEffect } from "react";
-
+import { useAccountsComponentStore } from "./_store";
 
 interface AccountsComponentProps {
     defaultAccount?: string;
@@ -19,7 +18,7 @@ export default function AccountsComponent({ defaultAccount, title, name }: Accou
     const setInputValue = useAccountsComponentStore((state) => state.setInputValue);
     const selectedAccount = useAccountsComponentStore((state) => state.selectedAccount);
     const selectAccount = useAccountsComponentStore((state) => state.selectAccount);
-	const formatAccountText = useAccountsComponentStore((state) => state.formatAccountText);
+    const formatAccountText = useAccountsComponentStore((state) => state.formatAccountText);
 
     useEffect(() => {
         fetchAccounts().then(() => {
@@ -47,9 +46,7 @@ export default function AccountsComponent({ defaultAccount, title, name }: Accou
                     <AutocompleteItem key={account.name} textValue={formatAccountText(account)}>
                         <div className="flex flex-col justify-between items-start">
                             <span className="text-foreground/40">{account.name}</span>
-                            <span>
-								{formatAccountText(account)}
-                            </span>
+                            <span>{formatAccountText(account)}</span>
                         </div>
                     </AutocompleteItem>
                 )}

@@ -100,7 +100,7 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
                                 isRequired={true}
                             >
                                 {PROJECT_OPTIONS.map((project) => (
-                                    <SelectItem key={project} value={project}>
+                                    <SelectItem key={project} textValue={project}>
                                         {project}
                                     </SelectItem>
                                 ))}

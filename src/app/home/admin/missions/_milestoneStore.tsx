@@ -5,9 +5,8 @@ import {
     patchMissionMilestone,
     postMissionMilestone,
 } from "@/api/missionboard";
-import createCustomStore from "../CreateCustomStore";
 import { toast } from "react-hot-toast";
-
+import createCustomStore from "../CreateCustomStore";
 
 type MilestoneStore = {
     milestones: MissionMilestone[];
@@ -35,11 +34,8 @@ export const { StoreProvider: MilestoneStoreProvider, useStore: useMilestoneStor
             set({ loading: true, milestones: [] });
             try {
                 const response = await getMissionMilestones(missionName);
-                if (response.status >= 300 || response.status < 200) {
-                    throw new Error("Failed to fetch milestones");
-                }
                 set({ milestones: response.data, missionName, loading: false });
-            } catch (error) {
+            } catch {
                 toast.error("Failed to fetch milestones");
                 set({ loading: false });
             }
@@ -49,39 +45,30 @@ export const { StoreProvider: MilestoneStoreProvider, useStore: useMilestoneStor
         },
         createMilestone: async (missionName: string, milestone: MissionMilestone) => {
             try {
-                const response = await postMissionMilestone(missionName, milestone);
-                if (response.status >= 300 || response.status < 200) {
-                    throw new Error("Failed to create milestone");
-                }
+                await postMissionMilestone(missionName, milestone);
                 toast.success("Milestone created successfully");
                 get().fetchMilestones(missionName);
                 set({ editOpen: false });
-            } catch (error) {
+            } catch {
                 toast.error("Failed to create milestone");
             }
         },
         updateMilestone: async (missionName: string, milestone: MissionMilestone) => {
             try {
-                const response = await patchMissionMilestone(missionName, milestone.name.split("/").at(-1) ?? "", milestone);
-                if (response.status >= 300 || response.status < 200) {
-                    throw new Error("Failed to update milestone");
-                }
+                await patchMissionMilestone(missionName, milestone.name.split("/").at(-1) ?? "", milestone);
                 toast.success("Milestone updated successfully");
                 get().fetchMilestones(missionName);
                 set({ editOpen: false });
-            } catch (error) {
+            } catch {
                 toast.error("Failed to update milestone");
             }
         },
         deleteMilestone: async (missionName: string, milestone: MissionMilestone) => {
             try {
-                const response = await deleteMissionMilestone(missionName, milestone.name.split("/").at(-1) ?? "");
-                if (response.status >= 300 || response.status < 200) {
-                    throw new Error("Failed to delete milestone");
-                }
+                await deleteMissionMilestone(missionName, milestone.name.split("/").at(-1) ?? "");
                 toast.success("Milestone deleted successfully");
                 get().fetchMilestones(missionName);
-            } catch (error) {
+            } catch {
                 toast.error("Failed to delete milestone");
             }
         },

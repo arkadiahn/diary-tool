@@ -20,16 +20,20 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 /* -------------------------------------------------------------------------- */
 /*                              ActionsComponent                              */
 /* -------------------------------------------------------------------------- */
-const CustomActionsComponent = (props: any) => {
+const CustomActionsComponent = <T,>(props: {
+    data: T;
+    onEditEvent?: (data: T) => void | Promise<void>;
+    onDeleteEvent?: (data: T) => void | Promise<void>;
+}) => {
     return (
         <div className="flex gap-2 items-center justify-center h-full">
             {props.onEditEvent && (
-                <Button size="sm" onPress={() => props.onEditEvent(props.data)}>
+                <Button size="sm" onPress={() => props.onEditEvent?.(props.data)}>
                     Edit
                 </Button>
             )}
             {props.onDeleteEvent && (
-                <Button size="sm" color="danger" onPress={() => props.onDeleteEvent(props.data)}>
+                <Button size="sm" color="danger" onPress={() => props.onDeleteEvent?.(props.data)}>
                     Delete
                 </Button>
             )}
@@ -40,28 +44,33 @@ const CustomActionsComponent = (props: any) => {
 /* -------------------------------------------------------------------------- */
 /*                                 CustomGrid                                 */
 /* -------------------------------------------------------------------------- */
-interface CustomGridProps {
-    data: any[];
+interface CustomGridProps<T> {
+    data: T[];
     loading: boolean;
     tableTitle: string;
-    columnDefs: (ColDef<any, any> | ColGroupDef<any>)[];
-    onEdit?: (data: any) => void;
-    onDelete?: (data: any) => void;
-    onCreate?: () => void;
+    columnDefs: (ColDef<T> | ColGroupDef<T>)[];
+    onEdit?: (data: T) => void | Promise<void>;
+    onDelete?: (data: T) => void | Promise<void>;
+    onCreate?: (data: null) => void | Promise<void>;
 }
 
-export default forwardRef(function CustomGrid(
-    { columnDefs, data, tableTitle, loading = false, onEdit, onDelete, onCreate }: CustomGridProps,
-    ref: ForwardedRef<AgGridReact>,
-) {
+function CustomGrid<T>({
+    columnDefs,
+    data,
+    tableTitle,
+    loading = false,
+    onEdit,
+    onDelete,
+    onCreate,
+}: CustomGridProps<T>) {
     const { resolvedTheme } = useTheme();
 
-    const handleEdit = (data: any) => {
-        onEdit?.(data);
+    const handleEdit = async (data: T) => {
+        await onEdit?.(data);
     };
 
-    const handleDelete = (data: any) => {
-        onDelete?.(data);
+    const handleDelete = async (data: T) => {
+        await onDelete?.(data);
     };
 
     return (
@@ -72,7 +81,7 @@ export default forwardRef(function CustomGrid(
                     <Button
                         size="sm"
                         color="primary"
-                        onPress={onCreate}
+                        onPress={() => onCreate?.(null)}
                         startContent={<CustomIcon icon={plus} width={16} height={16} />}
                     >
                         Create
@@ -81,7 +90,6 @@ export default forwardRef(function CustomGrid(
             </div>
             <div className="max-h-[800px] h-full w-full">
                 <AgGridReact
-                    ref={ref}
                     loading={loading}
                     theme={resolvedTheme === "dark" ? themeQuartz.withPart(colorSchemeDark) : themeQuartz}
                     suppressCellFocus={true}
@@ -115,4 +123,6 @@ export default forwardRef(function CustomGrid(
             </div>
         </>
     );
-});
+}
+
+export default CustomGrid;

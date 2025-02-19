@@ -14,7 +14,10 @@ const groupEventsByDate = (events: Event[]) => {
     );
     return sortedEvents.reduce<Record<string, Event[]>>((groups, event) => {
         const date = new Date(event.begin_time).toLocaleDateString("de-DE");
-        (groups[date] ??= []).push(event);
+        if (!groups[date]) {
+            groups[date] = [];
+        }
+        groups[date].push(event);
         return groups;
     }, {});
 };

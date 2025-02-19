@@ -6,5 +6,11 @@ export default async function MarkdownRenderer({ markdown }: { markdown: string 
     const processedContent = await remark().use(html).process(markdown);
     const descriptionHtml = processedContent.toString();
 
-    return <div className="markdown-body !bg-transparent" dangerouslySetInnerHTML={{ __html: descriptionHtml }} />;
+    return (
+        <div
+            className="markdown-body !bg-transparent"
+            // biome-ignore lint/security/noDangerouslySetInnerHTML: Markdown content is processed through remark which sanitizes the HTML
+            dangerouslySetInnerHTML={{ __html: descriptionHtml }}
+        />
+    );
 }

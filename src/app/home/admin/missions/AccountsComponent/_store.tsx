@@ -13,7 +13,7 @@ interface AccountsComponentStore {
     fetchAccounts: () => Promise<void>;
     setInputValue: (value: string) => void;
     selectAccount: (value: React.Key | null) => void;
-	formatAccountText: (account: Account) => string;
+    formatAccountText: (account: Account) => string;
 }
 
 export const useAccountsComponentStore = create<AccountsComponentStore>((set, get) => ({
@@ -40,9 +40,9 @@ export const useAccountsComponentStore = create<AccountsComponentStore>((set, ge
         try {
             set({ loading: true });
             const response = await getAccounts();
-            const accountsMap = new Map((
-				response.data.accounts as Account[]
-			).map((account) => [account.name, account]));
+            const accountsMap = new Map(
+                (response.data.accounts as Account[]).map((account) => [account.name, account]),
+            );
 
             get().fuse.setCollection(Array.from(accountsMap.values()));
             set({
@@ -50,34 +50,34 @@ export const useAccountsComponentStore = create<AccountsComponentStore>((set, ge
                 accountsMap,
                 loading: false,
             });
-        } catch (error) {
+        } catch {
             set({ loading: false });
         }
     },
     setInputValue: (value: string) => {
-		const { fuse, allAccounts, selectedAccount } = get();
-		if (value === selectedAccount) {
-			return;
-		}
-		set({
-			inputValue: value,
-			selectedAccount: value === "" ? null : selectedAccount,
-			filteredAccounts: value ? fuse.search(value.toString()).map((result) => result.item) : allAccounts,
-		})
+        const { fuse, allAccounts, selectedAccount } = get();
+        if (value === selectedAccount) {
+            return;
+        }
+        set({
+            inputValue: value,
+            selectedAccount: value === "" ? null : selectedAccount,
+            filteredAccounts: value ? fuse.search(value.toString()).map((result) => result.item) : allAccounts,
+        });
     },
     selectAccount: (value: React.Key | null) => {
         const { accountsMap, fuse, allAccounts, selectedAccount, formatAccountText } = get();
         const account = value ? accountsMap.get(value.toString()) : null;
-		if (value === selectedAccount) {
-			return;
-		}
+        if (value === selectedAccount) {
+            return;
+        }
         set({
-			inputValue: account ? formatAccountText(account) : "",
+            inputValue: account ? formatAccountText(account) : "",
             selectedAccount: value,
-			filteredAccounts: value ? fuse.search(value.toString()).map((result) => result.item) : allAccounts,
+            filteredAccounts: value ? fuse.search(value.toString()).map((result) => result.item) : allAccounts,
         });
     },
-	formatAccountText: (account: Account) => {
-		return `${account.nick_name} - ${account.email}`;
-	},
+    formatAccountText: (account: Account) => {
+        return `${account.nick_name} - ${account.email}`;
+    },
 }));

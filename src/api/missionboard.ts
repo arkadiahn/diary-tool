@@ -765,6 +765,18 @@ export const patchEvent = (
     }
   
 /**
+ * @summary Delete an event
+ */
+export const deleteEvent = (
+    event: string,
+ options?: SecondParameter<typeof customAxios>,) => {
+      return customAxios<R204Response>(
+      {url: `/events/${event}`, method: 'DELETE'
+    },
+      options);
+    }
+  
+/**
  * @summary Get all missions
  */
 export const getMissions = (
@@ -1100,6 +1112,7 @@ export type GetEventsResult = NonNullable<Awaited<ReturnType<typeof getEvents>>>
 export type PostEventResult = NonNullable<Awaited<ReturnType<typeof postEvent>>>
 export type GetEventResult = NonNullable<Awaited<ReturnType<typeof getEvent>>>
 export type PatchEventResult = NonNullable<Awaited<ReturnType<typeof patchEvent>>>
+export type DeleteEventResult = NonNullable<Awaited<ReturnType<typeof deleteEvent>>>
 export type GetMissionsResult = NonNullable<Awaited<ReturnType<typeof getMissions>>>
 export type PostMissionResult = NonNullable<Awaited<ReturnType<typeof postMission>>>
 export type GetMissionResult = NonNullable<Awaited<ReturnType<typeof getMission>>>

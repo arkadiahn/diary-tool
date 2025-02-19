@@ -1,32 +1,21 @@
 import { MissionMilestoneState } from "@/api/missionboard";
 import CustomIcon from "@/components/CustomIcon";
-import {
-    Button,
-    Chip,
-    type ChipProps,
-    DatePicker,
-    Input,
-    TableCell,
-    TableRow,
-    Textarea,
-    Tooltip,
-} from "@heroui/react";
+import { Button, Chip, type ChipProps, DatePicker, Input, TableCell, TableRow, Textarea, Tooltip } from "@heroui/react";
 import { now, parseAbsolute } from "@internationalized/date";
 import { useEffect } from "react";
 import CustomEditModal from "../CustomEditModal";
+import CustomInsideTable from "../CustomInsideTable";
 import AccountsComponent from "./AccountsComponent";
+import DateComponent from "./DateComponent";
+import { useAccountStore } from "./_accountStore";
 import { useMilestoneStore } from "./_milestoneStore";
 import { useMissionsStore } from "./_missionsStore";
-import { useAccountStore } from "./_accountStore";
-import CustomInsideTable from "../CustomInsideTable";
-import DateComponent from "./DateComponent";
 
 /* ---------------------------------- Icons --------------------------------- */
 import EditIcon from "@iconify/icons-ic/edit";
 import TrashIcon from "@iconify/icons-ic/sharp-delete";
 import EditMissionAccountModal from "./EditMissionAccountModal";
 import EditMissionMilestoneModal from "./EditMissionMilestoneModal";
-
 
 function MilestoneState({ state }: { state: MissionMilestoneState }) {
     const props: ChipProps = {
@@ -65,13 +54,12 @@ function MilestoneState({ state }: { state: MissionMilestoneState }) {
     }
 }
 
-
 export default function EditMissionModal() {
     const updateMission = useMissionsStore((state) => state.updateMission);
     const createMission = useMissionsStore((state) => state.createMission);
     const mission = useMissionsStore((state) => state.selectedMission);
-	const toggleEdit = useMissionsStore((state) => state.toggleEdit);
-	const editOpen = useMissionsStore((state) => state.editOpen);
+    const toggleEdit = useMissionsStore((state) => state.toggleEdit);
+    const editOpen = useMissionsStore((state) => state.editOpen);
 
     const selectMilestone = useMilestoneStore((state) => state.selectMilestone);
     const fetchMilestones = useMilestoneStore((state) => state.fetchMilestones);
@@ -134,13 +122,13 @@ export default function EditMissionModal() {
                     />
                 </div>
                 <Input
-					size="sm"
-					label="GitHub Link"
-					name="github_link"
-					placeholder="Enter GitHub repository URL"
-					type="url"
-					defaultValue={mission?.github_link}
-				/>
+                    size="sm"
+                    label="GitHub Link"
+                    name="github_link"
+                    placeholder="Enter GitHub repository URL"
+                    type="url"
+                    defaultValue={mission?.github_link}
+                />
                 <Textarea
                     label="Description"
                     name="description"
@@ -181,13 +169,24 @@ export default function EditMissionModal() {
                                     <TableCell>{milestone.description}</TableCell>
                                     <TableCell>{<MilestoneState state={milestone.state} />}</TableCell>
                                     <TableCell width={200}>
-										<DateComponent date={milestone.end_time} />
+                                        <DateComponent date={milestone.end_time} />
                                     </TableCell>
                                     <TableCell className="flex flex-row gap-2 items-center justify-center">
                                         <Tooltip color="danger" content="Delete">
-                                            <span className="text-sm text-danger cursor-pointer active:opacity-50" onClick={() => {
-												deleteMilestone(mission?.name.split("/").at(-1) ?? "", milestone);
-											}}>
+                                            <span
+                                                className="text-sm text-danger cursor-pointer active:opacity-50"
+                                                onClick={() => {
+                                                    deleteMilestone(mission?.name.split("/").at(-1) ?? "", milestone);
+                                                }}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === "Enter") {
+                                                        deleteMilestone(
+                                                            mission?.name.split("/").at(-1) ?? "",
+                                                            milestone,
+                                                        );
+                                                    }
+                                                }}
+                                            >
                                                 <CustomIcon icon={TrashIcon} height={20} width={20} />
                                             </span>
                                         </Tooltip>
@@ -195,6 +194,11 @@ export default function EditMissionModal() {
                                             <span
                                                 className="text-sm text-default-400 cursor-pointer active:opacity-50"
                                                 onClick={() => selectMilestone(milestone)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === "Enter") {
+                                                        selectMilestone(milestone);
+                                                    }
+                                                }}
                                             >
                                                 <CustomIcon icon={EditIcon} height={20} width={20} />
                                             </span>
@@ -257,6 +261,14 @@ export default function EditMissionModal() {
                                                     className="text-sm text-danger cursor-pointer active:opacity-50"
                                                     onClick={() => {
                                                         removeAccount(mission?.name.split("/").at(-1) ?? "", account);
+                                                    }}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === "Enter") {
+                                                            removeAccount(
+                                                                mission?.name.split("/").at(-1) ?? "",
+                                                                account,
+                                                            );
+                                                        }
                                                     }}
                                                 >
                                                     <CustomIcon icon={TrashIcon} height={20} width={20} />

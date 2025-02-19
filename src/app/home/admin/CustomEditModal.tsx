@@ -1,7 +1,6 @@
 import { Button, Form, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/react";
 import { parseZonedDateTime } from "@internationalized/date";
 
-
 interface EditModalProps<T> {
     isOpen: boolean;
     title: string;
@@ -32,14 +31,16 @@ export default function CustomEditModal<T>({
             Array.from(e.currentTarget.getElementsByTagName("input")).map((input) => {
                 const { name, value, type, checked } = input;
 
-                if (type === "checkbox") return [name, checked];
+                if (type === "checkbox") {
+                    return [name, checked];
+                }
 
                 if (value.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?[+-]\d{2}:\d{2}\[[\w/]+\]$/)) {
                     return [name, parseZonedDateTime(value).toDate().toISOString()];
                 }
 
                 return [name, value];
-            })
+            }),
         );
 
         if (data && onUpdate) {

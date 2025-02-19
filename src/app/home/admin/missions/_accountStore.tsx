@@ -7,9 +7,8 @@ import {
     postMissionAccount,
     rejectMissionAccount,
 } from "@/api/missionboard";
-import createCustomStore from "../CreateCustomStore";
 import { toast } from "react-hot-toast";
-
+import createCustomStore from "../CreateCustomStore";
 
 type AccountStore = {
     accounts: MissionAccount[];
@@ -37,61 +36,46 @@ export const { StoreProvider: AccountStoreProvider, useStore: useAccountStore } 
                 const response = await getMissionAccounts(missionName, {
                     show_unapproved: true,
                 });
-                if (response.status >= 300 || response.status < 200) {
-                    throw new Error("Failed to fetch accounts");
-                }
                 set({ accounts: response.data, missionName, loading: false });
-            } catch (error) {
+            } catch {
                 toast.error("Failed to fetch accounts");
                 set({ loading: false });
             }
         },
         removeAccount: async (missionName: string, account: MissionAccount) => {
             try {
-                const response = await deleteMissionAccount(missionName, account.name.split("/").at(-1) ?? "");
-                if (response.status >= 300 || response.status < 200) {
-                    throw new Error("Failed to delete account");
-                }
+                await deleteMissionAccount(missionName, account.name.split("/").at(-1) ?? "");
                 toast.success("Account deleted successfully");
                 get().fetchAccounts(missionName);
-            } catch (error) {
+            } catch {
                 toast.error("Failed to delete account");
             }
         },
         addAccount: async (missionName: string, account: MissionAccountPost) => {
             try {
-                const response = await postMissionAccount(missionName, account);
-                if (response.status >= 300 || response.status < 200) {
-                    throw new Error("Failed to add account");
-                }
+                await postMissionAccount(missionName, account);
                 toast.success("Account added successfully");
                 get().fetchAccounts(missionName);
-				set({ addOpen: false });
-            } catch (error) {
+                set({ addOpen: false });
+            } catch {
                 toast.error("Failed to add account");
             }
         },
         approveAccount: async (missionName: string, account: MissionAccount) => {
             try {
-                const response = await approveMissionAccount(missionName, account.name.split("/").at(-1) ?? "");
-                if (response.status >= 300 || response.status < 200) {
-                    throw new Error("Failed to approve account");
-                }
+                await approveMissionAccount(missionName, account.name.split("/").at(-1) ?? "");
                 toast.success("Account approved successfully");
                 get().fetchAccounts(missionName);
-            } catch (error) {
+            } catch {
                 toast.error("Failed to approve account");
             }
         },
         rejectAccount: async (missionName: string, account: MissionAccount) => {
             try {
-                const response = await rejectMissionAccount(missionName, account.name.split("/").at(-1) ?? "");
-                if (response.status >= 300 || response.status < 200) {
-                    throw new Error("Failed to reject account");
-                }
+                await rejectMissionAccount(missionName, account.name.split("/").at(-1) ?? "");
                 toast.success("Account rejected successfully");
                 get().fetchAccounts(missionName);
-            } catch (error) {
+            } catch {
                 toast.error("Failed to reject account");
             }
         },

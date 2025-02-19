@@ -5,7 +5,6 @@ import { now, parseAbsolute } from "@internationalized/date";
 import CustomEditModal from "../CustomEditModal";
 import { useMilestoneStore } from "./_milestoneStore";
 
-
 export default function EditMissionMilestoneModal() {
     const selectedMilestone = useMilestoneStore((state) => state.selectedMilestone);
     const updateMilestone = useMilestoneStore((state) => state.updateMilestone);
@@ -41,13 +40,13 @@ export default function EditMissionMilestoneModal() {
                 placeholderValue={now("Europe/Berlin")}
                 isRequired={true}
             />
-			<Checkbox
-				size="sm"
-				name="completed"
-				defaultSelected={selectedMilestone?.state === MissionMilestoneState.completed}
-			>
-				Milestone Completed
-			</Checkbox>
+            <Checkbox
+                size="sm"
+                name="completed"
+                defaultSelected={selectedMilestone?.state === MissionMilestoneState.completed}
+            >
+                Milestone Completed
+            </Checkbox>
         </CustomEditModal>
     );
 }
