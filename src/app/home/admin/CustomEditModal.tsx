@@ -38,6 +38,12 @@ export default function CustomEditModal<T>({
                           element.value.trim() !== ""
                         : false,
                 )
+                .filter((element) => {
+                    if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
+                        return element.name !== "";
+                    }
+                    return (element as HTMLInputElement).name !== "";
+                })
                 .map((element) => {
                     const input = element as HTMLInputElement | HTMLTextAreaElement;
                     const { name, value, type } = input;
@@ -48,9 +54,8 @@ export default function CustomEditModal<T>({
 
                     if (
                         value.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?[+-]\d{2}:\d{2}\[[\w/]+\]$/) &&
-                        type == "text"
+                        type === "text"
                     ) {
-                        console.log(name, parseZonedDateTime(value).toDate().toISOString());
                         return [name, parseZonedDateTime(value).toDate().toISOString()];
                     }
 

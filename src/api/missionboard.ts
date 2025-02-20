@@ -352,6 +352,7 @@ export const MissionMissionState = {
 
 export interface MissionSummary {
   account_count: number;
+  approval_state: MissionApprovalState;
   completed_milestones_count: number;
   description: PropertiesDescription;
   like_count: number;

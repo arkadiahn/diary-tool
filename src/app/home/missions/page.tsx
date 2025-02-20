@@ -6,14 +6,17 @@ import {
     Checkbox,
     CheckboxGroup,
     Input,
+    Link,
     Popover,
     PopoverContent,
     PopoverTrigger,
     ScrollShadow,
+    Tooltip,
 } from "@heroui/react";
 import MainPageLayout from "../src/components/MainPageLayout";
 import MissionLayout from "./MissionLayout";
 
+import { auth } from "@/auth/server";
 /* ---------------------------------- Icons --------------------------------- */
 import icRoundFilterList from "@iconify/icons-ic/round-filter-list";
 import icRoundSearch from "@iconify/icons-ic/round-search";
@@ -23,6 +26,7 @@ export default async function Home() {
         format: "summary",
         show_unapproved: true,
     });
+    const { session } = await auth();
 
     return (
         <MainPageLayout
@@ -30,6 +34,16 @@ export default async function Home() {
             description="Manage all missions"
             headerItems={
                 <>
+                    <Button
+                        as={Link}
+                        color="primary"
+                        href="/missions/create"
+                        variant="flat"
+                        className="min-w-[120px]"
+                        isDisabled={!session}
+                    >
+                        Create Mission
+                    </Button>
                     <Popover placement="bottom-end">
                         <PopoverTrigger>
                             <Button>

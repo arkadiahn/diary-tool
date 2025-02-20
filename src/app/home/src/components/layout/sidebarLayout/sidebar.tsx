@@ -74,7 +74,7 @@ export default function Sidebar({ items, adminItems, sidebarLogo, headerLogo, se
                                 <SidebarItem
                                     key={item.href}
                                     href={item.href}
-                                    leading={<CustomIcon className="w-[22px]" icon={item.icon} width={22} />}
+                                    leading={<CustomIcon className="w-[19px]" icon={item.icon} width={19} />}
                                     label={item.label}
                                 />
                             ))}
@@ -93,7 +93,7 @@ export default function Sidebar({ items, adminItems, sidebarLogo, headerLogo, se
                                     <SidebarItem
                                         key={item.href}
                                         href={item.href}
-                                        leading={<CustomIcon className="w-[22px]" icon={item.icon} width={22} />}
+                                        leading={<CustomIcon className="w-[19px]" icon={item.icon} width={19} />}
                                         label={item.label}
                                         admin={true}
                                     />
