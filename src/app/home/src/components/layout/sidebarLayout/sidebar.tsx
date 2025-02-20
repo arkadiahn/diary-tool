@@ -48,7 +48,9 @@ export default function Sidebar({ items, adminItems, sidebarLogo, headerLogo, se
                         "--spacing": "8px",
                     } as React.CSSProperties
                 }
-                className={cn("fixed sm:sticky z-[50] top-[60px] sm:top-0 h-[calc(100dvh-60px)] sm:h-dvh w-fit pointer-events-none")}
+                className={cn(
+                    "fixed sm:sticky z-[50] top-[60px] sm:top-0 h-[calc(100dvh-60px)] sm:h-dvh w-fit pointer-events-none",
+                )}
                 // role="navigation"
             >
                 <input type="checkbox" id="sidebar-toggle" className="peer hidden" />

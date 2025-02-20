@@ -34,9 +34,9 @@ export function EditEventModal() {
             />
             <div className="col-span-1">
                 <MDEditor
-					textareaProps={{
-						name: "description"
-					}}
+                    textareaProps={{
+                        name: "description",
+                    }}
                     value={description}
                     onChange={(value) => setDescription(value ?? "")}
                     preview="live"
@@ -103,7 +103,7 @@ export function EditEventModal() {
                     defaultValue={selectedEvent?.picture_uri}
                 />
             </div>
-			{/* // @todo add image upload */}
+            {/* // @todo add image upload */}
         </CustomEditModal>
     );
 }

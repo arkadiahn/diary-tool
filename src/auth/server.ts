@@ -134,7 +134,7 @@ export async function auth(redirectUrl?: string, requiredScopes?: string[]): Pro
         }
 
         return { session: sessionData };
-    } catch (error) {
+    } catch {
         if (redirectUrl) {
             redirect(redirectUrl);
         }

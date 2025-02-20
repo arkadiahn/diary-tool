@@ -64,7 +64,7 @@ export const SessionProvider = ({
                 prompt: "none",
                 scope: "openid",
             });
-			// @todo iframe not hidden on safari
+            // @todo iframe not hidden on safari
             const iframeEl = document.createElement("iframe");
             iframeEl.className = "hidden";
             iframeEl.src = `${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/auth?${params}`;
