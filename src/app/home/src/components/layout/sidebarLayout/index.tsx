@@ -56,6 +56,11 @@ export default async function SidebarLayout({ children }: SidebarLayoutProps) {
                     label: "Missions",
                     href: "/admin/missions",
                 },
+                {
+                    icon: solarDocumentsLinear,
+                    label: "Accounts",
+                    href: "/admin/accounts",
+                },
             ]}
             items={[
                 {
