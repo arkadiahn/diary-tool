@@ -55,7 +55,7 @@ export const { StoreProvider: MilestoneStoreProvider, useStore: useMilestoneStor
         },
         updateMilestone: async (missionName: string, milestone: MissionMilestone) => {
             try {
-                await patchMissionMilestone(missionName, milestone.name.split("/").at(-1) ?? "", milestone);
+                await patchMissionMilestone(missionName, milestone.name, milestone);
                 toast.success("Milestone updated successfully");
                 get().fetchMilestones(missionName);
                 set({ editOpen: false });
@@ -65,7 +65,7 @@ export const { StoreProvider: MilestoneStoreProvider, useStore: useMilestoneStor
         },
         deleteMilestone: async (missionName: string, milestone: MissionMilestone) => {
             try {
-                await deleteMissionMilestone(missionName, milestone.name.split("/").at(-1) ?? "");
+                await deleteMissionMilestone(missionName, milestone.name);
                 toast.success("Milestone deleted successfully");
                 get().fetchMilestones(missionName);
             } catch {

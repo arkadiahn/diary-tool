@@ -1,14 +1,19 @@
 import { getMissions } from "@/api/missionboard";
 import type { MissionSummaryArray } from "@/api/missionboard";
 import CustomIcon from "@/components/CustomIcon";
-import { Input } from "@heroui/react";
-import icRoundSearch from "@iconify/icons-ic/round-search";
+import { Checkbox, Input, PopoverContent, Popover, CheckboxGroup, PopoverTrigger, Button, ScrollShadow } from "@heroui/react";
 import MainPageLayout from "../src/components/MainPageLayout";
-import MissionView from "./MissionView";
+import MissionLayout from "./MissionLayout";
+
+/* ---------------------------------- Icons --------------------------------- */
+import icRoundFilterList from "@iconify/icons-ic/round-filter-list";
+import icRoundSearch from "@iconify/icons-ic/round-search";
+
 
 export default async function Home() {
-    const data = await getMissions({
+    const { data: missions } = await getMissions({
         format: "summary",
+		show_unapproved: true,
     });
 
     return (
@@ -16,17 +21,39 @@ export default async function Home() {
             title="MissionBoard"
             description="Manage all missions"
             headerItems={
-                <Input
-                    placeholder="Search..."
-                    className="w-full self-center lg:max-w-xs"
-                    isClearable={true}
-                    startContent={<CustomIcon icon={icRoundSearch} className="w-6 h-6 pointer-events-none" />}
-                />
+				<>
+					<Popover placement="bottom-end">
+						<PopoverTrigger>
+							<Button>
+								Filters
+								<div>
+									<CustomIcon icon={icRoundFilterList} width={16} height={16} />
+								</div>
+							</Button>
+						</PopoverTrigger>
+						<PopoverContent title="Filters" className="px-5 py-4 items-start rounded-large">
+							<CheckboxGroup aria-label="Event Type" description="Choose the type of events you want to see" label="Event Type">
+								<Checkbox value="1">
+									Event
+								</Checkbox>
+								<Checkbox value="2">
+									Topic
+								</Checkbox>
+							</CheckboxGroup>
+						</PopoverContent>
+					</Popover>
+					<Input
+						placeholder="Search..."
+						className="w-full self-center lg:max-w-lg"
+						isClearable={true}
+						startContent={<CustomIcon icon={icRoundSearch} className="w-6 h-6 pointer-events-none" />}
+					/>
+				</>
             }
         >
-            <main className="flex-1 flex flex-col overflow-hidden w-full h-full">
-                <MissionView missions={data.data as MissionSummaryArray} />
-            </main>
+			<ScrollShadow className="w-full flex-1 scrollbar-thin scrollbar-thumb-default-300 scrollbar-track-transparent px-4 py-5 -ml-2">
+				<MissionLayout missions={missions as MissionSummaryArray} />
+			</ScrollShadow>
         </MainPageLayout>
     );
 }

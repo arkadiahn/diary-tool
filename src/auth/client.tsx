@@ -64,9 +64,10 @@ export const SessionProvider = ({
                 prompt: "none",
                 scope: "openid",
             });
+			// @todo iframe not hidden on safari
             const iframeEl = document.createElement("iframe");
-            iframeEl.src = `${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/auth?${params}`;
             iframeEl.className = "hidden";
+            iframeEl.src = `${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/auth?${params}`;
             iframeEl.setAttribute("sandbox", "allow-same-origin allow-scripts");
             iframeEl.onload = async () => {
                 const iframeUrl = new URL(iframeEl.contentWindow?.location.href ?? "");

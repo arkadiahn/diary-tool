@@ -6,7 +6,7 @@ interface TimelineProps {
 }
 
 export default async function Timeline({ name }: TimelineProps) {
-    const { data } = await getMissionMilestones(name.split("/").at(-1)!);
+    const { data } = await getMissionMilestones(name);
 
     const milestonesCount = data.length;
     const completedMilestonesCount = data.filter((milestone) => milestone.state === "completed").length;

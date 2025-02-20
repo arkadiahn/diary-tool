@@ -22,7 +22,7 @@ export default function MissionDetailView({ data, timelineComponent }: MissionDe
         <>
             <div className="w-full p-6">
                 <Breadcrumbs
-                    size="md"
+                    size="lg"
                     className="mb-5"
                     itemClasses={{
                         item: "text-default-600",

@@ -23,31 +23,52 @@ export const customAxios = async <T>(
         },
     });
 
+	// remove duplicate segments from url
 	instance.interceptors.request.use((config) => {
-		console.log(config);
+		if (config.url) {
+			const segments = config.url.split('/').filter(Boolean);
+			const firstSegment = segments.at(0);
+			if (firstSegment) {
+				const lastIndex = segments.lastIndexOf(firstSegment);
+				if (lastIndex > 0) {
+					config.url = '/' + segments.slice(lastIndex).join('/');
+				}
+			}
+		}
 		return config;
 	});
 
-	// @todo does this work (also for admins)
+	// refresh session if expired
 	instance.interceptors.response.use(
 		(response) => response,
 		async (error) => {
 			if (error.response.status === 401) {
-				console.log(sessionCookie);
-				const decodedToken = await jose.decodeJwt(sessionCookie ?? "");
-				if (decodedToken && decodedToken.exp && decodedToken.exp < Date.now() / 1000) {
-					const sessionResponse = await fetch("/api/session", {
-						credentials: "include",
-						cache: "no-store",
-					});
-					if (sessionResponse.status !== 200) {
-						window.location.href = "/";
+				const retryAttempt = error.config._retry as boolean | undefined;
+				if (retryAttempt) {
+					throw error;
+				}
+
+				try {
+					const decodedToken = await jose.decodeJwt(sessionCookie ?? "");
+					if (decodedToken) {
+						const sessionResponse = await fetch("/api/session", {
+							credentials: "include",
+							cache: "no-store",
+						});
+						if (sessionResponse.status !== 200) {
+							window.location.href = "/";
+						} else {
+							error.config._retry = true;
+							return instance(error.config);
+						}
 					}
+				} catch {
+					window.location.href = "/";
 				}
 			}
+			throw error;
 		}
 	);
-	// @todo parse name id from url correctly
 
     return instance({
         ...config,

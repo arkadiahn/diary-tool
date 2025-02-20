@@ -48,19 +48,19 @@ export default function Sidebar({ items, adminItems, sidebarLogo, headerLogo, se
                         "--spacing": "8px",
                     } as React.CSSProperties
                 }
-                className={cn("fixed sm:sticky z-[50] top-[60px] sm:top-0 h-[calc(100dvh-60px)] sm:h-dvh w-fit")}
+                className={cn("fixed sm:sticky z-[50] top-[60px] sm:top-0 h-[calc(100dvh-60px)] sm:h-dvh w-fit pointer-events-none")}
                 // role="navigation"
             >
                 <input type="checkbox" id="sidebar-toggle" className="peer hidden" />
 
                 {/* Backdrop */}
                 <div
-                    className="absolute inset-0 w-dvw bg-black/0 peer-checked:bg-black/15 pointer-events-none peer-checked:pointer-events-auto sm:hidden transition-colors duration-300"
+                    className="absolute inset-0 w-dvw bg-black/0 peer-checked:bg-black/15 pointer-events-none sm:hidden transition-colors duration-300"
                     aria-hidden="true"
                 />
 
                 {/* Sidebar */}
-                <nav className="h-full p-[var(--spacing)] -translate-x-full sm:translate-x-0 peer-checked:translate-x-0 transition-transform duration-300">
+                <nav className="h-full p-[var(--spacing)] -translate-x-full sm:translate-x-0 peer-checked:translate-x-0 transition-transform duration-300 peer-checked:pointer-events-auto sm:pointer-events-auto">
                     {/* Sidebar Content */}
                     <div className="h-full rounded-large bg-background dark:bg-content1 shadow-small flex flex-col items-center gap-[var(--spacing)] p-[var(--spacing)]">
                         <div className="hidden sm:flex justify-center items-center">{sidebarLogo}</div>

@@ -61,7 +61,7 @@ export const { StoreProvider: MissionsStoreProvider, useStore: useMissionsStore 
         },
         updateMission: async (mission: Mission) => {
             try {
-                await patchMission(mission.name.split("/").at(-1) ?? "", mission);
+                await patchMission(mission.name, mission);
                 toast.success("Mission updated successfully");
                 get().fetchMissions();
                 set({ editOpen: false });
@@ -71,7 +71,7 @@ export const { StoreProvider: MissionsStoreProvider, useStore: useMissionsStore 
         },
         deleteMission: async (mission: Mission) => {
             try {
-                await deleteMission(mission.name.split("/").at(-1) ?? "", {
+                await deleteMission(mission.name, {
                     allow_missing: true,
                 });
                 toast.success("Mission deleted successfully");
@@ -82,7 +82,7 @@ export const { StoreProvider: MissionsStoreProvider, useStore: useMissionsStore 
         },
         approveMission: async (mission: Mission) => {
             try {
-                await approveMission(mission.name.split("/").at(-1) ?? "");
+                await approveMission(mission.name);
                 toast.success("Mission approved successfully");
                 get().fetchMissions();
             } catch {
@@ -91,7 +91,7 @@ export const { StoreProvider: MissionsStoreProvider, useStore: useMissionsStore 
         },
         rejectMission: async (mission: Mission) => {
             try {
-                await rejectMission(mission.name.split("/").at(-1) ?? "");
+                await rejectMission(mission.name);
                 toast.success("Mission rejected successfully");
                 get().fetchMissions();
             } catch {

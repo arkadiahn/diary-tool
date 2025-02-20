@@ -50,7 +50,7 @@ export const { StoreProvider: EventsStoreProvider, useStore: useEventsStore } = 
         },
         updateEvent: async (event: Event) => {
             try {
-                await patchEvent(event.name.split("/").at(-1) ?? "", event);
+                await patchEvent(event.name, event);
                 toast.success("Event updated successfully");
                 get().fetchEvents();
                 set({ editOpen: false });
@@ -60,7 +60,7 @@ export const { StoreProvider: EventsStoreProvider, useStore: useEventsStore } = 
         },
         deleteEvent: async (event: Event) => {
             try {
-                await deleteEvent(event.name.split("/").at(-1) ?? "");
+                await deleteEvent(event.name);
                 toast.success("Event deleted successfully");
                 get().fetchEvents();
             } catch {

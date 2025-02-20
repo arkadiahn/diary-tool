@@ -24,7 +24,6 @@ export function EditEventModal() {
             onCreate={async (data: Event) => await createEvent(data)}
         >
             <input name="name" value={selectedEvent?.name ?? ""} readOnly={true} className="hidden" />
-            <input name="description" value={description} readOnly={true} className="hidden" />
             <Input
                 size="sm"
                 label="Title"
@@ -35,6 +34,9 @@ export function EditEventModal() {
             />
             <div className="col-span-1">
                 <MDEditor
+					textareaProps={{
+						name: "description"
+					}}
                     value={description}
                     onChange={(value) => setDescription(value ?? "")}
                     preview="live"
@@ -101,6 +103,7 @@ export function EditEventModal() {
                     defaultValue={selectedEvent?.picture_uri}
                 />
             </div>
+			{/* // @todo add image upload */}
         </CustomEditModal>
     );
 }

@@ -19,7 +19,7 @@ export default function EventGroup({ date, children }: EventGroupProps) {
                 <time className="text-default-500 text-md font-medium whitespace-nowrap">{date}</time>
                 <Divider className="flex-1" />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">{children}</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">{children}</div>
         </div>
     );
 }

@@ -17,21 +17,23 @@ export default async function CalendarEventPage({ params }: { params: Promise<{ 
 
     return (
         <MainPageLayout>
-            <div className="min-h-full w-full max-w-7xl flex flex-col gap-6">
+            <div className="min-h-full w-full flex flex-col gap-6">
                 <PageBreadcrumbs title={event.title} />
-                <Image
-                    isBlurred={true}
-                    as={NextImage}
-                    src={event.picture_uri}
-                    width={1920}
-                    height={1080}
-                    alt={event.title}
-                    className="w-full !h-[250px] md:!h-[380px] object-cover rounded-large"
-                    classNames={{
-                        wrapper: "w-full !max-w-full",
-                        blurredImg: "!scale-[100%] !h-[270px] md:!h-[400px]",
-                    }}
-                />
+                {event.picture_uri && (
+                    <Image
+                        isBlurred={true}
+                        as={NextImage}
+                        src={event.picture_uri}
+                        width={1920}
+                        height={1080}
+						alt={event.title}
+						className="w-full !h-[250px] md:!h-[380px] object-cover rounded-large"
+						classNames={{
+							wrapper: "w-full !max-w-full",
+							blurredImg: "!scale-[100%] !h-[270px] md:!h-[400px]",
+						}}
+					/>
+				)}
 
                 <div className="space-y-1">
                     <div className="flex flex-row items-center justify-between gap-2">

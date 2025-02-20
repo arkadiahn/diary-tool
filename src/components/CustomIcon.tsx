@@ -8,7 +8,7 @@ export interface CustomIconProps {
     width?: number;
     height?: number;
     className?: string;
-    onClick?: () => void;
+    onClick?: (e: React.MouseEvent<SVGSVGElement> | React.KeyboardEvent<SVGSVGElement>) => void;
 }
 export default function CustomIcon({ icon, width, height, className, onClick }: CustomIconProps) {
     const getViewBoxLength = (length?: number) => {

@@ -1,3 +1,5 @@
+// "use server";
+
 import * as jose from "jose";
 import type { NextURL } from "next/dist/server/web/next-url";
 import { cookies, headers } from "next/headers";
@@ -133,7 +135,6 @@ export async function auth(redirectUrl?: string, requiredScopes?: string[]): Pro
 
         return { session: sessionData };
     } catch (error) {
-        console.error(error);
         if (redirectUrl) {
             redirect(redirectUrl);
         }

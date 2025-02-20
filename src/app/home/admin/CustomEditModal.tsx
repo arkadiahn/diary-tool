@@ -1,5 +1,6 @@
 import { Button, Form, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/react";
 import { parseZonedDateTime } from "@internationalized/date";
+import { useTheme } from "next-themes";
 
 interface EditModalProps<T> {
     isOpen: boolean;
@@ -24,23 +25,34 @@ export default function CustomEditModal<T>({
     createButtonText = "Create",
     updateButtonText = "Update",
 }: EditModalProps<T>) {
+	const { resolvedTheme } = useTheme();
+
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const filteredData = Object.fromEntries(
-            Array.from(e.currentTarget.getElementsByTagName("input")).map((input) => {
-                const { name, value, type, checked } = input;
-
+            Array.from(e.currentTarget.querySelectorAll("input, textarea"))
+              .filter((element) => 
+                element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement ? 
+                (element.type === "text" || element.tagName.toLowerCase() === "textarea") && 
+                element.value.trim() !== ""
+                : false
+              )
+              .map((element) => {
+                const input = element as HTMLInputElement | HTMLTextAreaElement;
+                const { name, value, type } = input;
+                
                 if (type === "checkbox") {
-                    return [name, checked];
+                    return [name, (input as HTMLInputElement).checked];
                 }
 
-                if (value.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?[+-]\d{2}:\d{2}\[[\w/]+\]$/)) {
+                if (value.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?[+-]\d{2}:\d{2}\[[\w/]+\]$/) && type == "text") {
+					console.log(name, parseZonedDateTime(value).toDate().toISOString());
                     return [name, parseZonedDateTime(value).toDate().toISOString()];
                 }
 
                 return [name, value];
-            }),
+            })
         );
 
         if (data && onUpdate) {
@@ -57,7 +69,7 @@ export default function CustomEditModal<T>({
                     {(onClose) => (
                         <>
                             <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
-                            <ModalBody className="grid grid-cols-1 gap-4">{children}</ModalBody>
+                            <ModalBody className="grid grid-cols-1 gap-4" data-color-mode={resolvedTheme}>{children}</ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="light" onPress={onClose}>
                                     Close

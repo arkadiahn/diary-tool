@@ -44,7 +44,7 @@ export const { StoreProvider: AccountStoreProvider, useStore: useAccountStore } 
         },
         removeAccount: async (missionName: string, account: MissionAccount) => {
             try {
-                await deleteMissionAccount(missionName, account.name.split("/").at(-1) ?? "");
+                await deleteMissionAccount(missionName, account.name);
                 toast.success("Account deleted successfully");
                 get().fetchAccounts(missionName);
             } catch {
@@ -63,7 +63,7 @@ export const { StoreProvider: AccountStoreProvider, useStore: useAccountStore } 
         },
         approveAccount: async (missionName: string, account: MissionAccount) => {
             try {
-                await approveMissionAccount(missionName, account.name.split("/").at(-1) ?? "");
+                await approveMissionAccount(missionName, account.name);
                 toast.success("Account approved successfully");
                 get().fetchAccounts(missionName);
             } catch {
@@ -72,7 +72,7 @@ export const { StoreProvider: AccountStoreProvider, useStore: useAccountStore } 
         },
         rejectAccount: async (missionName: string, account: MissionAccount) => {
             try {
-                await rejectMissionAccount(missionName, account.name.split("/").at(-1) ?? "");
+                await rejectMissionAccount(missionName, account.name);
                 toast.success("Account rejected successfully");
                 get().fetchAccounts(missionName);
             } catch {

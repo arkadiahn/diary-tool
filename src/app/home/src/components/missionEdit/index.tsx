@@ -16,7 +16,7 @@ function ProjectLeaderChip({ account }: { account: string }) {
     useEffect(() => {
         const fetchLeader = async () => {
             try {
-                const { data } = await getAccount(account.split("/").at(-1)!);
+                const { data } = await getAccount(account);
                 setAccountData(data);
             } catch (_error) {
                 setAccountData(null);
@@ -57,7 +57,7 @@ export default function MissionEdit({ data }: MissionEditProps) {
     const onSave = async (mission: Mission) => {
         try {
             if (mission.name !== "---") {
-                await patchMission(mission.name.split("/").at(-1)!, mission);
+                await patchMission(mission.name, mission);
                 router.push(`/${mission.name}`);
             } else {
                 const { data } = await postMission(mission);

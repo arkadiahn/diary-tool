@@ -77,8 +77,8 @@ export default function EditMissionModal() {
 
     useEffect(() => {
         if (mission) {
-            fetchMilestones(mission.name.split("/").at(-1) ?? "");
-            fetchAccounts(mission.name.split("/").at(-1) ?? "");
+            fetchMilestones(mission.name);
+            fetchAccounts(mission.name);
         }
     }, [mission]);
 
@@ -176,14 +176,11 @@ export default function EditMissionModal() {
                                             <span
                                                 className="text-sm text-danger cursor-pointer active:opacity-50"
                                                 onClick={() => {
-                                                    deleteMilestone(mission?.name.split("/").at(-1) ?? "", milestone);
+                                                    deleteMilestone(mission?.name, milestone);
                                                 }}
                                                 onKeyDown={(e) => {
                                                     if (e.key === "Enter") {
-                                                        deleteMilestone(
-                                                            mission?.name.split("/").at(-1) ?? "",
-                                                            milestone,
-                                                        );
+                                                        deleteMilestone(mission?.name, milestone);
                                                     }
                                                 }}
                                             >
@@ -230,10 +227,7 @@ export default function EditMissionModal() {
                                                         size="sm"
                                                         color="success"
                                                         onPress={() => {
-                                                            approveAccount(
-                                                                mission?.name.split("/").at(-1) ?? "",
-                                                                account,
-                                                            );
+                                                            approveAccount(mission?.name, account);
                                                         }}
                                                     >
                                                         Approve
@@ -242,10 +236,7 @@ export default function EditMissionModal() {
                                                         size="sm"
                                                         color="danger"
                                                         onPress={() => {
-                                                            rejectAccount(
-                                                                mission?.name.split("/").at(-1) ?? "",
-                                                                account,
-                                                            );
+                                                            rejectAccount(mission?.name, account);
                                                         }}
                                                     >
                                                         Reject
@@ -260,14 +251,11 @@ export default function EditMissionModal() {
                                                 <span
                                                     className="text-sm text-danger cursor-pointer active:opacity-50"
                                                     onClick={() => {
-                                                        removeAccount(mission?.name.split("/").at(-1) ?? "", account);
+                                                        removeAccount(mission?.name, account);
                                                     }}
                                                     onKeyDown={(e) => {
                                                         if (e.key === "Enter") {
-                                                            removeAccount(
-                                                                mission?.name.split("/").at(-1) ?? "",
-                                                                account,
-                                                            );
+                                                            removeAccount(mission?.name, account);
                                                         }
                                                     }}
                                                 >
