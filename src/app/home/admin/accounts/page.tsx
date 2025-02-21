@@ -34,7 +34,7 @@ function Accounts() {
             <CustomGrid
                 data={users}
                 loading={loading}
-                tableTitle="Users"
+                tableTitle="Accounts"
                 columnDefs={[
                     { field: "name", headerName: "Name", width: 120 },
                     { field: "nick_name", headerName: "Nickname" },

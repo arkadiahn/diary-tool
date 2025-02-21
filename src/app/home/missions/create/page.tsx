@@ -11,8 +11,6 @@ import {
     BreadcrumbItem,
     Breadcrumbs,
     Button,
-    Chip,
-    ChipProps,
     DatePicker,
     Form,
     Input,
@@ -21,7 +19,6 @@ import {
     ModalContent,
     ModalFooter,
     ModalHeader,
-    ScrollShadow,
     Table,
     TableBody,
     TableCell,
@@ -117,17 +114,16 @@ export default function CreateMissionPage() {
                     <BreadcrumbItem href="/missions">Missions</BreadcrumbItem>
                     <BreadcrumbItem>Create Mission</BreadcrumbItem>
                 </Breadcrumbs>
-                <div className="w-full flex flex-col h-full lg:flex-row">
+                <div className="w-full flex flex-col h-full justify-center lg:flex-row">
                     <RowSteps
                         className="!w-full !max-w-full mb-6 lg:mb-0 lg:hidden"
                         currentStep={step}
                         onStepChange={setStep}
                         steps={[
-                            { title: "What is a mission?" },
-                            { title: "Mission Non-Profit?" },
-                            { title: "Mission Details" },
-                            { title: "Mission Milestones" },
-                            { title: "Await Approval" },
+                            { title: "What is a mission?", minWidth: 120 },
+                            { title: "Mission Non-Profit?", minWidth: 120 },
+                            { title: "Mission Details", minWidth: 120 },
+                            { title: "Mission Milestones", minWidth: 120 },
                         ]}
                     />
                     <VerticalSteps
@@ -150,10 +146,6 @@ export default function CreateMissionPage() {
                             {
                                 title: "Mission Milestones",
                                 description: "Enter the milestones of the mission",
-                            },
-                            {
-                                title: "Await Approval",
-                                description: "Wait for the mission to be approved",
                             },
                         ]}
                     />

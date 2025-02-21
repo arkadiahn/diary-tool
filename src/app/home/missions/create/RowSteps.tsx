@@ -5,12 +5,14 @@ import type { ComponentProps } from "react";
 
 import { cn } from "@heroui/react";
 import { useControlledState } from "@react-stately/utils";
+import clsx from "clsx";
 import { LazyMotion, domAnimation, m } from "framer-motion";
 import React from "react";
 
 export type RowStepProps = {
     title?: React.ReactNode;
     className?: string;
+    minWidth?: number;
 };
 
 export interface RowStepsProps extends React.HTMLAttributes<HTMLButtonElement> {
@@ -159,7 +161,12 @@ const RowSteps = React.forwardRef<HTMLButtonElement, RowStepsProps>(
                             currentStep === stepIdx ? "active" : currentStep < stepIdx ? "inactive" : "complete";
 
                         return (
-                            <li key={stepIdx} className="relative flex w-full items-center pr-12">
+                            <li
+                                key={stepIdx}
+                                className={clsx("relative flex w-full items-center", {
+                                    "pr-12": stepIdx < steps.length - 1,
+                                })}
+                            >
                                 <button
                                     key={stepIdx}
                                     ref={ref}
@@ -168,6 +175,9 @@ const RowSteps = React.forwardRef<HTMLButtonElement, RowStepsProps>(
                                         "group flex w-full cursor-pointer flex-row items-center justify-center gap-x-3 rounded-large py-2.5",
                                         stepClassName,
                                     )}
+                                    style={{
+                                        minWidth: step.minWidth ?? 0,
+                                    }}
                                     onClick={() => setCurrentStep(stepIdx)}
                                     {...props}
                                 >

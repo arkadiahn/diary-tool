@@ -9,8 +9,8 @@ import {
     rejectMission,
 } from "@/api/missionboard";
 import toast from "react-hot-toast";
+import { confirm } from "../AreYouSurePopup";
 import createCustomStore from "../CreateCustomStore";
-
 type MissionsStore = {
     selectedMission: Mission | null;
     missions: MissionArray;
@@ -70,6 +70,8 @@ export const { StoreProvider: MissionsStoreProvider, useStore: useMissionsStore 
             }
         },
         deleteMission: async (mission: Mission) => {
+            const result = await confirm("Are you sure you want to delete this mission?", "Delete Mission");
+            if (!result) return;
             try {
                 await deleteMission(mission.name, {
                     allow_missing: true,
@@ -90,6 +92,8 @@ export const { StoreProvider: MissionsStoreProvider, useStore: useMissionsStore 
             }
         },
         rejectMission: async (mission: Mission) => {
+            const result = await confirm("Are you sure you want to reject this mission?", "Reject Mission");
+            if (!result) return;
             try {
                 await rejectMission(mission.name);
                 toast.success("Mission rejected successfully");

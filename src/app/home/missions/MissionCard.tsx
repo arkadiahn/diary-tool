@@ -71,7 +71,7 @@ export default function MissionCard({ mission }: { mission: MissionSummary }) {
                     </Chip>
                 </CardHeader>
 
-                <CardBody className="pt-0 pb-0 space-y-2">
+                <CardBody className="pt-0 pb-3 space-y-2">
                     <p className="text-default-500 text-sm line-clamp-2 min-h-[38px]">{mission.description}</p>
                     <div className="w-full h-[50px] space-y-1">
                         <h4 className="text-xs font-medium text-default-500 flex items-center">Milestones</h4>
@@ -86,7 +86,7 @@ export default function MissionCard({ mission }: { mission: MissionSummary }) {
                     </div>
                 </CardBody>
 
-                <CardFooter className="flex justify-between items-center pt-3">
+                <CardFooter className="flex justify-between items-center pt-0">
                     <div className="flex items-center gap-1 text-default-500">
                         <CustomIcon icon={UserGroupIcon} className="w-5 h-5" />
                         <span className="text-sm">{mission.account_count}</span>

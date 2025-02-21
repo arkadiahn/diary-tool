@@ -44,7 +44,6 @@ const SidebarItem = ({
                 { "gap-2 sm:gap-1 lg:gap-2 p-2 text-default-500 hover:text-foreground": Component === Button }, // if button
                 { "bg-default/40 text-foreground/80": selected }, // if selected
                 { "px-1 py-1": Component === "div" }, // if div
-                { "text-orange-500 hover:text-orange-500": admin }, // if admin
             )}
             variant="light"
             {...props}

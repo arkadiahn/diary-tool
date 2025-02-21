@@ -3,7 +3,18 @@
 import type { Mission, MissionAccount } from "@/api/missionboard";
 import { useSession } from "@/auth/client";
 import CustomIcon from "@/components/CustomIcon";
-import { BreadcrumbItem, Breadcrumbs, Button, Card, CardBody, CardHeader, Chip, Divider, Link } from "@heroui/react";
+import {
+    Avatar,
+    BreadcrumbItem,
+    Breadcrumbs,
+    Button,
+    Card,
+    CardBody,
+    CardHeader,
+    Chip,
+    Divider,
+    Link,
+} from "@heroui/react";
 import MainPageLayout from "../../src/components/MainPageLayout";
 import JoinMissionButton from "./JoinMissionButton";
 
@@ -84,20 +95,37 @@ export default function MissionDetails({ mission, timelineComponent, accounts }:
                             </section>
                         </div>
 
-                        <section className="w-64">
-                            <h2 className="text-xl font-semibold mb-1">Accounts</h2>
-                            <div className="flex flex-col gap-3">
-                                {accounts.map((account) => (
-                                    <div className="flex items-center gap-2" key={account.account.name}>
-                                        <span>{account.account.nick_name}</span>
-                                        <span>{account.account.email}</span>
+                        <section className="w-80">
+                            <Card className="h-full min-h-[300px]">
+                                <CardBody>
+                                    <h2 className="text-xl font-semibold">Team Members</h2>
+                                    <Divider className="my-3" />
+                                    <div className="flex flex-col gap-4">
+                                        {accounts.map((account) => (
+                                            <div className="flex items-center gap-3" key={account.account.name}>
+                                                <Avatar
+                                                    name={account.account.nick_name}
+                                                    className="bg-primary/10 text-primary"
+                                                    size="sm"
+                                                />
+                                                <div className="flex flex-col subpixel-antialiased">
+                                                    <span className="text-small font-medium">
+                                                        {account.account.nick_name}
+                                                    </span>
+                                                    <span className="text-xs text-default-500">
+                                                        {account.account.email}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
-                                ))}
-                            </div>
+                                </CardBody>
+                            </Card>
                         </section>
                     </div>
 
                     <section className="pt-4">
+                        <Divider className="my-3" />
                         <h2 className="text-xl font-semibold mb-1">Timeline</h2>
                         {timelineComponent}
                     </section>

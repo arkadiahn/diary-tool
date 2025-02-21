@@ -2,6 +2,7 @@
 
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { useEffect } from "react";
+import { AreYouSure } from "../AreYouSurePopup";
 import CustomGrid from "../CustomGrid";
 import { EditEventModal } from "./EditEventModal";
 import { EventsStoreProvider, useEventsStore } from "./_eventsStore";
@@ -48,6 +49,7 @@ function AdminEvents() {
 export default function AdminEventsWrapper() {
     return (
         <EventsStoreProvider>
+            <AreYouSure />
             <AdminEvents />
         </EventsStoreProvider>
     );

@@ -3,6 +3,7 @@
 import type { Mission } from "@/api/missionboard";
 import { Button, Chip } from "@heroui/react";
 import { useEffect } from "react";
+import { AreYouSure } from "../AreYouSurePopup";
 import CustomGrid from "../CustomGrid";
 import EditMissionModal from "./EditMissionModal";
 import { AccountStoreProvider } from "./_accountStore";
@@ -209,6 +210,7 @@ function AdminMissions() {
 export default function AdminMissionsWrapper() {
     return (
         <MissionsStoreProvider>
+            <AreYouSure />
             <AdminMissions />
         </MissionsStoreProvider>
     );

@@ -6,6 +6,7 @@ import {
     postMissionMilestone,
 } from "@/api/missionboard";
 import { toast } from "react-hot-toast";
+import { confirm } from "../AreYouSurePopup";
 import createCustomStore from "../CreateCustomStore";
 
 type MilestoneStore = {
@@ -64,6 +65,8 @@ export const { StoreProvider: MilestoneStoreProvider, useStore: useMilestoneStor
             }
         },
         deleteMilestone: async (missionName: string, milestone: MissionMilestone) => {
+            const result = await confirm("Are you sure you want to delete this milestone?", "Delete Milestone");
+            if (!result) return;
             try {
                 await deleteMissionMilestone(missionName, milestone.name);
                 toast.success("Milestone deleted successfully");

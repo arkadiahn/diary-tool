@@ -64,12 +64,16 @@ export default function Sidebar({ items, adminItems, sidebarLogo, headerLogo, se
                 {/* Sidebar */}
                 <nav className="h-full p-[var(--spacing)] -translate-x-full sm:translate-x-0 peer-checked:translate-x-0 transition-transform duration-300 peer-checked:pointer-events-auto sm:pointer-events-auto">
                     {/* Sidebar Content */}
-                    <div className="h-full rounded-large bg-background dark:bg-content1 shadow-small flex flex-col items-center gap-[var(--spacing)] p-[var(--spacing)]">
-                        <div className="hidden sm:flex justify-center items-center">{sidebarLogo}</div>
+                    <div className="h-full rounded-large bg-background dark:bg-content1 shadow-small flex flex-col items-center">
+                        <div className="hidden sm:flex justify-center items-center p-[var(--spacing)]">
+                            {sidebarLogo}
+                        </div>
 
-                        <Divider className="hidden sm:block" />
+                        <div className="w-full px-[var(--spacing)]">
+                            <Divider className="hidden sm:block" />
+                        </div>
 
-                        <ScrollShadow className="flex-1 space-y-1" hideScrollBar={true}>
+                        <ScrollShadow className="flex-1 space-y-1 p-[var(--spacing)]" hideScrollBar={true}>
                             {items.map((item) => (
                                 <SidebarItem
                                     key={item.href}
@@ -100,8 +104,11 @@ export default function Sidebar({ items, adminItems, sidebarLogo, headerLogo, se
                                 ))}
                         </ScrollShadow>
 
-                        <Divider className="hidden sm:block" />
-                        <div className="w-full hidden sm:block">
+                        <div className="w-full px-[var(--spacing)]">
+                            <Divider className="hidden sm:block" />
+                        </div>
+
+                        <div className="w-full p-[var(--spacing)] hidden sm:block">
                             <AccountHandler />
                         </div>
                     </div>

@@ -34,8 +34,10 @@ export default function CustomEditModal<T>({
             Array.from(e.currentTarget.querySelectorAll("input, textarea"))
                 .filter((element) =>
                     element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement
-                        ? (element.type === "text" || element.tagName.toLowerCase() === "textarea") &&
-                          element.value.trim() !== ""
+                        ? (element.type === "checkbox" ||
+                              element.type === "text" ||
+                              element.tagName.toLowerCase() === "textarea") &&
+                          (element.type === "checkbox" || element.value.trim() !== "")
                         : false,
                 )
                 .filter((element) => {
