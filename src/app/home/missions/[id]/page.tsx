@@ -1,5 +1,6 @@
-import { getMission } from "@/api/missionboard";
-import MissionDetailView from "../../src/components/missionDetail";
+import { getMission, getMissionAccounts } from "@/api/missionboard";
+import DetailTimeline from "./DetailTimeline";
+import MissionDetails from "./MissionDetails";
 
 interface ProjectPageProps {
     params: Promise<{
@@ -10,6 +11,13 @@ interface ProjectPageProps {
 export default async function ProjectPage({ params }: ProjectPageProps) {
     const { id } = await params;
     const { data: mission } = await getMission(id);
+    const { data: accounts } = await getMissionAccounts(id);
 
-    return <MissionDetailView data={mission} />;
+    return (
+        <MissionDetails
+            mission={mission}
+            timelineComponent={<DetailTimeline name={mission.name} />}
+            accounts={accounts}
+        />
+    );
 }

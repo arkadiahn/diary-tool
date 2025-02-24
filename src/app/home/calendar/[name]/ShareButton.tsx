@@ -36,10 +36,7 @@ export default function ShareButton({ event }: ShareButtonProps) {
                         document.body.removeChild(textarea);
                         toast.success("Link copied to clipboard!");
                     }
-                } catch (err) {
-                    console.error("Error sharing:", err);
-                    toast.error("Failed to share event");
-                }
+                } catch {}
             }}
         >
             Share Event

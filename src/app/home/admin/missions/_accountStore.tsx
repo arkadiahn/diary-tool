@@ -8,6 +8,7 @@ import {
     rejectMissionAccount,
 } from "@/api/missionboard";
 import { toast } from "react-hot-toast";
+import { confirm } from "../AreYouSurePopup";
 import createCustomStore from "../CreateCustomStore";
 
 type AccountStore = {
@@ -43,6 +44,8 @@ export const { StoreProvider: AccountStoreProvider, useStore: useAccountStore } 
             }
         },
         removeAccount: async (missionName: string, account: MissionAccount) => {
+            const result = await confirm("Are you sure you want to delete this account?", "Delete Account");
+            if (!result) return;
             try {
                 await deleteMissionAccount(missionName, account.name);
                 toast.success("Account deleted successfully");
@@ -71,6 +74,8 @@ export const { StoreProvider: AccountStoreProvider, useStore: useAccountStore } 
             }
         },
         rejectAccount: async (missionName: string, account: MissionAccount) => {
+            const result = await confirm("Are you sure you want to reject this account?", "Reject Account");
+            if (!result) return;
             try {
                 await rejectMissionAccount(missionName, account.name);
                 toast.success("Account rejected successfully");

@@ -1,5 +1,6 @@
 "use client";
 
+import { debounce } from "lodash";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { type StoreApi, createStore, useStore } from "zustand";
 import type { Session } from "./models";
@@ -54,79 +55,79 @@ export const SessionProvider = ({
     }, [store]);
 
     /* ------------------------------ Silent Login ------------------------------ */
-    useEffect(() => {
-        if (!store.getState().session) {
-            const iframe = document.createElement("iframe");
-            const params = new URLSearchParams({
-                client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID!,
-                redirect_uri: `${window.location.origin}/api/silent`,
-                response_type: "code",
-                prompt: "none",
-                scope: "openid",
-            });
-            // @todo iframe not hidden on safari
-            const iframeEl = document.createElement("iframe");
-            iframeEl.className = "hidden";
-            iframeEl.src = `${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/auth?${params}`;
-            iframeEl.setAttribute("sandbox", "allow-same-origin allow-scripts");
-            iframeEl.onload = async () => {
-                const iframeUrl = new URL(iframeEl.contentWindow?.location.href ?? "");
-                iframeEl.remove();
-                if (iframeUrl.searchParams.get("code")) {
-                    await fetch(
-                        `/api/session?${new URLSearchParams({
-                            code: iframeUrl.searchParams.get("code") ?? "",
-                            redirect_url: `${window.location.origin}/api/silent`,
-                        })}`,
-                        {
-                            credentials: "include",
-                            cache: "no-store",
-                        },
-                    );
-                    window.location.reload();
-                }
-            };
-            document.body.appendChild(iframe);
-
-            return () => {
-                iframe.remove();
-            };
-        }
-    }, [store]);
-
-    // /* ----------------------------- Periodic Check ----------------------------- */
+    // @todo fix silent login
     // useEffect(() => {
-    // 	if (store.getState().session) {
-    // 		const interval = setInterval(async () => {
-    // 			const check = await checkSession();
-    // 			if (check === false) {
-    // 				signOut();
-    // 			} else if (check === true) {
-    // 				window.location.reload();
-    // 			}
-    // 		}, 30000);
-    // 		return () => clearInterval(interval);
-    // 	}
-    // }, [checkSession, store]);
+    //     if (!store.getState().session) {
+    //         const iframe = document.createElement("iframe");
+    //         const params = new URLSearchParams({
+    //             client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID!,
+    //             redirect_uri: `${window.location.origin}/api/silent`,
+    //             response_type: "code",
+    //             prompt: "none",
+    //             scope: "openid",
+    //         });
+    //         // @todo iframe not hidden on safari
+    //         const iframeEl = document.createElement("iframe");
+    //         iframeEl.className = "hidden";
+    //         iframeEl.src = `${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/auth?${params}`;
+    //         iframeEl.setAttribute("sandbox", "allow-same-origin allow-scripts");
+    //         iframeEl.onload = async () => {
+    //             const iframeUrl = new URL(iframeEl.contentWindow?.location.href ?? "");
+    //             iframeEl.remove();
+    //             if (iframeUrl.searchParams.get("code")) {
+    //                 await fetch(
+    //                     `/api/session?${new URLSearchParams({
+    //                         code: iframeUrl.searchParams.get("code") ?? "",
+    //                         redirect_url: `${window.location.origin}/api/silent`,
+    //                     })}`,
+    //                     {
+    //                         credentials: "include",
+    //                         cache: "no-store",
+    //                     },
+    //                 );
+    //                 window.location.reload();
+    //             }
+    //         };
+    //         document.body.appendChild(iframe);
+
+    //         return () => {
+    //             iframe.remove();
+    //         };
+    //     }
+    // }, [store]);
 
     /* ------------------- Update Session On Visibility Change ------------------ */
-    const visibilityHandler = useCallback(async () => {
-        // @todo refresh if session details changed
-        const sessionAvailable = await checkSession();
-        if (sessionAvailable) {
-            window.location.reload();
-        } else if (sessionAvailable === false && store.getState().session) {
-            signOut();
+    const debouncedHandler = useCallback(
+        debounce(
+            async () => {
+                const sessionAvailable = await checkSession();
+                if (sessionAvailable) {
+                    window.location.reload();
+                } else if (sessionAvailable === false && store.getState().session) {
+                    signOut();
+                }
+            },
+            80,
+            { leading: true, trailing: false },
+        ),
+        [checkSession, store],
+    );
+
+    const visibilityHandler = useCallback(() => {
+        if (document.visibilityState === "visible") {
+            debouncedHandler();
         }
-    }, [checkSession, store]);
+    }, [debouncedHandler]);
+
     useEffect(() => {
         document.addEventListener("visibilitychange", visibilityHandler);
         window.addEventListener("focus", visibilityHandler);
         return () => {
             document.removeEventListener("visibilitychange", visibilityHandler);
             window.removeEventListener("focus", visibilityHandler);
+            debouncedHandler.cancel();
         };
-    }, [visibilityHandler]);
+    }, [visibilityHandler, debouncedHandler]);
 
     return <SessionStoreContext.Provider value={store}>{children}</SessionStoreContext.Provider>;
 };

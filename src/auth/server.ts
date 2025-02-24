@@ -368,6 +368,31 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
         return setResponseCookies(unauthorizedResponse);
     }
 
+    /* ------------------------------- IMPERSONATE ------------------------------ */
+    if (path[0] === "impersonate") {
+        const tokenResponse = await fetch(`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/protocol/openid-connect/token`, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+                client_id: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID,
+                client_secret: process.env.KEYCLOAK_SECRET,
+                grant_type: "urn:ietf:params:oauth:grant-type:token-exchange",
+                subject_token: request.cookies.get("session")?.value ?? "",
+                requested_token_type: "urn:ietf:params:oauth:token-type:access_token",
+                requested_subject: request.nextUrl.searchParams.get("name") ?? "",
+            }),
+            cache: "no-store",
+        });
+        if (!tokenResponse.ok) {
+            return NextResponse.json({ error: "Failed to impersonate user" }, { status: 500 });
+        }
+        const tokenData = await tokenResponse.json();
+        return setResponseCookies(
+            NextResponse.json({ impersonated: request.nextUrl.searchParams.get("name") }),
+            tokenData,
+        );
+    }
+
     if (path[0] === "silent") {
         return NextResponse.json(
             {
