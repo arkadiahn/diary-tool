@@ -38,6 +38,9 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
     ];
 
     const [error, setError] = useState<string | null>(null);
+    const [useCustomProject, setUseCustomProject] = useState(
+        initialDiary ? !PROJECT_OPTIONS.includes(initialDiary.project) : false
+    );
 
     const [newEntry, setNewEntry] = useState({
         entry_date: initialDiary
@@ -93,18 +96,41 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
                     <h2 className="text-2xl font-medium mb-6">{initialDiary ? "Edit Entry" : "New Entry"}</h2>
                     <form onSubmit={handleSubmit}>
                         <div className="grid grid-cols-1 gap-6">
-                            <Select
-                                label="Project you are currently working on"
-                                selectedKeys={newEntry.project ? [newEntry.project] : []}
-                                onChange={(e) => setNewEntry({ ...newEntry, project: e.target.value })}
-                                isRequired={true}
-                            >
-                                {PROJECT_OPTIONS.map((project) => (
-                                    <SelectItem key={project} textValue={project}>
-                                        {project}
-                                    </SelectItem>
-                                ))}
-                            </Select>
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        id="useCustomProject"
+                                        checked={useCustomProject}
+                                        onChange={(e) => setUseCustomProject(e.target.checked)}
+                                    />
+                                    <label htmlFor="useCustomProject">Use custom project name</label>
+                                </div>
+                                
+                                {useCustomProject ? (
+                                    <Input
+                                        type="text"
+                                        label="Custom project name"
+                                        value={newEntry.project}
+                                        onChange={(e) => setNewEntry({ ...newEntry, project: e.target.value })}
+                                        placeholder="Enter project name"
+                                        isRequired={true}
+                                    />
+                                ) : (
+                                    <Select
+                                        label="Project you are currently working on"
+                                        selectedKeys={newEntry.project ? [newEntry.project] : []}
+                                        onChange={(e) => setNewEntry({ ...newEntry, project: e.target.value })}
+                                        isRequired={true}
+                                    >
+                                        {PROJECT_OPTIONS.map((project) => (
+                                            <SelectItem key={project} textValue={project}>
+                                                {project}
+                                            </SelectItem>
+                                        ))}
+                                    </Select>
+                                )}
+                            </div>
 
                             <Input
                                 type="number"
