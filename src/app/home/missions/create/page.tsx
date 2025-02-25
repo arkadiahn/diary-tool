@@ -19,6 +19,7 @@ import {
     ModalContent,
     ModalFooter,
     ModalHeader,
+    ScrollShadow,
     Table,
     TableBody,
     TableCell,
@@ -50,10 +51,10 @@ function MissionDetailsView({ children, title, view, setStep, submit }: MissionD
                 hidden: !view,
             })}
         >
-            <div className="w-full flex flex-col gap-5">
-                <h1 className="text-2xl font-bold self-start">{title}</h1>
-                {children}
-            </div>
+			<h1 className="text-2xl font-bold self-start">{title}</h1>
+			<ScrollShadow className="flex-1 flex flex-col gap-5 h-[300px]">
+				{children}
+            </ScrollShadow>
             <div className="w-full flex flex-row justify-between gap-2">
                 <Button onPress={() => setStep((prev) => prev - 1)}>Back</Button>
                 <Button
@@ -107,14 +108,13 @@ export default function CreateMissionPage() {
         onOpenChange();
     };
 
-    return (
-        <MainPageLayout>
-            <div className="flex flex-col gap-6 w-full h-full">
+    return (<>
+        <MainPageLayout className="overflow-hidden flex flex-col gap-6 max-h-full">
                 <Breadcrumbs size="lg" className="self-start font-medium">
                     <BreadcrumbItem href="/missions">Missions</BreadcrumbItem>
                     <BreadcrumbItem>Create Mission</BreadcrumbItem>
                 </Breadcrumbs>
-                <div className="w-full flex flex-col h-full justify-center lg:flex-row">
+                <div className="w-full max-h-full flex-1 flex flex-col justify-center lg:flex-row">
                     <RowSteps
                         className="!w-full !max-w-full mb-6 lg:mb-0 lg:hidden"
                         currentStep={step}
@@ -192,6 +192,7 @@ export default function CreateMissionPage() {
                                     label="Kickoff Time"
                                     name="kickoff_time"
                                     placeholderValue={now("Europe/Berlin")}
+                                    description="The time where the team formation happens and the mission starts"
                                     isRequired={true}
                                 />
                                 <DatePicker
@@ -323,43 +324,42 @@ export default function CreateMissionPage() {
                         </div>
                     )}
                 </div>
-            </div>
-
-            <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="4xl">
-                <ModalContent>
-                    <Form onSubmit={onAddMilestone}>
-                        <ModalHeader>
-                            <h1 className="text-2xl font-bold">Milestone Details</h1>
-                        </ModalHeader>
-                        <ModalBody className="w-full flex flex-col gap-6">
-                            <Textarea
-                                label="Description"
-                                name="description"
-                                defaultValue={selectedMilestone?.description}
-                                placeholder="Enter milestone description"
-                                isRequired={true}
-                            />
-                            <DatePicker
-                                size="sm"
-                                label="End Time"
-                                name="end_time"
-                                defaultValue={
-                                    selectedMilestone?.end_time
-                                        ? parseAbsolute(selectedMilestone.end_time, "Europe/Berlin")
-                                        : null
-                                }
-                                placeholderValue={now("Europe/Berlin")}
-                                isRequired={true}
-                            />
-                        </ModalBody>
-                        <ModalFooter>
-                            <Button color="primary" type="submit">
-                                Add Milestone
-                            </Button>
-                        </ModalFooter>
-                    </Form>
-                </ModalContent>
-            </Modal>
         </MainPageLayout>
-    );
+
+		<Modal isOpen={isOpen} onOpenChange={onOpenChange} size="4xl">
+			<ModalContent>
+				<Form onSubmit={onAddMilestone}>
+					<ModalHeader>
+						<h1 className="text-2xl font-bold">Milestone Details</h1>
+					</ModalHeader>
+					<ModalBody className="w-full flex flex-col gap-6">
+						<Textarea
+							label="Description"
+							name="description"
+							defaultValue={selectedMilestone?.description}
+							placeholder="Enter milestone description"
+							isRequired={true}
+						/>
+						<DatePicker
+							size="sm"
+							label="End Time"
+							name="end_time"
+							defaultValue={
+								selectedMilestone?.end_time
+									? parseAbsolute(selectedMilestone.end_time, "Europe/Berlin")
+									: null
+							}
+							placeholderValue={now("Europe/Berlin")}
+							isRequired={true}
+						/>
+					</ModalBody>
+					<ModalFooter>
+						<Button color="primary" type="submit">
+							Add Milestone
+						</Button>
+					</ModalFooter>
+				</Form>
+			</ModalContent>
+		</Modal>
+	</>);
 }

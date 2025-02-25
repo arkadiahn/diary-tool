@@ -55,6 +55,7 @@ function AdminMissions() {
     const fetchMissions = useMissionsStore((state) => state.fetchMissions);
     const deleteMission = useMissionsStore((state) => state.deleteMission);
     const selectMission = useMissionsStore((state) => state.selectMission);
+	const undeleteMission = useMissionsStore((state) => state.undeleteMission);
     const missions = useMissionsStore((state) => state.missions);
     const loading = useMissionsStore((state) => state.loading);
 
@@ -68,6 +69,7 @@ function AdminMissions() {
                 onEdit={selectMission}
                 onCreate={selectMission}
                 onDelete={deleteMission}
+				onUndelete={undeleteMission}
                 tableTitle="Missions"
                 data={missions as Mission[]}
                 loading={loading}

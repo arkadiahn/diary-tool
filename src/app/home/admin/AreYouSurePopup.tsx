@@ -48,7 +48,7 @@ export const AreYouSure = () => {
         <Modal isOpen={isOpen} onClose={() => handleClose(false)} size="sm">
             <ModalContent>
                 <ModalHeader>
-                    <h1>{title}</h1>
+                    <h1>Are you sure?</h1>
                 </ModalHeader>
                 <ModalBody>
                     <p>{message}</p>
@@ -58,7 +58,7 @@ export const AreYouSure = () => {
                         Cancel
                     </Button>
                     <Button onPress={() => handleClose(true)} color="danger" size="sm">
-                        Delete
+						{title}
                     </Button>
                 </ModalFooter>
             </ModalContent>

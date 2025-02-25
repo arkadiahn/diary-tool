@@ -7,6 +7,7 @@ import {
     patchMission,
     postMission,
     rejectMission,
+	undeleteMission,
 } from "@/api/missionboard";
 import toast from "react-hot-toast";
 import { confirm } from "../AreYouSurePopup";
@@ -22,6 +23,7 @@ type MissionsStore = {
     createMission: (mission: Mission) => Promise<void>;
     updateMission: (mission: Mission) => Promise<void>;
     deleteMission: (mission: Mission) => Promise<void>;
+	undeleteMission: (mission: Mission) => Promise<void>;
     approveMission: (mission: Mission) => Promise<void>;
     rejectMission: (mission: Mission) => Promise<void>;
 };
@@ -82,6 +84,15 @@ export const { StoreProvider: MissionsStoreProvider, useStore: useMissionsStore 
                 toast.error("Failed to delete mission");
             }
         },
+		undeleteMission: async (mission: Mission) => {
+			try {
+				await undeleteMission(mission.name);
+				toast.success("Mission undeleted successfully");
+				get().fetchMissions();
+			} catch {
+				toast.error("Failed to undelete mission");
+			}
+		},
         approveMission: async (mission: Mission) => {
             try {
                 await approveMission(mission.name);
