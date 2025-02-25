@@ -52,94 +52,6 @@ export type UploadFileParams = {
 bucketName: UploadFileBucketName;
 };
 
-export type GetMissionsFormat = typeof GetMissionsFormat[keyof typeof GetMissionsFormat];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetMissionsFormat = {
-  summary: 'summary',
-  extended: 'extended',
-} as const;
-
-export type GetMissionsParams = {
-format?: GetMissionsFormat;
-/**
- * Filter by [mission_state, approval_state]
- */
-filter?: string;
-/**
- * Order by [title, like_count]
- */
-order_by?: string;
-/**
- * include soft deleted resources
- */
-show_deleted?: ShowDeletedParameter;
-show_unapproved?: boolean;
-};
-
-export type PostEventParams = {
-/**
- * 4-63 valid characters: /[a-z][0-9]-/
- */
-event_id?: string;
-};
-
-export type DeleteDiaryParams = {
-/**
- * delete will return 2xx if the resource is not found
- */
-allow_missing?: AllowMissingParameter;
-};
-
-export type GetAccounts200 = {
-  accounts: GetAccountsResponse;
-  next_page_token: string;
-};
-
-/**
- * A page token, received from a previous call.
-Provide this to retrieve the subsequent page.
-When paginating, all other parameters provided must match
-the call that provided the page token.
-
- */
-export type PageTokenParameter = string;
-
-/**
- * The maximum number to return. May return fewer than this value.
-If unspecified (or specifies 0), a defualt is chosen.
-
- */
-export type PageSizeParameter = number;
-
-export type GetAccountsParams = {
-/**
- * The maximum number to return. May return fewer than this value.
-If unspecified (or specifies 0), a defualt is chosen.
-
- */
-page_size?: PageSizeParameter;
-/**
- * A page token, received from a previous call.
-Provide this to retrieve the subsequent page.
-When paginating, all other parameters provided must match
-the call that provided the page token.
-
- */
-page_token?: PageTokenParameter;
-};
-
-/**
- * include soft deleted resources
- */
-export type ShowDeletedParameter = boolean;
-
-/**
- * delete will return 2xx if the resource is not found
- */
-export type AllowMissingParameter = boolean;
-
 export type DeleteMissionAccountParams = {
 /**
  * delete will return 2xx if the resource is not found
@@ -178,18 +90,80 @@ filter?: string;
 show_unapproved?: boolean;
 };
 
-export type DeleteMissionMilestoneParams = {
+export type PostMissionMilestoneParams = {
+/**
+ * 4-63 valid characters: /[a-z][0-9]-/
+ */
+milestone_id?: string;
+};
+
+export type PostMissionParams = {
+/**
+ * 4-63 valid characters: /[a-z][0-9]-/
+ */
+mission_id?: string;
+};
+
+export type GetMissionsFormat = typeof GetMissionsFormat[keyof typeof GetMissionsFormat];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetMissionsFormat = {
+  summary: 'summary',
+  extended: 'extended',
+} as const;
+
+export type PostEventParams = {
+/**
+ * 4-63 valid characters: /[a-z][0-9]-/
+ */
+event_id?: string;
+};
+
+export type DeleteDiaryParams = {
 /**
  * delete will return 2xx if the resource is not found
  */
 allow_missing?: AllowMissingParameter;
 };
 
-export type PostMissionMilestoneParams = {
+export type GetAccounts200 = {
+  accounts: GetAccountsResponse;
+  next_page_token: string;
+};
+
 /**
- * 4-63 valid characters: /[a-z][0-9]-/
+ * include soft deleted resources
  */
-milestone_id?: string;
+export type ShowDeletedParameter = boolean;
+
+export type GetMissionsParams = {
+format?: GetMissionsFormat;
+/**
+ * Filter by [mission_state, approval_state]
+ */
+filter?: string;
+/**
+ * Order by [title, like_count]
+ */
+order_by?: string;
+/**
+ * include soft deleted resources
+ */
+show_deleted?: ShowDeletedParameter;
+show_unapproved?: boolean;
+};
+
+/**
+ * delete will return 2xx if the resource is not found
+ */
+export type AllowMissingParameter = boolean;
+
+export type DeleteMissionMilestoneParams = {
+/**
+ * delete will return 2xx if the resource is not found
+ */
+allow_missing?: AllowMissingParameter;
 };
 
 export type DeleteMissionParams = {
@@ -199,11 +173,37 @@ export type DeleteMissionParams = {
 allow_missing?: AllowMissingParameter;
 };
 
-export type PostMissionParams = {
 /**
- * 4-63 valid characters: /[a-z][0-9]-/
+ * A page token, received from a previous call.
+Provide this to retrieve the subsequent page.
+When paginating, all other parameters provided must match
+the call that provided the page token.
+
  */
-mission_id?: string;
+export type PageTokenParameter = string;
+
+/**
+ * The maximum number to return. May return fewer than this value.
+If unspecified (or specifies 0), a defualt is chosen.
+
+ */
+export type PageSizeParameter = number;
+
+export type GetAccountsParams = {
+/**
+ * The maximum number to return. May return fewer than this value.
+If unspecified (or specifies 0), a defualt is chosen.
+
+ */
+page_size?: PageSizeParameter;
+/**
+ * A page token, received from a previous call.
+Provide this to retrieve the subsequent page.
+When paginating, all other parameters provided must match
+the call that provided the page token.
+
+ */
+page_token?: PageTokenParameter;
 };
 
 /**
@@ -282,14 +282,6 @@ export interface MissionMilestone {
   state: MissionMilestoneState;
 }
 
-export interface MissionPatch {
-  description?: PropertiesDescription;
-  description_goal?: DescriptionGoal;
-  description_skills?: DescriptionSkills;
-  github_link?: GithubLink;
-  title?: PropertiesTitle;
-}
-
 export type PropertiesEndTime = string;
 
 export type KickoffTime = string;
@@ -306,15 +298,13 @@ export type DescriptionSkills = string;
  */
 export type DescriptionGoal = string;
 
-/**
- * @maxLength 1000
- */
-export type PropertiesDescription = string;
-
-/**
- * @maxLength 255
- */
-export type PropertiesTitle = string;
+export interface MissionPatch {
+  description?: PropertiesDescription;
+  description_goal?: DescriptionGoal;
+  description_skills?: DescriptionSkills;
+  github_link?: GithubLink;
+  title?: PropertiesTitle;
+}
 
 export interface MissionPost {
   description: PropertiesDescription;
@@ -326,9 +316,17 @@ export interface MissionPost {
   title: PropertiesTitle;
 }
 
-export type MissionSummaryArray = MissionSummary[];
-
 export type GetMissionResponse = MissionArray | MissionSummaryArray;
+
+/**
+ * @maxLength 1000
+ */
+export type PropertiesDescription = string;
+
+/**
+ * @maxLength 255
+ */
+export type PropertiesTitle = string;
 
 export type PropertiesName = string;
 
@@ -363,6 +361,8 @@ export interface MissionSummary {
   name: PropertiesName;
   title: PropertiesTitle;
 }
+
+export type MissionSummaryArray = MissionSummary[];
 
 export interface Mission {
   approval_state: MissionApprovalState;
@@ -522,6 +522,8 @@ export interface Diary {
 
 export type GetAccountResponse = Account | AccountPublic;
 
+export type GetAccountsResponse = AccountArray | AccountPublicArray;
+
 /**
  * @maxLength 255
  */
@@ -547,8 +549,6 @@ export interface AccountPublic {
 }
 
 export type AccountPublicArray = AccountPublic[];
-
-export type GetAccountsResponse = AccountArray | AccountPublicArray;
 
 export interface Account {
   create_time: string;

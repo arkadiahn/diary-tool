@@ -1,0 +1,4 @@
+https://shadcn-admin.netlify.app/
+
+
+https://missionboard.localdev.com/api/login?redirect_url=https%3A%2F%2Fmissionboard.localdev.com%2F

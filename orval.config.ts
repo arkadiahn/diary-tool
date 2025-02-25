@@ -1,9 +1,8 @@
 /** @type {import('orval').OrvalConfig} */
 module.exports = {
     missionboard: {
-        input: "../backend/openapi.yaml",
+        input: "https://raw.githubusercontent.com/arkadiahn/intra/refs/heads/development/backend/openapi.yaml?token=GHSAT0AAAAAAC3J67LJSMECJG3PKUXJUIOIZ55Y45A",
         output: {
-            httpClient: "fetch",
             target: "./src/api/missionboard.ts",
             override: {
                 mutator: {
