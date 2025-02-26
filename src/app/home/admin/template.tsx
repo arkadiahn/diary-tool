@@ -1,6 +1,6 @@
 import { auth } from "@/auth/server";
 
 export default async function AdminTemplate({ children }: { children: React.ReactNode }) {
-    await auth("/", ["mission.admin"]);
+    await auth({ requiredScopes: ["mission.admin"], toLogin: true });
     return children;
 }

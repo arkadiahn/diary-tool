@@ -9,7 +9,7 @@ interface MainPageLayoutProps {
 }
 export default function MainPageLayout({ children, title, description, className, headerItems }: MainPageLayoutProps) {
     return (
-        <div className={cn("flex flex-col items-center overflow-y-auto h-full w-full p-3 px-5", className)}>
+        <div className={cn("flex flex-col items-center overflow-y-auto h-full max-h-full w-full", className)}>
             {(title || description) && (
                 <div className="p-1 w-full flex flex-col sm:flex-row items-start sm:items-center gap-4 shrink-0">
                     <div className="w-full flex flex-col">

@@ -58,7 +58,7 @@ export const AreYouSure = () => {
                         Cancel
                     </Button>
                     <Button onPress={() => handleClose(true)} color="danger" size="sm">
-						{title}
+                        {title}
                     </Button>
                 </ModalFooter>
             </ModalContent>

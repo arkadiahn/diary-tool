@@ -32,6 +32,7 @@ import {
 import { now, parseAbsolute, parseZonedDateTime } from "@internationalized/date";
 import clsx from "clsx";
 import { useState } from "react";
+import YouTube from "react-youtube";
 import DateComponent from "../../admin/missions/DateComponent";
 import MainPageLayout from "../../src/components/MainPageLayout";
 import RowSteps from "./RowSteps";
@@ -43,21 +44,48 @@ interface MissionDetailsViewProps {
     view: boolean;
     setStep: React.Dispatch<React.SetStateAction<number>>;
     submit?: boolean;
+    className?: string;
+    noScroll?: boolean;
+    buttonsDisabled?: boolean;
+    noBackButton?: boolean;
 }
-function MissionDetailsView({ children, title, view, setStep, submit }: MissionDetailsViewProps) {
+function MissionDetailsView({
+    children,
+    title,
+    view,
+    setStep,
+    submit,
+    className,
+    noScroll,
+    buttonsDisabled,
+    noBackButton,
+}: MissionDetailsViewProps) {
     return (
         <div
-            className={clsx("w-full flex flex-col justify-between h-full gap-5", {
+            className={clsx("w-full flex flex-col justify-between h-full max-h-full gap-5", {
                 hidden: !view,
             })}
         >
-			<h1 className="text-2xl font-bold self-start">{title}</h1>
-			<ScrollShadow className="flex-1 flex flex-col gap-5 h-[300px]">
-				{children}
-            </ScrollShadow>
-            <div className="w-full flex flex-row justify-between gap-2">
-                <Button onPress={() => setStep((prev) => prev - 1)}>Back</Button>
+            <h1 className="text-2xl font-bold self-start px-1">{title}</h1>
+            {!noScroll && (
+                <ScrollShadow className={clsx("flex flex-col gap-5 h-full p-1 pr-2", className)}>
+                    {children}
+                </ScrollShadow>
+            )}
+            {noScroll && <div className={clsx("w-full h-full flex flex-col gap-5 px-1", className)}>{children}</div>}
+            <div
+                className={clsx("w-full flex flex-row gap-2 overflow-x-visible px-1", {
+                    "justify-end": noBackButton,
+                    "justify-between": !noBackButton,
+                })}
+            >
+                {!noBackButton && (
+                    <Button isDisabled={buttonsDisabled} onPress={() => setStep((prev) => prev - 1)}>
+                        Back
+                    </Button>
+                )}
                 <Button
+                    isDisabled={buttonsDisabled}
                     color="primary"
                     type={submit ? "submit" : "button"}
                     onPress={!submit ? () => setStep((prev) => prev + 1) : undefined}
@@ -73,7 +101,8 @@ export default function CreateMissionPage() {
     const { isOpen, onOpenChange } = useDisclosure();
     const [selectedMilestone, setSelectedMilestone] = useState<MissionMilestone | null>(null);
     const [milestones, setMilestones] = useState<MissionMilestone[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [videoEnded, setVideoEnded] = useState(false);
+    const [_loading, setLoading] = useState(false);
     const [step, setStep] = useState(0);
 
     const submitMission = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -108,15 +137,16 @@ export default function CreateMissionPage() {
         onOpenChange();
     };
 
-    return (<>
-        <MainPageLayout className="overflow-hidden flex flex-col gap-6 max-h-full">
+    return (
+        <>
+            <MainPageLayout className="overflow-visible flex flex-col gap-5">
                 <Breadcrumbs size="lg" className="self-start font-medium">
                     <BreadcrumbItem href="/missions">Missions</BreadcrumbItem>
                     <BreadcrumbItem>Create Mission</BreadcrumbItem>
                 </Breadcrumbs>
-                <div className="w-full max-h-full flex-1 flex flex-col justify-center lg:flex-row">
+                <div className="flex-1 flex flex-col xl:flex-row min-h-0 w-full">
                     <RowSteps
-                        className="!w-full !max-w-full mb-6 lg:mb-0 lg:hidden"
+                        className="!w-full !max-w-full mb-6 xl:mb-0 xl:hidden"
                         currentStep={step}
                         onStepChange={setStep}
                         steps={[
@@ -127,53 +157,73 @@ export default function CreateMissionPage() {
                         ]}
                     />
                     <VerticalSteps
-                        className="hidden lg:flex lg:mr-6"
+                        className="hidden xl:flex xl:mr-6"
                         currentStep={step}
                         onStepChange={setStep}
                         steps={[
                             {
                                 title: "What is a Mission?",
                                 description: "Get introduced to missions",
+                                disabled: true,
                             },
                             {
                                 title: "Mission Non-Profit?",
                                 description: "Enter the non-profit of the mission",
+                                disabled: !videoEnded,
                             },
                             {
                                 title: "Mission Details",
                                 description: "Enter the details of the mission",
+                                disabled: !videoEnded,
                             },
                             {
                                 title: "Mission Milestones",
                                 description: "Enter the milestones of the mission",
+                                disabled: !videoEnded,
                             },
                         ]}
                     />
                     {step === 0 && (
                         <div className="flex-1 flex flex-col justify-between h-full items-end gap-5">
-                            <h1 className="text-2xl font-bold self-start">What is a Mission?</h1>
-                            <div className="w-full flex flex-row justify-end gap-2">
-                                <Button color="primary" onPress={() => setStep((prev) => prev + 1)}>
-                                    Next
-                                </Button>
-                            </div>
+                            <MissionDetailsView
+                                title="What is a Mission?"
+                                buttonsDisabled={!videoEnded}
+                                view={true}
+                                noScroll={true}
+                                setStep={setStep}
+                                noBackButton={true}
+                            >
+                                <YouTube
+                                    className="w-full h-full"
+                                    videoId="BBJa32lCaaY"
+                                    opts={{
+                                        width: "100%",
+                                        height: "50%",
+                                        playerVars: {
+                                            autoplay: 1,
+                                            controls: 0,
+                                            rel: 0,
+                                        },
+                                    }}
+                                    onEnd={() => setVideoEnded(true)}
+                                />
+                            </MissionDetailsView>
                         </div>
                     )}
                     {step === 1 && (
                         <div className="flex-1 flex flex-col items-end justify-between h-full gap-5">
-                            <h1 className="text-2xl font-bold self-start">Mission Non-Profit?</h1>
-                            <div className="w-full flex flex-row justify-between gap-2">
-                                <Button isDisabled={loading} onPress={() => setStep((prev) => prev - 1)}>
-                                    Back
-                                </Button>
-                                <Button color="primary" onPress={() => setStep((prev) => prev + 1)}>
-                                    Next
-                                </Button>
-                            </div>
+                            <MissionDetailsView
+                                title="Mission Non-Profit?"
+                                view={true}
+                                setStep={setStep}
+                                noBackButton={true}
+                            >
+                                <p>Mission Non-Profit?</p>
+                            </MissionDetailsView>
                         </div>
                     )}
                     {(step === 2 || step === 3) && (
-                        <Form onSubmit={submitMission} className="flex-1">
+                        <Form onSubmit={submitMission} className="flex-1 flex flex-col w-full">
                             <MissionDetailsView
                                 title="Mission Details"
                                 view={step === 2}
@@ -256,28 +306,31 @@ export default function CreateMissionPage() {
                                 submit={true}
                                 aria-label="Mission Milestones"
                             >
-                                <div className="w-full flex flex-row justify-end items-center">
-                                    <Button
-                                        size="sm"
-                                        color="primary"
-                                        onPress={() => {
-                                            setSelectedMilestone(null);
-                                            onOpenChange();
-                                        }}
-                                    >
-                                        Add Milestone
-                                    </Button>
-                                </div>
-
-                                <Table maxTableHeight={300} className="h-full">
+                                <Table
+                                    maxTableHeight={300}
+                                    className="h-full"
+                                    removeWrapper={true}
+                                    bottomContent={
+                                        <Button
+                                            size="sm"
+                                            fullWidth={true}
+                                            onPress={() => {
+                                                setSelectedMilestone(null);
+                                                onOpenChange();
+                                            }}
+                                        >
+                                            Add Milestone
+                                        </Button>
+                                    }
+                                >
                                     <TableHeader>
                                         <TableColumn>Description</TableColumn>
                                         <TableColumn width={200}>End Time</TableColumn>
                                         <TableColumn width={200}>Actions</TableColumn>
                                     </TableHeader>
                                     <TableBody emptyContent="No milestones added yet">
-                                        {milestones.map((milestone) => (
-                                            <TableRow key={milestone.name}>
+                                        {milestones.map((milestone, index) => (
+                                            <TableRow key={`${milestone.name}-${milestone.end_time}-${index}`}>
                                                 <TableCell>{milestone.description}</TableCell>
                                                 <TableCell>
                                                     <DateComponent date={milestone.end_time} />
@@ -324,42 +377,43 @@ export default function CreateMissionPage() {
                         </div>
                     )}
                 </div>
-        </MainPageLayout>
+            </MainPageLayout>
 
-		<Modal isOpen={isOpen} onOpenChange={onOpenChange} size="4xl">
-			<ModalContent>
-				<Form onSubmit={onAddMilestone}>
-					<ModalHeader>
-						<h1 className="text-2xl font-bold">Milestone Details</h1>
-					</ModalHeader>
-					<ModalBody className="w-full flex flex-col gap-6">
-						<Textarea
-							label="Description"
-							name="description"
-							defaultValue={selectedMilestone?.description}
-							placeholder="Enter milestone description"
-							isRequired={true}
-						/>
-						<DatePicker
-							size="sm"
-							label="End Time"
-							name="end_time"
-							defaultValue={
-								selectedMilestone?.end_time
-									? parseAbsolute(selectedMilestone.end_time, "Europe/Berlin")
-									: null
-							}
-							placeholderValue={now("Europe/Berlin")}
-							isRequired={true}
-						/>
-					</ModalBody>
-					<ModalFooter>
-						<Button color="primary" type="submit">
-							Add Milestone
-						</Button>
-					</ModalFooter>
-				</Form>
-			</ModalContent>
-		</Modal>
-	</>);
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="4xl">
+                <ModalContent>
+                    <Form onSubmit={onAddMilestone}>
+                        <ModalHeader>
+                            <h1 className="text-2xl font-bold">Milestone Details</h1>
+                        </ModalHeader>
+                        <ModalBody className="w-full flex flex-col gap-6">
+                            <Textarea
+                                label="Description"
+                                name="description"
+                                defaultValue={selectedMilestone?.description}
+                                placeholder="Enter milestone description"
+                                isRequired={true}
+                            />
+                            <DatePicker
+                                size="sm"
+                                label="End Time"
+                                name="end_time"
+                                defaultValue={
+                                    selectedMilestone?.end_time
+                                        ? parseAbsolute(selectedMilestone.end_time, "Europe/Berlin")
+                                        : null
+                                }
+                                placeholderValue={now("Europe/Berlin")}
+                                isRequired={true}
+                            />
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="primary" type="submit">
+                                Add Milestone
+                            </Button>
+                        </ModalFooter>
+                    </Form>
+                </ModalContent>
+            </Modal>
+        </>
+    );
 }

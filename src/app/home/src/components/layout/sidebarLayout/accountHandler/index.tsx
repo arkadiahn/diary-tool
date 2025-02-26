@@ -7,7 +7,7 @@ interface AccountHandlerProps {
     forceSmall?: boolean;
 }
 export default async function AccountHandler({ className, forceSmall }: AccountHandlerProps) {
-    const { session } = await auth();
+    const { session } = await auth({});
 
     return (
         <>

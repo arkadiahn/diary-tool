@@ -66,7 +66,9 @@ export const { StoreProvider: MilestoneStoreProvider, useStore: useMilestoneStor
         },
         deleteMilestone: async (missionName: string, milestone: MissionMilestone) => {
             const result = await confirm("Are you sure you want to delete this milestone?", "Delete Milestone");
-            if (!result) return;
+            if (!result) {
+                return;
+            }
             try {
                 await deleteMissionMilestone(missionName, milestone.name);
                 toast.success("Milestone deleted successfully");

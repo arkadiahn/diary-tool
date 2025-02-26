@@ -12,7 +12,8 @@ export default authMiddleware((request: NextRequest) => {
     }
 
     let host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
-    host = host?.replace(process.env.TOP_LEVEL_DOMAIN, "") ?? host;
+    const topLevelDomains = process.env.TOP_LEVEL_DOMAIN?.split(",").map((d) => d.trim()) ?? [];
+    host = topLevelDomains.reduce((h, domain) => h.replace(domain, ""), host ?? "") ?? host;
     const subdomains = host?.includes(".") ? host?.split(".") : [];
 
     const url = request.nextUrl.clone();

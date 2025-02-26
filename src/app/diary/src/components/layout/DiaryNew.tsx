@@ -39,7 +39,7 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
 
     const [error, setError] = useState<string | null>(null);
     const [useCustomProject, setUseCustomProject] = useState(
-        initialDiary ? !PROJECT_OPTIONS.includes(initialDiary.project) : false
+        initialDiary ? !PROJECT_OPTIONS.includes(initialDiary.project) : false,
     );
 
     const [newEntry, setNewEntry] = useState({
@@ -106,7 +106,7 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
                                     />
                                     <label htmlFor="useCustomProject">Use custom project name</label>
                                 </div>
-                                
+
                                 {useCustomProject ? (
                                     <Input
                                         type="text"

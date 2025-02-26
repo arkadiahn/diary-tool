@@ -8,7 +8,7 @@ type UserStore = {
 };
 
 export const { StoreProvider: UserStoreProvider, useStore: useUserStore } = createCustomStore<UserStore>(
-    (set, get) => ({
+    (set, _get) => ({
         users: [],
         loading: true,
         fetchUsers: async () => {

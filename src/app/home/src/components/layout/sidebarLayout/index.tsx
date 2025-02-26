@@ -41,7 +41,7 @@ interface SidebarLayoutProps {
     children: React.ReactNode;
 }
 export default async function SidebarLayout({ children }: SidebarLayoutProps) {
-    const { session } = await auth();
+    const { session } = await auth({});
 
     return (
         <Sidebar

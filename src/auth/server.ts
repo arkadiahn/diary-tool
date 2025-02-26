@@ -9,6 +9,24 @@ import setCookie from "set-cookie-parser";
 import type { Session } from "./models";
 
 /* -------------------------------------------------------------------------- */
+/*                                Login/Logout                                */
+/* -------------------------------------------------------------------------- */
+export const signIn = (redirectUrl: string) => {
+    const urlParams = new URLSearchParams({
+        redirect_uri: redirectUrl,
+        theme: "system",
+    });
+    redirect(`/api/login?${urlParams}`);
+};
+
+export const signOut = (redirectUrl: string) => {
+    const urlParams = new URLSearchParams({
+        redirect_uri: redirectUrl,
+    });
+    redirect(`/api/logout?${urlParams}`);
+};
+
+/* -------------------------------------------------------------------------- */
 /*                                   Helpers                                  */
 /* -------------------------------------------------------------------------- */
 const buildRealUrl = (request: NextRequest): NextURL => {
@@ -104,9 +122,14 @@ const addMiddlewareCookies = (request: NextRequest, response: NextResponse, setC
 /*                                SSR Functions                               */
 /* -------------------------------------------------------------------------- */
 // @todo maybe add scopes check for routes?
-export async function auth(redirectUrl?: string, requiredScopes?: string[]): Promise<{ session: Session | null }> {
+export async function auth({
+    redirectUrl,
+    requiredScopes,
+    toLogin = false,
+}: { redirectUrl?: string; requiredScopes?: string[]; toLogin?: boolean }): Promise<{ session: Session | null }> {
     const requestHeaders = await headers();
     const requestCookies = await cookies();
+    const loginRedirectUrl = requestHeaders.get("referer");
     try {
         const decodedAccessPayload = await jose.decodeJwt(requestCookies.get("session")?.value ?? "");
         const decodedIdPayload = JSON.parse(Buffer.from(requestHeaders.get("x-id") ?? "", "base64").toString("utf-8"));
@@ -135,7 +158,12 @@ export async function auth(redirectUrl?: string, requiredScopes?: string[]): Pro
 
         return { session: sessionData };
     } catch {
-        if (redirectUrl) {
+        if (toLogin) {
+            if (!loginRedirectUrl) {
+                throw new Error("Invalid configuration");
+            }
+            signIn(loginRedirectUrl);
+        } else if (redirectUrl) {
             redirect(redirectUrl);
         }
         return { session: null };
@@ -170,6 +198,9 @@ export function authMiddleware(wrappedMiddleware: (request: NextRequest) => Next
                 addMiddlewareCookies(request, wrappedResponse, sessionResponse.headers.getSetCookie());
                 wrappedResponse.headers.set("x-id", sessionData.id);
             }
+
+            wrappedResponse.headers.set("referer", buildRealUrl(request).href);
+
             return wrappedResponse;
         }
 
@@ -196,6 +227,8 @@ export function authMiddleware(wrappedMiddleware: (request: NextRequest) => Next
                 }
             }
         } catch {}
+
+        response.headers.set("referer", buildRealUrl(request).href);
 
         return setResponseCookies(response);
     };
@@ -275,6 +308,9 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
                     cache: "no-store",
                 },
             );
+            if (tokenResponse.status === 401) {
+                console.error("Invalid Keycloak Secret/Config");
+            }
             if (!tokenResponse.ok) {
                 return setResponseCookies(unauthorizedResponse);
             }

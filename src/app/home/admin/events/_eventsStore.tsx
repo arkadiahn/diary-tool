@@ -61,7 +61,9 @@ export const { StoreProvider: EventsStoreProvider, useStore: useEventsStore } = 
         },
         deleteEvent: async (event: Event) => {
             const result = await confirm("Are you sure you want to delete this event?", "Delete Event");
-            if (!result) return;
+            if (!result) {
+                return;
+            }
             try {
                 await deleteEvent(event.name);
                 toast.success("Event deleted successfully");

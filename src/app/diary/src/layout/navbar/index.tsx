@@ -6,7 +6,7 @@ import { AccountDropdown } from "./accountDropdown";
 import LoginButton from "./loginButton";
 
 export default async function NavbarComponent(props: NavbarProps) {
-    const { session } = await auth();
+    const { session } = await auth({});
 
     return (
         <Navbar

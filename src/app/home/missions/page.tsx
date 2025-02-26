@@ -26,7 +26,7 @@ export default async function Home() {
         format: "summary",
         show_unapproved: true,
     });
-    const { session } = await auth();
+    const { session } = await auth({});
 
     return (
         <MainPageLayout

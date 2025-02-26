@@ -12,6 +12,7 @@ export type VerticalStepProps = {
     className?: string;
     description?: React.ReactNode;
     title?: React.ReactNode;
+    disabled?: boolean;
 };
 
 export interface VerticalStepsProps extends React.HTMLAttributes<HTMLButtonElement> {
@@ -169,8 +170,13 @@ const VerticalSteps = React.forwardRef<HTMLButtonElement, VerticalStepsProps>(
                                         className={cn(
                                             "group flex w-full cursor-pointer items-center justify-center gap-4 rounded-large py-2.5",
                                             stepClassName,
+                                            { "cursor-not-allowed": step.disabled },
                                         )}
-                                        onClick={() => setCurrentStep(stepIdx)}
+                                        onClick={() => {
+                                            if (!step.disabled) {
+                                                setCurrentStep(stepIdx);
+                                            }
+                                        }}
                                         {...props}
                                     >
                                         <div className="flex h-full items-center">
@@ -219,9 +225,10 @@ const VerticalSteps = React.forwardRef<HTMLButtonElement, VerticalStepsProps>(
                                             <div>
                                                 <div
                                                     className={cn(
-                                                        "text-medium font-medium text-default-foreground transition-[color,opacity] duration-300 group-active:opacity-70",
+                                                        "text-medium font-medium text-default-foreground transition-[color,opacity] duration-300",
                                                         {
                                                             "text-default-500": status === "inactive",
+                                                            "group-active:opacity-70": !step.disabled,
                                                         },
                                                     )}
                                                 >
@@ -229,9 +236,10 @@ const VerticalSteps = React.forwardRef<HTMLButtonElement, VerticalStepsProps>(
                                                 </div>
                                                 <div
                                                     className={cn(
-                                                        "text-tiny text-default-600 transition-[color,opacity] duration-300 group-active:opacity-70 lg:text-small",
+                                                        "text-tiny text-default-600 transition-[color,opacity] duration-300 lg:text-small",
                                                         {
                                                             "text-default-500": status === "inactive",
+                                                            "group-active:opacity-70": !step.disabled,
                                                         },
                                                     )}
                                                 >

@@ -3,7 +3,7 @@ import { auth } from "@/auth/server";
 import DiaryNew from "../src/components/layout/DiaryNew";
 
 export default async function NewDiaryPage({ searchParams }: { searchParams: Promise<{ edit?: string }> }) {
-    const { session } = await auth();
+    const { session } = await auth({});
     let initialDiary;
 
     if ((await searchParams).edit) {

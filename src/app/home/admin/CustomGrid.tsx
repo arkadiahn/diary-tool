@@ -24,7 +24,7 @@ const CustomActionsComponent = <T,>(props: {
     data: T;
     onEditEvent?: (data: T) => void | Promise<void>;
     onDeleteEvent?: (data: T) => void | Promise<void>;
-	onUndeleteEvent?: (data: T) => void | Promise<void>;
+    onUndeleteEvent?: (data: T) => void | Promise<void>;
 }) => {
     return (
         <div className="flex gap-2 items-center justify-start h-full">
@@ -38,11 +38,11 @@ const CustomActionsComponent = <T,>(props: {
                     Delete
                 </Button>
             )}
-			{(props.onUndeleteEvent && 'delete_time' in (props.data as unknown as object)) && (
-				<Button size="sm" color="warning" onPress={() => props.onUndeleteEvent?.(props.data)}>
-					Undelete
-				</Button>
-			)}
+            {props.onUndeleteEvent && "delete_time" in (props.data as unknown as object) && (
+                <Button size="sm" color="warning" onPress={() => props.onUndeleteEvent?.(props.data)}>
+                    Undelete
+                </Button>
+            )}
         </div>
     );
 };
@@ -57,7 +57,7 @@ interface CustomGridProps<T> {
     columnDefs: (ColDef<T> | ColGroupDef<T>)[];
     onEdit?: (data: T) => void | Promise<void>;
     onDelete?: (data: T) => void | Promise<void>;
-	onUndelete?: (data: T) => void | Promise<void>;
+    onUndelete?: (data: T) => void | Promise<void>;
     onCreate?: (data: null) => void | Promise<void>;
 }
 
@@ -69,7 +69,7 @@ function CustomGrid<T>({
     onEdit,
     onDelete,
     onCreate,
-	onUndelete,
+    onUndelete,
 }: CustomGridProps<T>) {
     const { resolvedTheme } = useTheme();
 
@@ -81,9 +81,9 @@ function CustomGrid<T>({
         await onDelete?.(data);
     };
 
-	const handleUndelete = async (data: T) => {
-		await onUndelete?.(data);
-	};
+    const handleUndelete = async (data: T) => {
+        await onUndelete?.(data);
+    };
 
     return (
         <>
@@ -116,7 +116,7 @@ function CustomGrid<T>({
                                       cellRendererParams: {
                                           onEditEvent: onEdit ? handleEdit : undefined,
                                           onDeleteEvent: onDelete ? handleDelete : undefined,
-											onUndeleteEvent: onUndelete ? handleUndelete : undefined,
+                                          onUndeleteEvent: onUndelete ? handleUndelete : undefined,
                                       },
                                       minWidth: (onEdit ? 100 : 0) + (onDelete ? 100 : 0) + (onUndelete ? 100 : 0),
                                   },

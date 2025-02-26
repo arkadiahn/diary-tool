@@ -7,7 +7,7 @@ import {
     patchMission,
     postMission,
     rejectMission,
-	undeleteMission,
+    undeleteMission,
 } from "@/api/missionboard";
 import toast from "react-hot-toast";
 import { confirm } from "../AreYouSurePopup";
@@ -23,7 +23,7 @@ type MissionsStore = {
     createMission: (mission: Mission) => Promise<void>;
     updateMission: (mission: Mission) => Promise<void>;
     deleteMission: (mission: Mission) => Promise<void>;
-	undeleteMission: (mission: Mission) => Promise<void>;
+    undeleteMission: (mission: Mission) => Promise<void>;
     approveMission: (mission: Mission) => Promise<void>;
     rejectMission: (mission: Mission) => Promise<void>;
 };
@@ -73,7 +73,9 @@ export const { StoreProvider: MissionsStoreProvider, useStore: useMissionsStore 
         },
         deleteMission: async (mission: Mission) => {
             const result = await confirm("Are you sure you want to delete this mission?", "Delete Mission");
-            if (!result) return;
+            if (!result) {
+                return;
+            }
             try {
                 await deleteMission(mission.name, {
                     allow_missing: true,
@@ -84,15 +86,15 @@ export const { StoreProvider: MissionsStoreProvider, useStore: useMissionsStore 
                 toast.error("Failed to delete mission");
             }
         },
-		undeleteMission: async (mission: Mission) => {
-			try {
-				await undeleteMission(mission.name);
-				toast.success("Mission undeleted successfully");
-				get().fetchMissions();
-			} catch {
-				toast.error("Failed to undelete mission");
-			}
-		},
+        undeleteMission: async (mission: Mission) => {
+            try {
+                await undeleteMission(mission.name);
+                toast.success("Mission undeleted successfully");
+                get().fetchMissions();
+            } catch {
+                toast.error("Failed to undelete mission");
+            }
+        },
         approveMission: async (mission: Mission) => {
             try {
                 await approveMission(mission.name);
@@ -104,7 +106,9 @@ export const { StoreProvider: MissionsStoreProvider, useStore: useMissionsStore 
         },
         rejectMission: async (mission: Mission) => {
             const result = await confirm("Are you sure you want to reject this mission?", "Reject Mission");
-            if (!result) return;
+            if (!result) {
+                return;
+            }
             try {
                 await rejectMission(mission.name);
                 toast.success("Mission rejected successfully");
