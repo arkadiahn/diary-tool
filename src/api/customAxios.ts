@@ -12,9 +12,9 @@ export const customAxios = async <T>(
     if (typeof window === "undefined") {
         const cookies = require("next/headers").cookies;
         sessionCookie = (await cookies()).get("session")?.value;
+		baseURL = process.env.BACKEND_URL;
     } else {
         sessionCookie = Cookies.get("session");
-		baseURL = process.env.BACKEND_URL;
     }
 
     const instance = axios.create({
