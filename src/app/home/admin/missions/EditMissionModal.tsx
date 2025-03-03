@@ -102,25 +102,16 @@ export default function EditMissionModal() {
                     isRequired={true}
                 />
                 {mission && <AccountsComponent defaultAccount={mission.leader} title="Leader" name="leader" />}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <DatePicker
-                        size="sm"
-                        label="Kickoff Time"
-                        name="kickoff_time"
-                        defaultValue={
-                            mission?.kickoff_time ? parseAbsolute(mission.kickoff_time, "Europe/Berlin") : null
-                        }
-                        placeholderValue={now("Europe/Berlin")}
-                        isRequired={true}
-                    />
-                    <DatePicker
-                        size="sm"
-                        label="End Time"
-                        name="end_time"
-                        defaultValue={mission?.end_time ? parseAbsolute(mission.end_time, "Europe/Berlin") : null}
-                        placeholderValue={now("Europe/Berlin")}
-                    />
-                </div>
+                <DatePicker
+					size="sm"
+					label="Kickoff Time"
+					name="kickoff_time"
+					defaultValue={
+						mission?.kickoff_time ? parseAbsolute(mission.kickoff_time, "Europe/Berlin") : null
+					}
+					placeholderValue={now("Europe/Berlin")}
+					isRequired={true}
+				/>
                 <Input
                     size="sm"
                     label="GitHub Link"

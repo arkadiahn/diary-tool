@@ -90,7 +90,7 @@ function MissionDetailsView({
                     type={submit ? "submit" : "button"}
                     onPress={!submit ? () => setStep((prev) => prev + 1) : undefined}
                 >
-                    Next
+                    {submit ? "Submit" : "Next"}
                 </Button>
             </div>
         </div>
@@ -243,13 +243,6 @@ export default function CreateMissionPage() {
                                     name="kickoff_time"
                                     placeholderValue={now("Europe/Berlin")}
                                     description="The time where the team formation happens and the mission starts"
-                                    isRequired={true}
-                                />
-                                <DatePicker
-                                    size="sm"
-                                    label="End Time"
-                                    name="end_time"
-                                    placeholderValue={now("Europe/Berlin")}
                                     isRequired={true}
                                 />
                                 <Textarea

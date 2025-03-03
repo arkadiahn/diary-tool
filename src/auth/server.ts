@@ -1,12 +1,13 @@
 // "use server";
 
-import * as jose from "jose";
+import { type NextRequest, NextResponse } from "next/server";
 import type { NextURL } from "next/dist/server/web/next-url";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { type NextRequest, NextResponse } from "next/server";
 import setCookie from "set-cookie-parser";
 import type { Session } from "./models";
+import * as jose from "jose";
+
 
 /* -------------------------------------------------------------------------- */
 /*                                Login/Logout                                */
@@ -152,13 +153,13 @@ export async function auth({
 
         if (requiredScopes) {
             if (!sessionData.user.scopes.some((scope) => requiredScopes.includes(scope))) {
-                throw new Error("Unauthorized");
+                throw new Error("Not required scopes");
             }
         }
 
         return { session: sessionData };
-    } catch {
-        if (toLogin) {
+    } catch (error) {
+        if (toLogin && error instanceof Error && error.message === "Unauthorized") {
             if (!loginRedirectUrl) {
                 throw new Error("Invalid configuration");
             }

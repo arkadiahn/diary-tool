@@ -8,15 +8,17 @@ export const customAxios = async <T>(
     options?: AxiosRequestConfig,
 ): Promise<AxiosResponse<T>> => {
     let sessionCookie: string | undefined;
+	let baseURL = process.env.NEXT_PUBLIC_BACKEND_URL;
     if (typeof window === "undefined") {
         const cookies = require("next/headers").cookies;
         sessionCookie = (await cookies()).get("session")?.value;
     } else {
         sessionCookie = Cookies.get("session");
+		baseURL = process.env.BACKEND_URL;
     }
 
     const instance = axios.create({
-        baseURL: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1`,
+        baseURL: `${baseURL}/api/v1`,
         headers: {
             ...(sessionCookie ? { Authorization: `Bearer ${sessionCookie}` } : {}),
             ...config.headers,

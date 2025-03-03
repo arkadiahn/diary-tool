@@ -5,7 +5,7 @@
     "scripts": {
         "dev": "orval && next dev --port ${PORT:-80}",
         "build": "next build",
-        "clean": "git clean -xdf .next .turbo node_modules",
+        "clean": "git clean -xdf .next node_modules",
         "lint": "biome lint",
         "format": "biome check --write .",
         "start": "next start",
