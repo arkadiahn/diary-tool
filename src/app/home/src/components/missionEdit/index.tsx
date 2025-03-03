@@ -39,7 +39,7 @@ function ProjectLeaderChip({ account }: { account: string }) {
             >
                 Project Leader
             </Chip>
-            <span className="text-sm text-default-600">{accountData?.nick_name || "Loading..."}</span>
+            <span className="text-sm text-default-600">{accountData?.nick || "Loading..."}</span>
         </div>
     );
 }

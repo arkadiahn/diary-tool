@@ -205,7 +205,7 @@ export default function EditMissionModal() {
                         >
                             {accounts.map((account) => (
                                 <TableRow key={account.name}>
-                                    <TableCell>{account.account.nick_name}</TableCell>
+                                    <TableCell>{account.account.nick}</TableCell>
                                     <TableCell width={200}>
                                         <div className="flex flex-row gap-2 items-center">
                                             {account.approved ? (

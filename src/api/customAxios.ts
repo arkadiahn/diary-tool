@@ -45,31 +45,32 @@ export const customAxios = async <T>(
 	instance.interceptors.response.use(
 		(response) => response,
 		async (error) => {
-			console.log(error);
-			if (error.response.status === 401) {
-				const retryAttempt = error.config._retry as boolean | undefined;
-				if (retryAttempt) {
-					throw error;
-				}
-
-				try {
-					const decodedToken = await jose.decodeJwt(sessionCookie ?? "");
-					if (decodedToken) {
-						const sessionResponse = await fetch("/api/session", {
-							credentials: "include",
-							cache: "no-store",
-						});
-						if (sessionResponse.status !== 200) {
-							window.location.href = "/";
-						} else {
-							error.config._retry = true;
-							return instance(error.config);
-						}
+			try {
+				if (error.response.status === 401) {
+					const retryAttempt = error.config._retry as boolean | undefined;
+					if (retryAttempt) {
+						throw error;
 					}
-				} catch {
-					window.location.href = "/";
+
+					try {
+						const decodedToken = await jose.decodeJwt(sessionCookie ?? "");
+						if (decodedToken) {
+							const sessionResponse = await fetch("/api/session", {
+								credentials: "include",
+								cache: "no-store",
+							});
+							if (sessionResponse.status !== 200) {
+								window.location.href = "/";
+							} else {
+								error.config._retry = true;
+								return instance(error.config);
+							}
+						}
+					} catch {
+						window.location.href = "/";
+					}
 				}
-			}
+			} catch {}
 			throw error;
 		}
 	);

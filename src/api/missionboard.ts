@@ -532,20 +532,20 @@ export type Email = string;
 /**
  * @maxLength 255
  */
-export type NickName = string;
+export type Nick = string;
 
 export type Name = string;
 
 export interface AccountUpdate {
   email: Email;
   name: Name;
-  nick_name: NickName;
+  nick: Nick;
 }
 
 export interface AccountPublic {
   email?: Email;
   name: Name;
-  nick_name: NickName;
+  nick: Nick;
 }
 
 export type AccountPublicArray = AccountPublic[];
@@ -558,7 +558,7 @@ export interface Account {
   last_login_time: string;
   name: string;
   /** @maxLength 255 */
-  nick_name: string;
+  nick: string;
   purge_time?: string;
   update_time: string;
 }

@@ -37,7 +37,7 @@ function Accounts() {
                 tableTitle="Accounts"
                 columnDefs={[
                     { field: "name", headerName: "Name", width: 120 },
-                    { field: "nick_name", headerName: "Nickname" },
+                    { field: "nick", headerName: "Nickname" },
                     { field: "email", headerName: "Email" },
                     {
                         field: "last_login_time",

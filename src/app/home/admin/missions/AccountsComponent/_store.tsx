@@ -22,12 +22,12 @@ export const useAccountsComponentStore = create<AccountsComponentStore>((set, ge
     accountsMap: new Map(),
     fuse: new Fuse<Account>([], {
         keys: [
-            "nick_name",
+            "nick",
             "email",
             "name",
             {
                 name: "combined",
-                getFn: (user) => `${user.nick_name} - ${user.email}`,
+                getFn: (user) => `${user.nick} - ${user.email}`,
             },
         ],
         threshold: 0.4,
@@ -78,6 +78,6 @@ export const useAccountsComponentStore = create<AccountsComponentStore>((set, ge
         });
     },
     formatAccountText: (account: Account) => {
-        return `${account.nick_name} - ${account.email}`;
+        return `${account.nick} - ${account.email}`;
     },
 }));

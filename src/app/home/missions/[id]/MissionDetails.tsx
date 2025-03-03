@@ -104,13 +104,13 @@ export default function MissionDetails({ mission, timelineComponent, accounts }:
                                         {accounts.map((account) => (
                                             <div className="flex items-center gap-3" key={account.account.name}>
                                                 <Avatar
-                                                    name={account.account.nick_name}
+                                                    name={account.account.nick}
                                                     className="bg-primary/10 text-primary"
                                                     size="sm"
                                                 />
                                                 <div className="flex flex-col subpixel-antialiased">
                                                     <span className="text-small font-medium">
-                                                        {account.account.nick_name}
+                                                        {account.account.nick}
                                                     </span>
                                                     <span className="text-xs text-default-500">
                                                         {account.account.email}
