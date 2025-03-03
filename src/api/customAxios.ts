@@ -12,11 +12,14 @@ export const customAxios = async <T>(
     if (typeof window === "undefined") {
         const cookies = require("next/headers").cookies;
         sessionCookie = (await cookies()).get("session")?.value;
-		baseURL = process.env.BACKEND_URL;
+
+		// check if we are currently building the production version, since maybe there is no private network available
+		if (process.env.NEXT_PHASE !== "phase-production-build") {
+			baseURL = process.env.BACKEND_URL;
+		}
     } else {
         sessionCookie = Cookies.get("session");
     }
-	console.log(baseURL);
 
     const instance = axios.create({
         baseURL: `${baseURL}/api/v1`,
