@@ -16,6 +16,7 @@ export const customAxios = async <T>(
     } else {
         sessionCookie = Cookies.get("session");
     }
+	console.log(baseURL);
 
     const instance = axios.create({
         baseURL: `${baseURL}/api/v1`,
@@ -44,6 +45,7 @@ export const customAxios = async <T>(
 	instance.interceptors.response.use(
 		(response) => response,
 		async (error) => {
+			console.log(error);
 			if (error.response.status === 401) {
 				const retryAttempt = error.config._retry as boolean | undefined;
 				if (retryAttempt) {
