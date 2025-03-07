@@ -1,6 +1,10 @@
 "use client";
 
-import { type MissionSummary, likeMission } from "@/api/missionboard";
+import { type Mission, Mission_ApprovalState, Mission_State } from "@arkadiahn/apis/intra/v1/mission_pb";
+import type { MissionMilestone } from "@arkadiahn/apis/intra/v1/mission_milestone_pb";
+import type { Account } from "@arkadiahn/apis/intra/v1/account_pb";
+import webClient from "@/api";
+
 import CustomIcon from "@/components/CustomIcon";
 import { Card, CardBody, CardFooter, CardHeader, Chip, Tooltip } from "@heroui/react";
 import clsx from "clsx";
@@ -12,16 +16,23 @@ import TimeStepper from "./TimeStepper";
 import UserGroupIcon from "@iconify/icons-ic/sharp-account-circle";
 import HeartIcon from "@iconify/icons-solar/heart-bold";
 
-export default function MissionCard({ mission }: { mission: MissionSummary }) {
-    const [likes, setLikes] = useState(mission.like_count);
-    const rejected = mission.approval_state === "rejected";
-    const approved = mission.approval_state === "approved";
-    const pending = mission.approval_state === "pending";
+interface MissionCardProps {
+	mission: Mission;
+	accounts: Account[];
+	milestones: MissionMilestone[];
+}
+export default function MissionCard({ mission, accounts, milestones }: MissionCardProps) {
+    const [likes, setLikes] = useState(mission.likeCount);
+    const rejected = mission.approvalState === Mission_ApprovalState.REJECTED;
+    const approved = mission.approvalState === Mission_ApprovalState.APPROVED;
+    const pending = mission.approvalState === Mission_ApprovalState.PENDING;
     const router = useRouter();
 
     const onLike = async () => {
         setLikes((prev) => prev + 1);
-        await likeMission(mission.name);
+		await webClient.likeMission({
+			name: mission.name,
+		});
     };
 
     return (
@@ -60,14 +71,20 @@ export default function MissionCard({ mission }: { mission: MissionSummary }) {
                         variant="dot"
                         radius="lg"
                         color={
-                            mission.mission_state === "active"
+                            mission.state === Mission_State.ACTIVE
                                 ? "primary"
-                                : mission.mission_state === "completed"
+                                : mission.state === Mission_State.COMPLETED
                                   ? "success"
                                   : "danger"
                         }
                     >
-                        {mission.mission_state}
+                        {{
+							0: "Unspecified",
+							1: "Pending",
+							2: "Active",
+							3: "Completed",
+							4: "Failed"
+						}[mission.state]}
                     </Chip>
                 </CardHeader>
 
@@ -75,12 +92,12 @@ export default function MissionCard({ mission }: { mission: MissionSummary }) {
                     <p className="text-default-500 text-sm line-clamp-2 min-h-[38px]">{mission.description}</p>
                     <div className="w-full h-[50px] space-y-1">
                         <h4 className="text-xs font-medium text-default-500 flex items-center">Milestones</h4>
-                        {mission.milestones_count === 0 ? (
+                        {milestones.length === 0 ? (
                             <p className="text-default-500 text-sm">No milestones</p>
                         ) : (
                             <TimeStepper
-                                stepsCount={mission.milestones_count}
-                                currentStep={mission.completed_milestones_count}
+                                stepsCount={milestones.length}
+                                currentStep={milestones.filter((m) => m.completed).length}
                             />
                         )}
                     </div>
@@ -89,9 +106,10 @@ export default function MissionCard({ mission }: { mission: MissionSummary }) {
                 <CardFooter className="flex justify-between items-center pt-0">
                     <div className="flex items-center gap-1 text-default-500">
                         <CustomIcon icon={UserGroupIcon} className="w-5 h-5" />
-                        <span className="text-sm">{mission.account_count}</span>
+                        <span className="text-sm">{accounts.length}</span>
                     </div>
                     <button
+						type="button"
                         className="hover:scale-110 active:scale-95 transition-transform flex items-center gap-1"
                         onClick={onLike}
                         onKeyDown={(e) => {

@@ -1,6 +1,8 @@
 "use client";
 
-import { type Diary, deleteDiary, getDiaries, updateDiary } from "@/api/missionboard";
+import type { Diary } from "@arkadiahn/apis/intra/v1/diary_pb";
+import webClient from "@/api";
+
 import type { Session } from "@/auth/models";
 import { Button } from "@heroui/react";
 import {
@@ -47,12 +49,14 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
                 const sortedDiaries = example_entries.sort(
                     (a, b) => new Date(a.entry_date).getTime() - new Date(b.entry_date).getTime(),
                 );
-                setDiaries(sortedDiaries);
+                setDiaries(sortedDiaries as Diary[]);
                 setLoading(false);
                 return;
             }
             try {
-                diaries = (await getDiaries("me")).data;
+				diaries = (await webClient.listDiaries({
+					parent: "accounts/me",
+				})).diaries;
                 if (diaries.length === 0) {
                     setHasEntryThisWeek(false);
                     setIsExample(true);
@@ -68,7 +72,7 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
                 );
                 setDiaries(sortedDiaries);
                 const lastEntry = sortedDiaries.at(-1)!;
-                const newEntryDate = new Date(lastEntry.entry_date);
+                const newEntryDate = new Date(lastEntry.entryTime?.nanos ?? 0);
                 newEntryDate.setDate(newEntryDate.getDate() + 1);
                 setHasEntryThisWeek(new Date() < newEntryDate);
             } catch {

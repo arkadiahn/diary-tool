@@ -8,7 +8,7 @@ const envSchema = z.object({
     NEXT_PUBLIC_KEYCLOAK_ISSUER: z.string().url(),
     NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: z.string(),
     KEYCLOAK_SECRET: z.string(),
-    COOKIE_DOMAIN: z.string(),
+    COOKIE_DOMAINS: z.string(),
 });
 
 declare global {

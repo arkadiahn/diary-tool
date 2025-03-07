@@ -1,8 +1,10 @@
 "use client";
 
-import type { Event } from "@/api/missionboard";
+import type { Event } from "@arkadiahn/apis/intra/v1/event_pb";
+import { timestampToDate } from "@/api/utils";
+
 import CustomIcon from "@/components/CustomIcon";
-import { Card, CardBody, CardHeader, Chip, Link } from "@heroui/react";
+import { Card, CardBody, CardHeader, Chip } from "@heroui/react";
 import { useRouter } from "next/navigation";
 
 /* ---------------------------------- Icons --------------------------------- */
@@ -11,17 +13,10 @@ import CalendarIcon from "@iconify/icons-ic/round-calendar-month";
 import MapPinIcon from "@iconify/icons-ic/round-map";
 
 /* -------------------------------------------------------------------------- */
-/*                                  Interface                                 */
-/* -------------------------------------------------------------------------- */
-interface EventCardProps {
-    event: Event;
-}
-
-/* -------------------------------------------------------------------------- */
 /*                                  Component                                 */
 /* -------------------------------------------------------------------------- */
 // @todo fix locale to adjust to user's locale
-export default function EventCard({ event }: EventCardProps) {
+export default function EventCard({ event }: { event: Event }) {
     const router = useRouter();
 
     const onEventClick = () => {
@@ -43,12 +38,12 @@ export default function EventCard({ event }: EventCardProps) {
                     <div className="flex flex-wrap items-center gap-2 text-default-500 text-sm">
                         <div className="flex items-center gap-1">
                             <CustomIcon icon={CalendarIcon} className="w-3.5 h-3.5" width={14} />
-                            <time>{new Date(event.begin_time).toLocaleDateString("de-DE")}</time>
+                            <time>{timestampToDate(event.beginTime)?.toLocaleDateString("de-DE")}</time>
                         </div>
                         <div className="flex items-center gap-1">
                             <CustomIcon icon={ClockIcon} className="w-3.5 h-3.5" width={14} />
                             <span>
-                                {new Date(event.begin_time).toLocaleTimeString("de-DE", {
+                                {timestampToDate(event.beginTime)?.toLocaleTimeString("de-DE", {
                                     hour: "2-digit",
                                     minute: "2-digit",
                                     hour12: true,
@@ -62,9 +57,9 @@ export default function EventCard({ event }: EventCardProps) {
                 </Chip>
             </CardHeader>
             <CardBody className="px-4 pb-4">
-                {event.picture_uri && (
+                {event.pictureUri && (
                     <img
-                        src={event.picture_uri}
+                        src={event.pictureUri}
                         alt={event.title}
                         className="w-full h-32 object-cover rounded-large mb-2"
                     />

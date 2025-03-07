@@ -1,4 +1,5 @@
-import type { Event } from "@/api/missionboard";
+import { timestampToDate } from "@/api/utils";
+
 import { DatePicker, Input } from "@heroui/react";
 import { now, parseAbsolute } from "@internationalized/date";
 import MDEditor from "@uiw/react-md-editor";
@@ -20,8 +21,8 @@ export function EditEventModal() {
             onOpenChange={toggleEdit}
             title="Event Details"
             data={selectedEvent}
-            onUpdate={async (data: Event) => await updateEvent(data)}
-            onCreate={async (data: Event) => await createEvent(data)}
+            onUpdate={updateEvent}
+            onCreate={createEvent}
         >
             <input name="name" value={selectedEvent?.name ?? ""} readOnly={true} className="hidden" />
             <Input
@@ -49,9 +50,9 @@ export function EditEventModal() {
                 <DatePicker
                     size="sm"
                     label="Start Time"
-                    name="begin_time"
+                    name="beginTime"
                     defaultValue={
-                        selectedEvent?.begin_time ? parseAbsolute(selectedEvent.begin_time, "Europe/Berlin") : null
+                        selectedEvent?.beginTime ? parseAbsolute(timestampToDate(selectedEvent.beginTime)!.toISOString(), "Europe/Berlin") : null
                     }
                     placeholderValue={now("Europe/Berlin")}
                     isRequired={true}
@@ -59,9 +60,9 @@ export function EditEventModal() {
                 <DatePicker
                     size="sm"
                     label="End Time"
-                    name="end_time"
+                    name="endTime"
                     defaultValue={
-                        selectedEvent?.end_time ? parseAbsolute(selectedEvent.end_time, "Europe/Berlin") : null
+                        selectedEvent?.endTime ? parseAbsolute(timestampToDate(selectedEvent.endTime)!.toISOString(), "Europe/Berlin") : null
                     }
                     placeholderValue={now("Europe/Berlin")}
                     isRequired={true}
@@ -97,10 +98,10 @@ export function EditEventModal() {
                 <Input
                     size="sm"
                     label="Picture URL"
-                    name="picture_uri"
+                    name="pictureUri"
                     placeholder="Enter picture URL"
                     type="url"
-                    defaultValue={selectedEvent?.picture_uri}
+                    defaultValue={selectedEvent?.pictureUri}
                 />
             </div>
             {/* // @todo add image upload */}

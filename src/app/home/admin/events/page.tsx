@@ -1,14 +1,12 @@
 "use client";
 
-import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { useEffect } from "react";
 import { AreYouSure } from "../AreYouSurePopup";
 import CustomGrid from "../CustomGrid";
 import { EditEventModal } from "./EditEventModal";
 import { EventsStoreProvider, useEventsStore } from "./_eventsStore";
+import { timestampToDate } from "@/api/utils";
 // @todo make the edit modal open with query params
-
-ModuleRegistry.registerModules([AllCommunityModule]);
 
 function AdminEvents() {
     const fetchEvents = useEventsStore((state) => state.fetchEvents);
@@ -33,11 +31,11 @@ function AdminEvents() {
                 columnDefs={[
                     { field: "title", minWidth: 200 },
                     { field: "topic", minWidth: 150 },
-                    { field: "begin_time", headerName: "Start Time", minWidth: 190, sort: "asc" },
-                    { field: "end_time", headerName: "End Time" },
+                    { field: "beginTime", headerName: "Start Time", minWidth: 190, sort: "asc", valueFormatter: (params) => timestampToDate(params.value)?.toISOString() ?? "null" },
+                    { field: "endTime", headerName: "End Time", valueFormatter: (params) => timestampToDate(params.value)?.toISOString() ?? "null" },
                     { field: "location" },
                     { field: "link" },
-                    { field: "picture_uri", headerName: "Picture URL" },
+                    { field: "pictureUri", headerName: "Picture URL" },
                 ]}
             />
 

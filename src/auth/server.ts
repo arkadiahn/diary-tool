@@ -1,5 +1,3 @@
-// "use server";
-
 import { type NextRequest, NextResponse } from "next/server";
 import type { NextURL } from "next/dist/server/web/next-url";
 import { cookies, headers } from "next/headers";
@@ -58,7 +56,7 @@ const decodeJWTToken = async (
         }
 
         const jwks = await fetch(`${issuer}/protocol/openid-connect/certs`, {
-            next: { revalidate: 360 },
+            next: { revalidate: 3600 },
             cache: "force-cache",
         }).then((res) => res.json());
         const decodedToken = await jose.jwtVerify(token, jose.createLocalJWKSet(jwks), {
@@ -78,6 +76,7 @@ interface TokenData {
     expires_in: number;
     refresh_token: string;
     refresh_expires_in: number;
+	id_token: string;
 }
 const setResponseCookies = (response: NextResponse, tokenData?: TokenData) => {
     response.cookies.set("session", tokenData?.access_token ?? "", {
@@ -85,17 +84,26 @@ const setResponseCookies = (response: NextResponse, tokenData?: TokenData) => {
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         maxAge: tokenData?.expires_in ?? 0,
-        domain: process.env.COOKIE_DOMAIN,
+        domain: process.env.COOKIE_DOMAINS,
         priority: "high",
     });
     response.cookies.set("refresh", tokenData?.refresh_token ?? "", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
+		path: "/", //"/api/session",
         sameSite: "strict",
         maxAge: tokenData?.refresh_expires_in ?? 0,
-        domain: process.env.COOKIE_DOMAIN,
+        domain: process.env.COOKIE_DOMAINS,
         priority: "high",
     });
+	response.cookies.set("id", tokenData?.id_token ?? "", {
+		httpOnly: true,
+		secure: process.env.NODE_ENV === "production",
+		sameSite: "lax",
+		maxAge: tokenData?.expires_in ?? 0,
+		domain: process.env.COOKIE_DOMAINS,
+		priority: "high",
+	});
     return response;
 };
 
@@ -133,9 +141,9 @@ export async function auth({
     const loginRedirectUrl = requestHeaders.get("referer");
     try {
         const decodedAccessPayload = await jose.decodeJwt(requestCookies.get("session")?.value ?? "");
-        const decodedIdPayload = JSON.parse(Buffer.from(requestHeaders.get("x-id") ?? "", "base64").toString("utf-8"));
+        const decodedIdPayload = await jose.decodeJwt(requestCookies.get("id")?.value ?? "");
         if (!decodedIdPayload || !decodedAccessPayload) {
-            throw new Error("Unauthorized");
+			throw new Error("Unauthorized");
         }
 
         // @todo better way to "parse/validate" session?
@@ -182,6 +190,9 @@ export function authMiddleware(wrappedMiddleware: (request: NextRequest) => Next
 
         const requestCookies = request.cookies.getAll();
         if (!searchParams.has("session_state") && !code && !searchParams.has("iss")) {
+			// const decodedSessionToken = await decodeJWTToken(request.cookies.get("session")?.value, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER, false);
+			// only do session request if session token is expired
+			// dont do request, create a seperate method for handling this and also use it in the apiroute
             let sessionResponse: Response | null = null;
             if (requestCookies.some((cookie) => cookie.name === "session" || cookie.name === "refresh")) {
                 sessionResponse = await fetch(`${buildRealUrl(request).origin}/api/session`, {
@@ -195,9 +206,7 @@ export function authMiddleware(wrappedMiddleware: (request: NextRequest) => Next
             const wrappedResponse = wrappedMiddleware(request);
 
             if (sessionResponse) {
-                const sessionData = await sessionResponse.json();
                 addMiddlewareCookies(request, wrappedResponse, sessionResponse.headers.getSetCookie());
-                wrappedResponse.headers.set("x-id", sessionData.id);
             }
 
             wrappedResponse.headers.set("referer", buildRealUrl(request).href);
@@ -318,16 +327,13 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
 
             const tokenData = await tokenResponse.json();
             const decodedToken = await decodeJWTToken(tokenData.access_token, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER);
-            const decodedIdToken = await decodeJWTToken(
-                tokenData.id_token,
-                process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER,
-                false,
-            );
+            // const decodedIdToken = await decodeJWTToken(
+            //     tokenData.id_token,
+            //     process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER,
+            //     false,
+            // );
             return setResponseCookies(
-                NextResponse.json({
-                    id: Buffer.from(JSON.stringify(decodedIdToken)).toString("base64"),
-                    accessClaims: decodedToken,
-                }),
+                NextResponse.json({ accessClaims: decodedToken }),
                 tokenData,
             );
         }
@@ -430,6 +436,7 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
         );
     }
 
+	/* ------------------------------ SILENT LOGIN ------------------------------ */
     if (path[0] === "silent") {
         return NextResponse.json(
             {

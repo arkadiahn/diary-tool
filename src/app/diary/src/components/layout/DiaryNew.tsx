@@ -1,6 +1,8 @@
 "use client";
 
-import { type Diary, createDiary, updateDiary } from "@/api/missionboard";
+import type { Diary, Diary_DiaryGoal } from "@arkadiahn/apis/intra/v1/diary_pb";
+import webClient from "@/api";
+
 import type { Session } from "@/auth/models";
 import { Button, Card, CardBody, Input, Select, SelectItem, Slider, Textarea } from "@heroui/react";
 import { format } from "date-fns";
@@ -44,10 +46,10 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
 
     const [newEntry, setNewEntry] = useState({
         entry_date: initialDiary
-            ? format(new Date(initialDiary.entry_date), "yyyy-MM-dd")
+            ? format(new Date(initialDiary.entryTime?.nanos ?? ""), "yyyy-MM-dd")
             : format(new Date(), "yyyy-MM-dd"),
         project: initialDiary?.project || "",
-        completion_weeks: initialDiary?.completion_weeks || 1,
+        completion_weeks: initialDiary?.completionWeeks || 1,
         motivation: initialDiary?.motivation || 5,
         learnings: initialDiary?.learnings || "",
         obstacles: initialDiary?.obstacles || "",
@@ -63,17 +65,22 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
 
             if (initialDiary) {
                 // Handle update
-                const [_, accountId, __, diaryId] = initialDiary.name.split("/");
-                await updateDiary(accountId, diaryId, {
-                    ...newEntry,
-                    goals: filteredGoals,
-                });
+				await webClient.updateDiary({
+					diary: {
+						...newEntry,
+						name: initialDiary.name,
+						goals: filteredGoals
+					}
+				});
             } else {
                 // Handle create
-                await createDiary("me", {
-                    ...newEntry,
-                    goals: filteredGoals,
-                });
+				await webClient.createDiary({
+					parent: "accounts/me",
+					diary: {
+						...newEntry,
+						goals: filteredGoals
+					}
+				});
             }
 
             router.push("/");
@@ -206,16 +213,16 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
                             />
 
                             <div className="space-y-4">
-                                <label className="block text-sm font-medium">Your goals for next week</label>
+                                <span className="block text-sm font-medium">Your goals for next week</span>
                                 {newEntry.goals.map((goal, index) => (
-                                    <div key={index} className="flex gap-2">
+                                    <div key={goal.title} className="flex gap-2">
                                         <Input
                                             type="text"
                                             value={goal.title}
                                             onChange={(e) => {
                                                 const newGoals = [...newEntry.goals];
                                                 newGoals[index].title = e.target.value;
-                                                setNewEntry({ ...newEntry, goals: newGoals });
+                                                setNewEntry({ ...newEntry, goals: newGoals as Diary_DiaryGoal[] });
                                             }}
                                             placeholder="Enter a goal"
                                         />
@@ -223,7 +230,7 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
                                             color="danger"
                                             onClick={() => {
                                                 const newGoals = newEntry.goals.filter((_, i) => i !== index);
-                                                setNewEntry({ ...newEntry, goals: newGoals });
+                                                setNewEntry({ ...newEntry, goals: newGoals as Diary_DiaryGoal[] });
                                             }}
                                         >
                                             Remove
@@ -235,7 +242,7 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
                                     onClick={() =>
                                         setNewEntry({
                                             ...newEntry,
-                                            goals: [...newEntry.goals, { title: "", completed: false }],
+                                            goals: [...newEntry.goals, { title: "", completed: false }] as Diary_DiaryGoal[],
                                         })
                                     }
                                 >

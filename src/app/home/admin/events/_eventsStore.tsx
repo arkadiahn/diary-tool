@@ -1,4 +1,6 @@
-import { type Event, deleteEvent, getEvents, patchEvent, postEvent } from "@/api/missionboard";
+import type { Event } from "@arkadiahn/apis/intra/v1/event_pb";
+import webClient from "@/api";
+
 import { toast } from "react-hot-toast";
 import { confirm } from "../AreYouSurePopup";
 import createCustomStore from "../CreateCustomStore";
@@ -29,8 +31,9 @@ export const { StoreProvider: EventsStoreProvider, useStore: useEventsStore } = 
         fetchEvents: async () => {
             set({ loading: true, events: [] });
             try {
-                const response = await getEvents();
-                set({ events: response.data, loading: false });
+				// @todo add fetching for all events
+				const { events } = await webClient.listEvents({});
+                set({ events, loading: false });
             } catch {
                 toast.error("Failed to fetch events");
                 set({ loading: false });
@@ -41,7 +44,7 @@ export const { StoreProvider: EventsStoreProvider, useStore: useEventsStore } = 
         },
         createEvent: async (event: Event) => {
             try {
-                await postEvent(event);
+				await webClient.createEvent({ event });
                 toast.success("Event created successfully");
                 get().fetchEvents();
                 set({ editOpen: false });
@@ -51,11 +54,14 @@ export const { StoreProvider: EventsStoreProvider, useStore: useEventsStore } = 
         },
         updateEvent: async (event: Event) => {
             try {
-                await patchEvent(event.name, event);
+				await webClient.updateEvent({ event, updateMask: {
+					paths: ["*"]
+				} });
                 toast.success("Event updated successfully");
                 get().fetchEvents();
                 set({ editOpen: false });
-            } catch {
+            } catch (error) {
+                console.error(error);
                 toast.error("Failed to update event");
             }
         },
@@ -65,7 +71,7 @@ export const { StoreProvider: EventsStoreProvider, useStore: useEventsStore } = 
                 return;
             }
             try {
-                await deleteEvent(event.name);
+                await webClient.deleteEvent({ name: event.name });
                 toast.success("Event deleted successfully");
                 get().fetchEvents();
             } catch {

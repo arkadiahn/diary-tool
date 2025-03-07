@@ -1,6 +1,7 @@
-import { Card } from "@heroui/react";
+import type { Event } from "@arkadiahn/apis/intra/v1/event_pb";
+import { timestampToDate } from "@/api/utils";
 
-import type { Event } from "@/api/missionboard";
+import { Card } from "@heroui/react";
 
 import EventCard from "./EventCard";
 import EventGroup from "./EventGroup";
@@ -10,10 +11,13 @@ import EventGroup from "./EventGroup";
 /* -------------------------------------------------------------------------- */
 const groupEventsByDate = (events: Event[]) => {
     const sortedEvents = [...events].sort(
-        (a, b) => new Date(a.begin_time).getTime() - new Date(b.begin_time).getTime(),
+        (a, b) => (timestampToDate(a.beginTime)?.getTime() ?? 0) - (timestampToDate(b.beginTime)?.getTime() ?? 0),
     );
     return sortedEvents.reduce<Record<string, Event[]>>((groups, event) => {
-        const date = new Date(event.begin_time).toLocaleDateString("de-DE");
+        const date = timestampToDate(event.beginTime)?.toLocaleDateString("de-DE");
+        if (!date) {
+            return groups;
+        }
         if (!groups[date]) {
             groups[date] = [];
         }

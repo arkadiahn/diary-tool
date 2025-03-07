@@ -115,7 +115,7 @@ export const SessionProvider = ({
 
     const visibilityHandler = useCallback(() => {
         if (document.visibilityState === "visible") {
-            debouncedHandler();
+            // debouncedHandler();
         }
     }, [debouncedHandler]);
 

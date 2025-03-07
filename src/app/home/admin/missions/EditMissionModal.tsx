@@ -1,4 +1,6 @@
-import { MissionMilestoneState } from "@/api/missionboard";
+import type { MissionMilestone } from "@arkadiahn/apis/intra/v1/mission_milestone_pb";
+import { type Mission, Mission_State } from "@arkadiahn/apis/intra/v1/mission_pb";
+
 import CustomIcon from "@/components/CustomIcon";
 import { Button, Chip, type ChipProps, DatePicker, Input, TableCell, TableRow, Textarea, Tooltip } from "@heroui/react";
 import { now, parseAbsolute } from "@internationalized/date";
@@ -17,41 +19,26 @@ import TrashIcon from "@iconify/icons-ic/sharp-delete";
 import EditMissionAccountModal from "./EditMissionAccountModal";
 import EditMissionMilestoneModal from "./EditMissionMilestoneModal";
 
-function MilestoneState({ state }: { state: MissionMilestoneState }) {
+function MilestoneState({ milestone }: { milestone: MissionMilestone }) {
     const props: ChipProps = {
         size: "sm",
         radius: "lg",
         variant: "dot",
     };
 
-    switch (state) {
-        case MissionMilestoneState.completed:
-            return (
-                <Chip color="success" {...props}>
-                    Completed
-                </Chip>
-            );
-        case MissionMilestoneState.in_progress:
-            return (
-                <Chip color="warning" {...props}>
-                    In Progress
-                </Chip>
-            );
-        case MissionMilestoneState.planned:
-            return (
-                <Chip color="primary" {...props}>
-                    Planned
-                </Chip>
-            );
-        case MissionMilestoneState.failed:
-            return (
-                <Chip color="danger" {...props}>
-                    Failed
-                </Chip>
-            );
-        default:
-            return state;
-    }
+	if (milestone.completed === true) {
+		return (
+			<Chip color="success" {...props}>
+				Completed
+			</Chip>
+		);
+	}
+
+	return (
+		<Chip color="primary" {...props}>
+			Planned
+		</Chip>
+	);
 }
 
 export default function EditMissionModal() {

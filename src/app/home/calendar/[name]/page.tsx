@@ -1,4 +1,6 @@
-import { getEvent } from "@/api/missionboard";
+import { timestampToDate } from "@/api/utils";
+import webClient from "@/api";
+
 import CustomIcon from "@/components/CustomIcon";
 import { Image } from "@heroui/image";
 import { Button, Chip, Divider } from "@heroui/react";
@@ -13,17 +15,17 @@ import ShareButton from "./ShareButton";
 
 export default async function CalendarEventPage({ params }: { params: Promise<{ name: string }> }) {
     const { name } = await params;
-    const { data: event } = await getEvent(name);
+    const event = await webClient.getEvent({ name: `events/${name}` });
 
     return (
         <MainPageLayout>
             <div className="min-h-full w-full flex flex-col gap-6">
                 <PageBreadcrumbs title={event.title} />
-                {event.picture_uri && (
+                {event.pictureUri && (
                     <Image
                         isBlurred={true}
                         as={NextImage}
-                        src={event.picture_uri}
+                        src={event.pictureUri}
                         width={1920}
                         height={1080}
                         alt={event.title}
@@ -48,8 +50,8 @@ export default async function CalendarEventPage({ params }: { params: Promise<{ 
                         <div className="flex items-center gap-2">
                             <CustomIcon icon={calendarMonth} width={20} height={20} />
                             <span>
-                                {new Date(event.begin_time).toLocaleString()} -{" "}
-                                {new Date(event.end_time).toLocaleString()}
+                                {timestampToDate(event.beginTime)?.toLocaleString()} -{" "}
+                                {timestampToDate(event.endTime)?.toLocaleString()}
                             </span>
                         </div>
 

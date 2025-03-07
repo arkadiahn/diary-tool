@@ -1,3 +1,4 @@
+import { dateToTimestamp } from "@/api/utils";
 import { Button, Form, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/react";
 import { parseZonedDateTime } from "@internationalized/date";
 import { useTheme } from "next-themes";
@@ -36,6 +37,7 @@ export default function CustomEditModal<T>({
                     element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement
                         ? (element.type === "checkbox" ||
                               element.type === "text" ||
+                              element.type === "url" ||
                               element.tagName.toLowerCase() === "textarea") &&
                           (element.type === "checkbox" || element.value.trim() !== "")
                         : false,
@@ -58,12 +60,15 @@ export default function CustomEditModal<T>({
                         value.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?[+-]\d{2}:\d{2}\[[\w/]+\]$/) &&
                         type === "text"
                     ) {
-                        return [name, parseZonedDateTime(value).toDate().toISOString()];
+                        return [name, dateToTimestamp(parseZonedDateTime(value).toDate())];
                     }
 
                     return [name, value];
                 }),
         );
+
+		// @todo check for key thats not in T and check for correct type
+
 
         if (data && onUpdate) {
             await onUpdate(filteredData as unknown as T);

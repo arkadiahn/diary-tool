@@ -1,6 +1,8 @@
 "use client";
 
-import type { Mission, MissionAccount } from "@/api/missionboard";
+import { Mission_State, type Mission } from "@arkadiahn/apis/intra/v1/mission_pb";
+import type { MissionAccount } from "@arkadiahn/apis/intra/v1/mission_account_pb";
+
 import { useSession } from "@/auth/client";
 import CustomIcon from "@/components/CustomIcon";
 import {
@@ -52,22 +54,28 @@ export default function MissionDetails({ mission, timelineComponent, accounts }:
                             <div className="flex items-center gap-3">
                                 <div className="flex items-center gap-1">
                                     <CustomIcon icon={HeartIcon} className="w-5 h-5 text-danger" />
-                                    <span>{mission.like_count} likes</span>
+                                    <span>{mission.likeCount} likes</span>
                                 </div>
                                 <Divider orientation="vertical" className="h-5" />
                                 <Chip
                                     color={
-                                        mission.mission_state === "active"
+                                        mission.state === Mission_State.ACTIVE
                                             ? "primary"
-                                            : mission.mission_state === "completed"
+                                            : mission.state === Mission_State.COMPLETED
                                               ? "success"
-                                              : mission.mission_state === "failed"
+                                              : mission.state === Mission_State.FAILED
                                                 ? "danger"
                                                 : "default"
                                     }
                                     variant="dot"
                                 >
-                                    {mission.mission_state}
+                                    {{
+										0: "Unspecified",
+										1: "Pending",
+										2: "Active",
+										3: "Completed",
+										4: "Failed"
+									}[mission.state]}
                                 </Chip>
                             </div>
                         </div>
@@ -86,12 +94,12 @@ export default function MissionDetails({ mission, timelineComponent, accounts }:
 
                             <section>
                                 <h2 className="text-xl font-semibold mb-1">Goals</h2>
-                                <p className="text-default-600 leading-relaxed">{mission.description_goal}</p>
+                                <p className="text-default-600 leading-relaxed">{mission.descriptionGoal}</p>
                             </section>
 
                             <section className="pt-4">
                                 <h2 className="text-xl font-semibold mb-1">Required Skills</h2>
-                                <p className="text-default-600 leading-relaxed">{mission.description_skills}</p>
+                                <p className="text-default-600 leading-relaxed">{mission.descriptionSkills}</p>
                             </section>
                         </div>
 
@@ -102,18 +110,18 @@ export default function MissionDetails({ mission, timelineComponent, accounts }:
                                     <Divider className="my-3" />
                                     <div className="flex flex-col gap-4">
                                         {accounts.map((account) => (
-                                            <div className="flex items-center gap-3" key={account.account.name}>
+                                            <div className="flex items-center gap-3" key={account.account}>
                                                 <Avatar
-                                                    name={account.account.nick}
+                                                    name={account.name}
                                                     className="bg-primary/10 text-primary"
                                                     size="sm"
                                                 />
                                                 <div className="flex flex-col subpixel-antialiased">
                                                     <span className="text-small font-medium">
-                                                        {account.account.nick}
+                                                        {account.name}
                                                     </span>
                                                     <span className="text-xs text-default-500">
-                                                        {account.account.email}
+                                                        {account.name}
                                                     </span>
                                                 </div>
                                             </div>

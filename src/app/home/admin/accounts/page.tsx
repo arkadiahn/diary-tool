@@ -1,15 +1,18 @@
 "use client";
 
-import type { Account } from "@/api/missionboard";
+import type { Account } from "@arkadiahn/apis/intra/v1/account_pb";
+
 import { Button } from "@heroui/react";
 import type { ICellRendererParams } from "ag-grid-community";
 import { useEffect } from "react";
 import { toast } from "react-hot-toast";
 import CustomGrid from "../CustomGrid";
 import { UserStoreProvider, useUserStore } from "./_accountsStore";
+import { timestampToDate } from "@/api/utils";
 
 function Accounts() {
     const fetchUsers = useUserStore((state) => state.fetchUsers);
+	const deleteUser = useUserStore((state) => state.deleteUser);
     const loading = useUserStore((state) => state.loading);
     const users = useUserStore((state) => state.users);
 
@@ -35,24 +38,30 @@ function Accounts() {
                 data={users}
                 loading={loading}
                 tableTitle="Accounts"
+				onDelete={deleteUser}
                 columnDefs={[
                     { field: "name", headerName: "Name", width: 120 },
                     { field: "nick", headerName: "Nickname" },
                     { field: "email", headerName: "Email" },
+                    // {
+                    //     field: "lastLoginTime",
+                    //     headerName: "Last Login",
+                    //     valueFormatter: (params) => new Date(params.value).toLocaleString(),
+                    // },
                     {
-                        field: "last_login_time",
-                        headerName: "Last Login",
-                        valueFormatter: (params) => new Date(params.value).toLocaleString(),
-                    },
-                    {
-                        field: "create_time",
+                        field: "createTime",
                         headerName: "Created",
-                        valueFormatter: (params) => new Date(params.value).toLocaleString(),
+                        valueFormatter: (params) => timestampToDate(params.value)?.toLocaleString() ?? "",
                     },
                     {
-                        field: "update_time",
+                        field: "updateTime",
                         headerName: "Updated",
-                        valueFormatter: (params) => new Date(params.value).toLocaleString(),
+                        valueFormatter: (params) => timestampToDate(params.value)?.toLocaleString() ?? "",
+                    },
+					{
+                        field: "deleteTime",
+                        headerName: "Deleted",
+                        valueFormatter: (params) => timestampToDate(params.value)?.toLocaleString() ?? "",
                     },
                     {
                         headerName: "Impersonate",

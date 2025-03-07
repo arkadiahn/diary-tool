@@ -1,5 +1,6 @@
-import { getMissions } from "@/api/missionboard";
-import type { MissionSummaryArray } from "@/api/missionboard";
+
+import webClient from "@/api";
+
 import CustomIcon from "@/components/CustomIcon";
 import {
     Button,
@@ -22,10 +23,9 @@ import icRoundFilterList from "@iconify/icons-ic/round-filter-list";
 import icRoundSearch from "@iconify/icons-ic/round-search";
 
 export default async function Home() {
-    const { data: missions } = await getMissions({
-        format: "summary",
-        show_unapproved: true,
-    });
+	const { missions } = await webClient.listMissions({});
+	const { accounts } = { accounts: [] };
+	const { milestones } = { milestones: [] };
     const { session } = await auth({});
 
     return (
@@ -74,7 +74,7 @@ export default async function Home() {
             }
         >
             <ScrollShadow className="w-full flex-1 scrollbar-thin scrollbar-thumb-default-300 scrollbar-track-transparent px-4 py-5 -ml-2">
-                <MissionLayout missions={missions as MissionSummaryArray} />
+                <MissionLayout missions={missions} accounts={accounts} milestones={milestones} />
             </ScrollShadow>
         </MainPageLayout>
     );

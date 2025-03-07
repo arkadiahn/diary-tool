@@ -1,6 +1,7 @@
 "use client";
 
-import type { Mission } from "@/api/missionboard";
+import { type Mission, Mission_ApprovalState, Mission_State } from "@arkadiahn/apis/intra/v1/mission_pb";
+
 import { Button, Chip } from "@heroui/react";
 import { useEffect } from "react";
 import { AreYouSure } from "../AreYouSurePopup";
@@ -9,31 +10,38 @@ import EditMissionModal from "./EditMissionModal";
 import { AccountStoreProvider } from "./_accountStore";
 import { MilestoneStoreProvider } from "./_milestoneStore";
 import { MissionsStoreProvider, useMissionsStore } from "./_missionsStore";
+import { timestampToDate } from "@/api/utils";
 
-function StateRenderer(props: { value: string }) {
+function StateRenderer(props: { value: Mission_State }) {
     return (
         <div className="flex items-center justify-center h-full">
             <Chip
-                color={props.value === "completed" ? "success" : props.value === "active" ? "warning" : "danger"}
+                color={props.value === Mission_State.COMPLETED ? "success" : props.value === Mission_State.ACTIVE ? "warning" : "danger"}
                 size="sm"
                 radius="lg"
                 variant="dot"
             >
-                {props.value}
+                {{
+                    [Mission_State.COMPLETED]: "Completed",
+                    [Mission_State.ACTIVE]: "Active",
+                    [Mission_State.FAILED]: "Failed",
+                    [Mission_State.PENDING]: "Pending",
+                    [Mission_State.UNSPECIFIED]: "Unspecified",
+                }[props.value]}
             </Chip>
         </div>
     );
 }
 
-function ApproveRenderer(props: { value: string; data: Mission }) {
+function ApproveRenderer(props: { value: Mission_ApprovalState; data: Mission }) {
     const approveMission = useMissionsStore((state) => state.approveMission);
     const rejectMission = useMissionsStore((state) => state.rejectMission);
 
-    if (props.value === "approved" || props.value === "rejected") {
+    if (props.value === Mission_ApprovalState.APPROVED || props.value === Mission_ApprovalState.REJECTED) {
         return (
             <div className="flex items-center justify-center h-full">
-                <Chip color={props.value === "approved" ? "success" : "danger"} size="sm" radius="lg" variant="dot">
-                    {props.value === "approved" ? "Approved" : "Rejected"}
+                <Chip color={props.value === Mission_ApprovalState.APPROVED ? "success" : "danger"} size="sm" radius="lg" variant="dot">
+                    {props.value === Mission_ApprovalState.APPROVED ? "Approved" : "Rejected"}
                 </Chip>
             </div>
         );
@@ -77,14 +85,14 @@ function AdminMissions() {
                     { field: "name", sortable: true },
                     { field: "title", sortable: true, minWidth: 180 },
                     {
-                        field: "mission_state",
+                        field: "state",
                         headerName: "State",
                         sortable: true,
                         minWidth: 130,
                         cellRenderer: StateRenderer,
                     },
                     {
-                        field: "approval_state",
+                        field: "approvalState",
                         headerName: "Approval",
                         sortable: true,
                         minWidth: 160,
@@ -93,38 +101,38 @@ function AdminMissions() {
                             if (valueA === valueB) {
                                 return 0;
                             }
-                            if (valueA === "pending") {
+                            if (valueA === Mission_ApprovalState.PENDING) {
                                 return -1;
                             }
-                            if (valueB === "pending") {
+                            if (valueB === Mission_ApprovalState.PENDING) {
                                 return 1;
                             }
-                            if (valueA === "approved") {
+                            if (valueA === Mission_ApprovalState.APPROVED) {
                                 return -1;
                             }
-                            if (valueB === "approved") {
+                            if (valueB === Mission_ApprovalState.APPROVED) {
                                 return 1;
                             }
                             return 0;
                         },
                     },
                     { field: "description", sortable: true },
-                    { field: "description_goal", sortable: true },
-                    { field: "description_skills", headerName: "Skills Description", sortable: true },
-                    { field: "github_link", sortable: true },
+                    { field: "descriptionGoal", sortable: true },
+                    { field: "descriptionSkills", headerName: "Skills Description", sortable: true },
+                    { field: "githubLink", sortable: true },
                     { field: "leader", sortable: true, minWidth: 130 },
                     {
-                        field: "like_count",
+                        field: "likeCount",
                         headerName: "Likes",
                         sortable: true,
                         type: "numericColumn",
                     },
                     {
-                        field: "create_time",
+                        field: "createTime",
                         headerName: "Created",
                         sortable: true,
                         minWidth: 180,
-                        valueFormatter: (params) => new Date(params.value).toLocaleString(),
+                        valueFormatter: (params) => timestampToDate(params.value)?.toLocaleString() ?? "",
                         comparator: (valueA, valueB) => {
                             const dateA = new Date(valueA).getTime();
                             const dateB = new Date(valueB).getTime();
@@ -134,10 +142,10 @@ function AdminMissions() {
                         sortIndex: 0,
                     },
                     {
-                        field: "update_time",
+                        field: "updateTime",
                         headerName: "Updated",
                         sortable: true,
-                        valueFormatter: (params) => new Date(params.value).toLocaleString(),
+                        valueFormatter: (params) => timestampToDate(params.value)?.toLocaleString() ?? "",
                         comparator: (valueA, valueB) => {
                             const dateA = new Date(valueA).getTime();
                             const dateB = new Date(valueB).getTime();
@@ -145,10 +153,10 @@ function AdminMissions() {
                         },
                     },
                     {
-                        field: "kickoff_time",
+                        field: "kickoffTime",
                         headerName: "Kickoff",
                         sortable: true,
-                        valueFormatter: (params) => (params.value ? new Date(params.value).toLocaleString() : ""),
+                        valueFormatter: (params) => (params.value ? timestampToDate(params.value)?.toLocaleString() ?? "" : ""),
                         comparator: (valueA, valueB) => {
                             if (!valueA) {
                                 return 1;
@@ -162,10 +170,10 @@ function AdminMissions() {
                         },
                     },
                     {
-                        field: "end_time",
+                        field: "endTime",
                         headerName: "End Time",
                         sortable: true,
-                        valueFormatter: (params) => (params.value ? new Date(params.value).toLocaleString() : ""),
+                        valueFormatter: (params) => (params.value ? timestampToDate(params.value)?.toLocaleString() ?? "" : ""),
                         comparator: (valueA, valueB) => {
                             if (!valueA) {
                                 return 1;
@@ -179,13 +187,13 @@ function AdminMissions() {
                         },
                     },
                     {
-                        field: "delete_time",
+                        field: "deleteTime",
                         headerName: "Deleted",
                         sortable: true,
                         minWidth: 180,
                         sort: "desc",
                         sortIndex: 1,
-                        valueFormatter: (params) => (params.value ? new Date(params.value).toLocaleString() : ""),
+                        valueFormatter: (params) => (params.value ? timestampToDate(params.value)?.toLocaleString() ?? "" : ""),
                         comparator: (valueA, valueB) => {
                             if (!valueA) {
                                 return 1;

@@ -43,6 +43,9 @@ const nextConfig: NextConfig = {
             },
         ],
     },
+	experimental: {
+		serverComponentsHmrCache: false,
+	},
 };
 
 export default nextConfig;

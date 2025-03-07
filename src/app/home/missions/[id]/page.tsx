@@ -1,4 +1,5 @@
-import { getMission, getMissionAccounts } from "@/api/missionboard";
+import webClient from "@/api";
+
 import DetailTimeline from "./DetailTimeline";
 import MissionDetails from "./MissionDetails";
 
@@ -10,14 +11,14 @@ interface ProjectPageProps {
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
     const { id } = await params;
-    const { data: mission } = await getMission(id);
-    const { data: accounts } = await getMissionAccounts(id);
+    const mission = await webClient.getMission({ name: `missions/${id}` });
+    const { missionAccounts } = await webClient.listMissionAccounts({ parent: mission.name });
 
     return (
         <MissionDetails
             mission={mission}
             timelineComponent={<DetailTimeline name={mission.name} />}
-            accounts={accounts}
+            accounts={missionAccounts}
         />
     );
 }

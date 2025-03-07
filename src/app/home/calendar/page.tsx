@@ -1,4 +1,5 @@
-import { getEvents } from "@/api/missionboard";
+import webClient from "@/api";
+
 import CustomIcon from "@/components/CustomIcon";
 import {
     Button,
@@ -12,15 +13,16 @@ import {
 } from "@heroui/react";
 import MainPageLayout from "../src/components/MainPageLayout";
 import CalendarLayout from "./CalendarLayout";
-
 /* ---------------------------------- Icons --------------------------------- */
 import icRoundFilterList from "@iconify/icons-ic/round-filter-list";
 import icRoundSearch from "@iconify/icons-ic/round-search";
+
+
 /* -------------------------------------------------------------------------- */
 /*                                    Page                                    */
 /* -------------------------------------------------------------------------- */
 export default async function CalendarPage() {
-    const { data: events } = await getEvents();
+	const { events } = await webClient.listEvents({});
 
     return (
         <MainPageLayout
