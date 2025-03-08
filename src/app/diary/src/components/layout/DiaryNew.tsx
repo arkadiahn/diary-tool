@@ -8,6 +8,7 @@ import { Button, Card, CardBody, Input, Select, SelectItem, Slider, Textarea } f
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { getTargetSunday } from "./DiaryOverview";
 
 interface DiaryPageProps {
     session: Session | null;
@@ -44,48 +45,89 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
         initialDiary ? !PROJECT_OPTIONS.includes(initialDiary.project) : false,
     );
 
-    const [newEntry, setNewEntry] = useState({
-        entry_date: initialDiary
-            ? format(new Date(initialDiary.entryTime?.nanos ?? ""), "yyyy-MM-dd")
-            : format(new Date(), "yyyy-MM-dd"),
+    const [newEntry, setNewEntry] = useState<Diary>({
+        $typeName: "arkadiahn.intra.v1.Diary",
+        name: initialDiary?.name || "",
+        entryTime: initialDiary?.entryTime || getTargetSunday(),
         project: initialDiary?.project || "",
-        completion_weeks: initialDiary?.completionWeeks || 1,
+        completionWeeks: initialDiary?.completionWeeks || 1,
         motivation: initialDiary?.motivation || 5,
         learnings: initialDiary?.learnings || "",
         obstacles: initialDiary?.obstacles || "",
-        goals: initialDiary?.goals || [{ title: "", completed: false }],
+        goals: initialDiary?.goals || [{
+            $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal",
+            title: "",
+            completed: false
+        }],
+        accountId: session?.user.id || "",
+        editableDiary: true,
+        editableGoalCompletion: true
     });
 
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!session?.user.id) {
+            setError("You must be logged in to create or update a diary entry");
+            return;
+        }
+
         try {
             const filteredGoals = newEntry.goals.filter((g) => g.title.trim() !== "");
 
             if (initialDiary) {
                 // Handle update
-				await webClient.updateDiary({
-					diary: {
-						...newEntry,
-						name: initialDiary.name,
-						goals: filteredGoals
-					}
-				});
+                try {
+                    const response = await webClient.updateDiary({
+                        diary: {
+                            ...newEntry,
+                            name: initialDiary.name,
+                            goals: filteredGoals
+                        }
+                    });
+                    router.push("/");
+                } catch (err: unknown) {
+                    if (err instanceof Error) {
+                        // Handle specific gRPC error codes if available
+                        const grpcError = err as { code?: number; message: string };
+                        const errorMessage = grpcError.code 
+                            ? `Error (${grpcError.code}): ${grpcError.message}`
+                            : grpcError.message;
+                        setError(`Failed to update diary: ${errorMessage}`);
+                    } else {
+                        setError("An unexpected error occurred while updating the diary");
+                    }
+                    console.error("Diary update error:", err);
+                }
             } else {
                 // Handle create
-				await webClient.createDiary({
-					parent: "accounts/me",
-					diary: {
-						...newEntry,
-						goals: filteredGoals
-					}
-				});
+                try {
+                    const response = await webClient.createDiary({
+                        parent: `accounts/${session.user.id}`,
+                        diary: {
+                            ...newEntry,
+                            goals: filteredGoals
+                        }
+                    });
+                    router.push("/");
+                } catch (err: unknown) {
+                    if (err instanceof Error) {
+                        // Handle specific gRPC error codes if available
+                        const grpcError = err as { code?: number; message: string };
+                        const errorMessage = grpcError.code 
+                            ? `Error (${grpcError.code}): ${grpcError.message}`
+                            : grpcError.message;
+                        setError(`Failed to create diary: ${errorMessage}`);
+                    } else {
+                        setError("An unexpected error occurred while creating the diary");
+                    }
+                    console.error("Diary creation error:", err);
+                }
             }
-
-            router.push("/");
-        } catch (_error) {
-            setError(initialDiary ? "Failed to update diary entry" : "Failed to create diary entry");
+        } catch (err) {
+            setError("An unexpected error occurred while processing your request");
+            console.error("Unexpected error:", err);
         }
     };
 
@@ -143,9 +185,9 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
                                 type="number"
                                 label="Expected weeks until completion"
                                 min={1}
-                                value={newEntry.completion_weeks.toString()}
+                                value={newEntry.completionWeeks.toString()}
                                 onChange={(e) =>
-                                    setNewEntry({ ...newEntry, completion_weeks: Number.parseInt(e.target.value) })
+                                    setNewEntry({ ...newEntry, completionWeeks: Number.parseInt(e.target.value) })
                                 }
                                 isRequired={true}
                             />
@@ -215,14 +257,15 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
                             <div className="space-y-4">
                                 <span className="block text-sm font-medium">Your goals for next week</span>
                                 {newEntry.goals.map((goal, index) => (
-                                    <div key={goal.title} className="flex gap-2">
+                                    <div key={index} className="flex gap-2">
                                         <Input
+                                            key={`goal-${index}`}
                                             type="text"
                                             value={goal.title}
                                             onChange={(e) => {
                                                 const newGoals = [...newEntry.goals];
                                                 newGoals[index].title = e.target.value;
-                                                setNewEntry({ ...newEntry, goals: newGoals as Diary_DiaryGoal[] });
+                                                setNewEntry({ ...newEntry, goals: newGoals  });
                                             }}
                                             placeholder="Enter a goal"
                                         />
@@ -230,7 +273,7 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
                                             color="danger"
                                             onClick={() => {
                                                 const newGoals = newEntry.goals.filter((_, i) => i !== index);
-                                                setNewEntry({ ...newEntry, goals: newGoals as Diary_DiaryGoal[] });
+                                                setNewEntry({ ...newEntry, goals: newGoals  });
                                             }}
                                         >
                                             Remove
@@ -239,10 +282,10 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
                                 ))}
                                 <Button
                                     color="primary"
-                                    onClick={() =>
+                                    onPress={() =>
                                         setNewEntry({
                                             ...newEntry,
-                                            goals: [...newEntry.goals, { title: "", completed: false }] as Diary_DiaryGoal[],
+                                            goals: [...newEntry.goals, { title: "", completed: false, $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal" }] ,
                                         })
                                     }
                                 >
