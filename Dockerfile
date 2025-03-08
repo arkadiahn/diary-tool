@@ -1,16 +1,27 @@
-FROM node:18-alpine AS base
+FROM oven/bun:1 AS base
 
 # ---------------------------------------------------------------------------- #
 #                                 Dependencies                                 #
 # ---------------------------------------------------------------------------- #
 FROM base AS deps
-RUN apk add --no-cache libc6-compat
-RUN apk add g++ make python3 py3-pip
+RUN apt-get update && apt-get install -y libc6 g++ make openssh-client git
 WORKDIR /app
 
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
-RUN npm install
-RUN npm install sharp
+ARG INTRA_APIS_DEPLOY_KEY
+RUN if [ -z "${INTRA_APIS_DEPLOY_KEY}" ]; then \
+    echo "Error: INTRA_APIS_DEPLOY_KEY is not set" && exit 1; \
+    fi && \
+    mkdir -p /root/.ssh && \
+    chmod 700 /root/.ssh && \
+    echo "${INTRA_APIS_DEPLOY_KEY}" > /root/.ssh/id_ed25519 && \
+    chmod 600 /root/.ssh/id_ed25519 && \
+    # Validate the key by checking if it's readable by ssh-keygen
+    ssh-keygen -y -f /root/.ssh/id_ed25519 > /dev/null && \
+    ssh-keyscan github.com > /root/.ssh/known_hosts
+
+COPY package.json bun.lockb* yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
+RUN bun install
+RUN bun add sharp
 
 # ---------------------------------------------------------------------------- #
 #                                   Building                                   #
@@ -52,7 +63,7 @@ ENV NEXT_PUBLIC_UMAMI_URL=$NEXT_PUBLIC_UMAMI_URL
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # ----------------------------------- Build ---------------------------------- #
-RUN npm run build
+RUN bun run build
 
 # ---------------------------------------------------------------------------- #
 #                                    Running                                   #
@@ -64,13 +75,13 @@ ENV NODE_ENV=production
 # Uncomment the following line in case you want to disable telemetry during runtime.
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN groupadd --system --gid 1001 bunjs
+RUN useradd --system --uid 1001 nextjs
 
 COPY --from=builder /app/public ./public
 
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:bunjs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:bunjs /app/.next/static ./.next/static
 
 USER nextjs
 
@@ -79,4 +90,4 @@ EXPOSE 3000
 ENV PORT=3000
 
 ENV HOSTNAME="0.0.0.0"
-CMD ["node", "server.js"]
+CMD ["bun", "server.js"]
