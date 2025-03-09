@@ -1,0 +1,157 @@
+import type { Diary } from "@arkadiahn/apis/intra/v1/diary_pb";
+
+const example_entries: Diary[] = [
+    {
+        name: "accounts/83f11e35-a97e-4c21-bf9a-716a6f853889/diaries/2024-W04",
+        accountId: "83f11e35-a97e-4c21-bf9a-716a6f853889",
+        entryTime: { seconds: BigInt(1741474800), nanos: 0, $typeName: "google.protobuf.Timestamp" },
+        project: "printf", 
+        completionWeeks: 3,
+        motivation: 8,
+        learnings: "Learned about memory management and string manipulation in C",
+        obstacles: "Struggling with proper memory allocation in ft_split",
+        editableDiary: false,
+        editableGoalCompletion: false,
+        goals: [
+            {
+                title: "Complete ft_split implementation",
+                completed: false,
+                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal"
+            },
+            {
+                title: "Write tests for string functions", 
+                completed: true,
+                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal"
+            }
+        ],
+        $typeName: "arkadiahn.intra.v1.Diary"
+    },
+    {
+        name: "accounts/83f11e35-a97e-4c21-bf9a-716a6f853889/diaries/2024-W03",
+        accountId: "83f11e35-a97e-4c21-bf9a-716a6f853889",
+        entryTime: { seconds: BigInt(1740870000), nanos: 0, $typeName: "google.protobuf.Timestamp" },
+        project: "printf",
+        completionWeeks: 4,
+        motivation: 9,
+        learnings: "Getting comfortable with pointers and memory allocation",
+        obstacles: "Understanding linked list implementation",
+        editableDiary: false,
+        editableGoalCompletion: false,
+        goals: [
+            {
+                title: "Implement basic string functions",
+                completed: true,
+                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal"
+            },
+            {
+                title: "Start working on memory functions",
+                completed: true,
+                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal"
+            }
+        ],
+        $typeName: "arkadiahn.intra.v1.Diary"
+    },
+    {
+        name: "accounts/83f11e35-a97e-4c21-bf9a-716a6f853889/diaries/2024-W02",
+        accountId: "83f11e35-a97e-4c21-bf9a-716a6f853889",
+        entryTime: { seconds: BigInt(1740265200), nanos: 0, $typeName: "google.protobuf.Timestamp" },
+        project: "printf",
+        completionWeeks: 5,
+        motivation: 7,
+        learnings: "Started learning C programming fundamentals",
+        obstacles: "Adjusting to low-level programming concepts",
+        editableDiary: false,
+        editableGoalCompletion: false,
+        goals: [
+            {
+                title: "Set up development environment",
+                completed: true,
+                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal"
+            },
+            {
+                title: "Complete first 5 functions",
+                completed: true,
+                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal"
+            }
+        ],
+        $typeName: "arkadiahn.intra.v1.Diary"
+    },
+    {
+        name: "accounts/83f11e35-a97e-4c21-bf9a-716a6f853889/diaries/2024-W01",
+        accountId: "83f11e35-a97e-4c21-bf9a-716a6f853889",
+        entryTime: { seconds: BigInt(1739660400), nanos: 0, $typeName: "google.protobuf.Timestamp" },
+        project: "libft",
+        completionWeeks: 1,
+        motivation: 9,
+        learnings: "Completed final libft exercises",
+        obstacles: "Time management with multiple assignments",
+        editableDiary: false,
+        editableGoalCompletion: false,
+        goals: [
+            {
+                title: "Complete BSQ project",
+                completed: true,
+                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal"
+            },
+            {
+                title: "Prepare for final exam",
+                completed: true,
+                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal"
+            }
+        ],
+        $typeName: "arkadiahn.intra.v1.Diary"
+    },
+    {
+        name: "accounts/83f11e35-a97e-4c21-bf9a-716a6f853889/diaries/2023-W52",
+        accountId: "83f11e35-a97e-4c21-bf9a-716a6f853889",
+        entryTime: { seconds: BigInt(1739055600), nanos: 0, $typeName: "google.protobuf.Timestamp" },
+        project: "libft",
+        completionWeeks: 2,
+        motivation: 8,
+        learnings: "Advanced C concepts and group projects",
+        obstacles: "Complex pointer arithmetic in C",
+        editableDiary: false,
+        editableGoalCompletion: false,
+        goals: [
+            {
+                title: "Complete rush01 project",
+                completed: true,
+                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal"
+            },
+            {
+                title: "Study for C09",
+                completed: true,
+                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal"
+            }
+        ],
+        $typeName: "arkadiahn.intra.v1.Diary"
+    },
+    {
+        name: "accounts/83f11e35-a97e-4c21-bf9a-716a6f853889/diaries/2023-W51",
+        accountId: "83f11e35-a97e-4c21-bf9a-716a6f853889",
+        entryTime: { seconds: BigInt(1738450800), nanos: 0, $typeName: "google.protobuf.Timestamp" },
+        project: "libft",
+        completionWeeks: 3,
+        motivation: 6,
+        learnings: "Shell scripting and basic C programming",
+        obstacles: "Challenging rush00 weekend project",
+        editableDiary: false,
+        editableGoalCompletion: false,
+        goals: [
+            {
+                title: "Complete Shell01",
+                completed: true,
+                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal"
+            },
+            {
+                title: "Start C03 exercises",
+                completed: false,
+                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal"
+            }
+        ],
+        $typeName: "arkadiahn.intra.v1.Diary"
+    }
+];
+
+
+export default example_entries;
