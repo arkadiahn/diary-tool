@@ -4,7 +4,6 @@ import { createGrpcWebTransport } from "@connectrpc/connect-web";
 import Cookies from "js-cookie";
 import * as jose from "jose";
 
-// @todo interceptor for parsing of post request mask
 
 
 /* ------------------------ Authorization Interceptor ----------------------- */

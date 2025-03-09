@@ -1,4 +1,4 @@
-import type { MissionMilestone } from "@arkadiahn/apis/intra/v1/mission_milestone_pb";
+import { MissionMilestone_State } from "@arkadiahn/apis/intra/v1/mission_milestone_pb";
 import { type Mission, Mission_State } from "@arkadiahn/apis/intra/v1/mission_pb";
 
 import CustomIcon from "@/components/CustomIcon";
@@ -19,26 +19,33 @@ import TrashIcon from "@iconify/icons-ic/sharp-delete";
 import EditMissionAccountModal from "./EditMissionAccountModal";
 import EditMissionMilestoneModal from "./EditMissionMilestoneModal";
 
-function MilestoneState({ milestone }: { milestone: MissionMilestone }) {
+function MilestoneState({ milestoneState }: { milestoneState: MissionMilestone_State }) {
     const props: ChipProps = {
         size: "sm",
         radius: "lg",
         variant: "dot",
     };
 
-	if (milestone.completed === true) {
-		return (
-			<Chip color="success" {...props}>
-				Completed
-			</Chip>
-		);
+	switch (milestoneState) {
+		case MissionMilestone_State.COMPLETED:
+			return (
+				<Chip color="success" {...props}>
+					Completed
+				</Chip>
+			);
+		case MissionMilestone_State.FAILED:
+			return (
+				<Chip color="danger" {...props}>
+					Failed
+				</Chip>
+			);
+		default:
+			return (
+				<Chip color="primary" {...props}>
+					Planned
+				</Chip>
+			);
 	}
-
-	return (
-		<Chip color="primary" {...props}>
-			Planned
-		</Chip>
-	);
 }
 
 export default function EditMissionModal() {
@@ -145,7 +152,7 @@ export default function EditMissionModal() {
                             {milestones.map((milestone) => (
                                 <TableRow key={milestone.name}>
                                     <TableCell>{milestone.description}</TableCell>
-                                    <TableCell>{<MilestoneState state={milestone.state} />}</TableCell>
+                                    <TableCell>{<MilestoneState milestoneState={milestone.state} />}</TableCell>
                                     <TableCell width={200}>
                                         <DateComponent date={milestone.end_time} />
                                     </TableCell>

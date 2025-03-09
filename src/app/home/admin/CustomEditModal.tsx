@@ -1,5 +1,5 @@
 import { dateToTimestamp } from "@/api/utils";
-import { Button, Form, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/react";
+import { Button, Form, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, type Input } from "@heroui/react";
 import { parseZonedDateTime } from "@internationalized/date";
 import { useTheme } from "next-themes";
 
@@ -9,7 +9,8 @@ interface EditModalProps<T> {
     onOpenChange: () => void;
     onUpdate?: (data: T) => Promise<void>;
     onCreate?: (data: T) => Promise<void>;
-    children: React.ReactNode;
+    // @todo fix types to automatically infer the correct types from T
+	children: React.ReactElement;
     data: T | null;
     createButtonText?: string;
     updateButtonText?: string;

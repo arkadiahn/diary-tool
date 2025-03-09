@@ -1,4 +1,5 @@
 import type { Event } from "@arkadiahn/apis/intra/v1/event_pb";
+import { createFieldMask } from "@/api/utils";
 import webClient from "@/api";
 
 import { toast } from "react-hot-toast";
@@ -54,9 +55,10 @@ export const { StoreProvider: EventsStoreProvider, useStore: useEventsStore } = 
         },
         updateEvent: async (event: Event) => {
             try {
-				await webClient.updateEvent({ event, updateMask: {
-					paths: ["*"]
-				} });
+				await webClient.updateEvent({
+					event, 
+					updateMask: createFieldMask(event)
+				});
                 toast.success("Event updated successfully");
                 get().fetchEvents();
                 set({ editOpen: false });
