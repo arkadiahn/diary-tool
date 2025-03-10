@@ -1,12 +1,9 @@
 "use client";
 
-import {
-    type MissionMilestone,
-    MissionMilestoneState,
-    type MissionPost,
-    postMission,
-    postMissionMilestone,
-} from "@/api/missionboard";
+import { type MissionMilestone, MissionMilestone_State } from "@arkadiahn/apis/intra/v1/mission_milestone_pb";
+import type { Mission } from "@arkadiahn/apis/intra/v1/mission_pb";
+import webClient from "@/api";
+
 import {
     BreadcrumbItem,
     Breadcrumbs,
@@ -37,6 +34,7 @@ import DateComponent from "../../admin/missions/DateComponent";
 import MainPageLayout from "../../src/components/MainPageLayout";
 import RowSteps from "./RowSteps";
 import VerticalSteps from "./VerticalSteps";
+import { dateToTimestamp, timestampToDate } from "@/api/utils";
 
 interface MissionDetailsViewProps {
     children: React.ReactNode;
@@ -115,8 +113,13 @@ export default function CreateMissionPage() {
         formData.end_time = parseZonedDateTime(formData.end_time as string)
             .toDate()
             .toISOString();
-        const { data: mission } = await postMission(formData as unknown as MissionPost);
-        await Promise.all(milestones.map((milestone) => postMissionMilestone(mission.name, milestone)));
+		const mission = await webClient.createMission({
+			mission: formData as unknown as Mission
+		});
+        await Promise.all(milestones.map((milestone) => webClient.createMissionMilestone({
+			parent: mission.name,
+			missionMilestone: milestone
+		})));
         setLoading(false);
         setStep(2);
     };
@@ -125,13 +128,10 @@ export default function CreateMissionPage() {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
         const milestone: MissionMilestone = {
-            name: "",
+            title: formData.get("title") as string,
             description: formData.get("description") as string,
-            end_time: parseZonedDateTime(formData.get("end_time") as string)
-                .toDate()
-                .toISOString(),
-            state: MissionMilestoneState.planned,
-        };
+            endTime: dateToTimestamp(parseZonedDateTime(formData.get("end_time") as string).toDate())
+        } as MissionMilestone;
         setMilestones((prev) => [...prev, milestone]);
         setSelectedMilestone(null);
         onOpenChange();
@@ -323,10 +323,10 @@ export default function CreateMissionPage() {
                                     </TableHeader>
                                     <TableBody emptyContent="No milestones added yet">
                                         {milestones.map((milestone, index) => (
-                                            <TableRow key={`${milestone.name}-${milestone.end_time}-${index}`}>
+                                            <TableRow key={`${milestone.name}-${milestone.endTime}-${index}`}>
                                                 <TableCell>{milestone.description}</TableCell>
                                                 <TableCell>
-                                                    <DateComponent date={milestone.end_time} />
+                                                    <DateComponent date={timestampToDate(milestone.endTime)?.toISOString() ?? ""} />
                                                 </TableCell>
                                                 <TableCell>
                                                     <div className="flex flex-row gap-2">
@@ -391,8 +391,8 @@ export default function CreateMissionPage() {
                                 label="End Time"
                                 name="end_time"
                                 defaultValue={
-                                    selectedMilestone?.end_time
-                                        ? parseAbsolute(selectedMilestone.end_time, "Europe/Berlin")
+                                    selectedMilestone?.endTime
+                                        ? parseAbsolute(timestampToDate(selectedMilestone.endTime)?.toISOString() ?? "", "Europe/Berlin")
                                         : null
                                 }
                                 placeholderValue={now("Europe/Berlin")}

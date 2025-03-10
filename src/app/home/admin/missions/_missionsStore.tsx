@@ -1,20 +1,14 @@
-import {
-    type Mission,
-    type MissionArray,
-    approveMission,
-    deleteMission,
-    getMissions,
-    patchMission,
-    postMission,
-    rejectMission,
-    undeleteMission,
-} from "@/api/missionboard";
+import type { Mission } from "@arkadiahn/apis/intra/v1/mission_pb";
+import webClient from "@/api";
+
 import toast from "react-hot-toast";
 import { confirm } from "../AreYouSurePopup";
 import createCustomStore from "../CreateCustomStore";
+import { createFieldMask } from "@/api/utils";
+
 type MissionsStore = {
     selectedMission: Mission | null;
-    missions: MissionArray;
+    missions: Mission[];
     loading: boolean;
     editOpen: boolean;
     toggleEdit: () => void;
@@ -38,11 +32,10 @@ export const { StoreProvider: MissionsStoreProvider, useStore: useMissionsStore 
         fetchMissions: async () => {
             set({ loading: true, missions: [] });
             try {
-                const response = await getMissions({
-                    show_unapproved: true,
-                    show_deleted: true,
-                });
-                set({ missions: response.data as MissionArray, loading: false });
+				const {missions} = await webClient.listMissions({
+					showDeleted: true
+				});
+                set({ missions: missions, loading: false });
             } catch {
                 toast.error("Failed to fetch missions");
                 set({ loading: false });
@@ -53,7 +46,9 @@ export const { StoreProvider: MissionsStoreProvider, useStore: useMissionsStore 
         },
         createMission: async (mission: Mission) => {
             try {
-                await postMission(mission);
+				await webClient.createMission({
+					mission: mission,
+				});
                 toast.success("Mission created successfully");
                 get().fetchMissions();
                 set({ editOpen: false });
@@ -63,7 +58,10 @@ export const { StoreProvider: MissionsStoreProvider, useStore: useMissionsStore 
         },
         updateMission: async (mission: Mission) => {
             try {
-                await patchMission(mission.name, mission);
+				await webClient.updateMission({
+					mission: mission,
+					updateMask: createFieldMask(mission),
+				});
                 toast.success("Mission updated successfully");
                 get().fetchMissions();
                 set({ editOpen: false });
@@ -77,9 +75,10 @@ export const { StoreProvider: MissionsStoreProvider, useStore: useMissionsStore 
                 return;
             }
             try {
-                await deleteMission(mission.name, {
-                    allow_missing: true,
-                });
+				await webClient.deleteMission({
+					name: mission.name,
+					allowMissing: true,
+				});
                 toast.success("Mission deleted successfully");
                 get().fetchMissions();
             } catch {
@@ -88,7 +87,9 @@ export const { StoreProvider: MissionsStoreProvider, useStore: useMissionsStore 
         },
         undeleteMission: async (mission: Mission) => {
             try {
-                await undeleteMission(mission.name);
+				await webClient.undeleteMission({
+					name: mission.name,
+				});
                 toast.success("Mission undeleted successfully");
                 get().fetchMissions();
             } catch {
@@ -97,7 +98,9 @@ export const { StoreProvider: MissionsStoreProvider, useStore: useMissionsStore 
         },
         approveMission: async (mission: Mission) => {
             try {
-                await approveMission(mission.name);
+				await webClient.approveMission({
+					name: mission.name,
+				});
                 toast.success("Mission approved successfully");
                 get().fetchMissions();
             } catch {
@@ -110,7 +113,9 @@ export const { StoreProvider: MissionsStoreProvider, useStore: useMissionsStore 
                 return;
             }
             try {
-                await rejectMission(mission.name);
+				await webClient.rejectMission({
+					name: mission.name,
+				});
                 toast.success("Mission rejected successfully");
                 get().fetchMissions();
             } catch {

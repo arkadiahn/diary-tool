@@ -1,4 +1,4 @@
-import type { Mission } from "@/api/missionboard";
+import type { Mission } from "@arkadiahn/apis/intra/v1/mission_pb";
 import MissionDetailView from "./missionDetail";
 import Timeline from "./timeline";
 

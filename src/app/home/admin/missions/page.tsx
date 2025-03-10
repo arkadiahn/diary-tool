@@ -16,7 +16,15 @@ function StateRenderer(props: { value: Mission_State }) {
     return (
         <div className="flex items-center justify-center h-full">
             <Chip
-                color={props.value === Mission_State.COMPLETED ? "success" : props.value === Mission_State.ACTIVE ? "warning" : "danger"}
+                color={
+                    {
+                        [Mission_State.COMPLETED]: "success",
+                        [Mission_State.ACTIVE]: "primary",
+                        [Mission_State.FAILED]: "danger",
+                        [Mission_State.PENDING]: "warning",
+                        [Mission_State.UNSPECIFIED]: "warning",
+                    }[props.value] as "success" | "primary" | "danger" | "warning" | "default" | "secondary"
+                }
                 size="sm"
                 radius="lg"
                 variant="dot"

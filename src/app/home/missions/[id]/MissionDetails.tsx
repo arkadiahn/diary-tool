@@ -59,14 +59,14 @@ export default function MissionDetails({ mission, timelineComponent, accounts }:
                                 <Divider orientation="vertical" className="h-5" />
                                 <Chip
                                     color={
-                                        mission.state === Mission_State.ACTIVE
-                                            ? "primary"
-                                            : mission.state === Mission_State.COMPLETED
-                                              ? "success"
-                                              : mission.state === Mission_State.FAILED
-                                                ? "danger"
-                                                : "default"
-                                    }
+										{
+											[Mission_State.COMPLETED]: "success",
+											[Mission_State.ACTIVE]: "primary",
+											[Mission_State.FAILED]: "danger",
+											[Mission_State.PENDING]: "warning",
+											[Mission_State.UNSPECIFIED]: "warning",
+										}[mission.state] as "success" | "primary" | "danger" | "warning" | "default" | "secondary"
+									}
                                     variant="dot"
                                 >
                                     {{

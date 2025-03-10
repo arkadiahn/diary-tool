@@ -1,6 +1,6 @@
 "use client";
 
-import type { Event } from "@/api/missionboard";
+import type { Event } from "@arkadiahn/apis/intra/v1/event_pb";
 import CustomIcon from "@/components/CustomIcon";
 import { Button } from "@heroui/react";
 import share from "@iconify/icons-ic/outline-share";

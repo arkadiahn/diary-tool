@@ -1,10 +1,14 @@
 import { timestampToDate } from "@/api/utils";
+import webClient from "@/api";
 
-import { DatePicker, Input } from "@heroui/react";
+import { DatePicker, Input, Textarea } from "@heroui/react";
 import { now, parseAbsolute } from "@internationalized/date";
 import MDEditor from "@uiw/react-md-editor";
 import CustomEditModal from "../CustomEditModal";
 import { useEventsStore } from "./_eventsStore";
+import CustomIcon from "@/components/CustomIcon";
+import icImage from "@iconify/icons-ic/round-image";
+import { toast } from "react-hot-toast";
 
 export function EditEventModal() {
     const setDescription = useEventsStore((state) => state.setDescription);
@@ -33,6 +37,14 @@ export function EditEventModal() {
                 defaultValue={selectedEvent?.title}
                 isRequired={true}
             />
+			<Input
+				label="Short Description"
+				name="shortDescription"
+				defaultValue={selectedEvent?.shortDescription ?? ""}
+				placeholder="Enter short description"
+				isRequired={true}
+				size="sm"
+			/>
             <div className="col-span-1">
                 <MDEditor
                     textareaProps={{
@@ -40,6 +52,38 @@ export function EditEventModal() {
                     }}
                     value={description}
                     onChange={(value) => setDescription(value ?? "")}
+					extraCommands={[
+						{
+							name: "Upload Image",
+							keyCommand: "upload-image",
+							icon: <CustomIcon icon={icImage} className="w-4 h-4" />,
+							buttonProps: { 'aria-label': 'Upload Image' },
+							async execute() {
+								try {
+									const input = document.createElement("input");
+									input.type = "file";
+									input.accept = "image/*";
+									const filePromise = new Promise<File | null>((resolve) => {
+										input.onchange = () => resolve(input.files ? input.files[0] : null);
+									});
+									input.click();
+									const file = await filePromise;
+									if (!file) {
+										throw new Error("No file selected");
+									}
+									const { fileUri } = await webClient.uploadFile({
+										data: new Uint8Array(await file.arrayBuffer()),
+										filename: file.name,
+										bucket: "public",
+									});
+									setDescription(`${description}\n![${file.name}](${fileUri})`);
+								} catch (error) {
+									toast.error("Error uploading image");
+									console.error(error);
+								}
+							},
+						},
+					]}
                     preview="live"
                     visibleDragbar={false}
                     maxHeight={250}

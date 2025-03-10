@@ -1,4 +1,6 @@
-import { type Account, getAccounts } from "@/api/missionboard";
+import type { Account } from "@arkadiahn/apis/intra/v1/account_pb";
+import webClient from "@/api";
+
 import Fuse from "fuse.js";
 import { create } from "zustand";
 
@@ -39,9 +41,9 @@ export const useAccountsComponentStore = create<AccountsComponentStore>((set, ge
     fetchAccounts: async () => {
         try {
             set({ loading: true });
-            const response = await getAccounts();
+            const { accounts } = await webClient.listAccounts({});
             const accountsMap = new Map(
-                (response.data.accounts as Account[]).map((account) => [account.name, account]),
+                (accounts as Account[]).map((account) => [account.name, account]),
             );
 
             get().fuse.setCollection(Array.from(accountsMap.values()));

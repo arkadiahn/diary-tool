@@ -35,7 +35,7 @@ export default async function DetailTimeline({ name }: TimelineProps) {
                         timestamp: timestampToDate(milestone.endTime)?.toLocaleString() ?? "",
                     }))}
             />
-            <div className="mt-6 space-y-4">
+            <div className="mt-6 space-y-4 mb-3">
                 {missionMilestones?.map((milestone, index) => (
                     <Card key={milestone.name} className="border-1 border-default-100">
                         <CardBody className="flex flex-row items-center gap-4">
@@ -51,7 +51,7 @@ export default async function DetailTimeline({ name }: TimelineProps) {
                                 </Chip>
                             </div>
                             <div className="flex-grow space-y-1">
-                                <h4 className="text-medium font-semibold">{milestone.name}</h4>
+                                <h4 className="text-medium font-semibold">{milestone.title}</h4>
                                 <p className="text-small text-default-500">{milestone.description}</p>
                                 <div className="flex items-center gap-2 mt-2">
                                     <CustomIcon icon={icCalendarEventFill} className="w-4 h-4 text-default-400" />

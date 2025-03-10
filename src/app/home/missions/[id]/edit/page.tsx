@@ -1,4 +1,6 @@
-import { type Mission, getMission } from "@/api/missionboard";
+import type { Mission } from "@arkadiahn/apis/intra/v1/mission_pb";
+import webClient from "@/api";
+
 import MissionEdit from "../../../src/components/missionEdit";
 
 interface EditMissionPageProps {
@@ -12,8 +14,9 @@ export default async function EditMissionPage({ params }: EditMissionPageProps) 
     let mission: Mission | undefined = undefined;
 
     try {
-        const { data } = await getMission(id);
-        mission = data;
+		mission = await webClient.getMission({
+			name: `mission/${id}`
+		});
     } catch {}
 
     return <MissionEdit data={mission!} />;

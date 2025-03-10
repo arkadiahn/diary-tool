@@ -1,4 +1,5 @@
-import type { MissionAccountPost } from "@/api/missionboard";
+import type { MissionAccount } from "@arkadiahn/apis/intra/v1/mission_account_pb";
+
 import CustomEditModal from "../CustomEditModal";
 import AccountsComponent from "./AccountsComponent";
 import { useAccountStore } from "./_accountStore";
@@ -15,7 +16,7 @@ export default function EditMissionAccountModal() {
             onOpenChange={toggleAdd}
             title="Accounts Details"
             data={null}
-            onCreate={async (data: MissionAccountPost) => await addAccount(missionName ?? "", data)}
+            onCreate={async (data: MissionAccount) => await addAccount(missionName ?? "", data)}
             createButtonText="Add"
         >
             <AccountsComponent title="Account" name="account" />

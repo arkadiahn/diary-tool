@@ -115,7 +115,7 @@ export default function Sidebar({ items, adminItems, sidebarLogo, headerLogo, se
                 </nav>
             </aside>
 
-            <main className="h-[calc(100dvh-60px)] sm:h-dvh sm:max-h-dvh flex-1 flex flex-col items-center overflow-hidden p-3 px-5">
+            <main className="h-[calc(100dvh-60px)] sm:h-dvh sm:max-h-dvh flex-1 flex flex-col items-center overflow-x-hidden overflow-y-auto p-3 px-5">
                 {children}
             </main>
         </div>

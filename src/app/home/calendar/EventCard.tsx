@@ -64,7 +64,7 @@ export default function EventCard({ event }: { event: Event }) {
                         className="w-full h-32 object-cover rounded-large mb-2"
                     />
                 )}
-                <p className="text-default-600 text-sm line-clamp-2 mb-2">{event.description}</p>
+                <p className="text-default-600 text-sm line-clamp-2 mb-2">{event.shortDescription}</p>
                 <div className="flex flex-wrap gap-2 text-default-500 text-sm">
                     {event.location && (
                         <div className="flex items-center gap-1">

@@ -1,15 +1,20 @@
-import { getMissionMilestones } from "@/api/missionboard";
+import { MissionMilestone_State } from "@arkadiahn/apis/intra/v1/mission_milestone_pb";
+import webClient from "@/api";
+
 import TimeStepper from "../../../missions/TimeStepper";
+import { timestampToDate } from "@/api/utils";
 
 interface TimelineProps {
     name: string;
 }
 
 export default async function Timeline({ name }: TimelineProps) {
-    const { data } = await getMissionMilestones(name);
+	const data = await webClient.listMissionMilestones({
+		parent: `mission/${name}`
+	});
 
-    const milestonesCount = data.length;
-    const completedMilestonesCount = data.filter((milestone) => milestone.state === "completed").length;
+    const milestonesCount = data.missionMilestones.length;
+    const completedMilestonesCount = data.missionMilestones.filter((milestone) => milestone.state === MissionMilestone_State.COMPLETED).length;
 
     if (milestonesCount === 0) {
         return <p className="text-default-500">No timeline found</p>;
@@ -19,9 +24,9 @@ export default async function Timeline({ name }: TimelineProps) {
         <TimeStepper
             stepsCount={milestonesCount}
             currentStep={completedMilestonesCount}
-            milestoneInfo={data.map((milestone) => ({
+            milestoneInfo={data.missionMilestones.map((milestone) => ({
                 description: milestone.description,
-                timestamp: milestone.end_time,
+                timestamp: timestampToDate(milestone.endTime)?.toISOString() ?? "",
             }))}
         />
     );

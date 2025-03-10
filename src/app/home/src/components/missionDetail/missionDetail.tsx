@@ -1,6 +1,6 @@
 "use client";
 
-import type { Mission } from "@/api/missionboard";
+import type { Mission } from "@arkadiahn/apis/intra/v1/mission_pb";
 import CustomIcon from "@/components/CustomIcon";
 import { BreadcrumbItem, Breadcrumbs, Button, Tooltip } from "@heroui/react";
 import { Chip } from "@heroui/react";
@@ -10,6 +10,7 @@ import MissionState from "../../../missions/MissionState";
 import icCalendarEventFill from "@iconify/icons-ri/calendar-event-fill";
 import icGithubFill from "@iconify/icons-ri/github-fill";
 import icTimeFill from "@iconify/icons-ri/time-fill";
+import { timestampToDate } from "@/api/utils";
 
 interface MissionDetailViewProps {
     data: Mission;
@@ -37,7 +38,7 @@ export default function MissionDetailView({ data, timelineComponent }: MissionDe
                     <div className="flex justify-between items-center mb-2">
                         <div className="flex gap-2 items-center">
                             <h1 className="text-2xl font-medium">{data.title}</h1>
-                            <MissionState state={data.mission_state} />
+                            <MissionState state={data.state} />
                             <button
                                 type="button"
                                 onClick={() => router.push(`/${data.name}/edit`)}
@@ -53,7 +54,7 @@ export default function MissionDetailView({ data, timelineComponent }: MissionDe
                                         <div className="flex items-center gap-1.5 bg-primary-50 dark:bg-primary-900/20 text-primary rounded-full px-3 py-1 cursor-help">
                                             <CustomIcon icon={icCalendarEventFill} width={16} />
                                             <span className="text-sm font-medium">
-                                                {new Date(data.kickoff_time).toLocaleDateString("en-US", {
+                                                {timestampToDate(data.kickoffTime)?.toLocaleDateString("en-US", {
                                                     year: "numeric",
                                                     month: "short",
                                                     day: "numeric",
@@ -67,7 +68,7 @@ export default function MissionDetailView({ data, timelineComponent }: MissionDe
                                         <div className="flex items-center gap-1.5 bg-primary-50 dark:bg-primary-900/20 text-primary rounded-full px-3 py-1 cursor-help">
                                             <CustomIcon icon={icTimeFill} width={16} />
                                             <span className="text-sm font-medium">
-                                                {new Date(data.end_time ?? new Date()).toLocaleDateString("en-US", {
+                                                {(timestampToDate(data.endTime) ?? new Date()).toLocaleDateString("en-US", {
                                                     year: "numeric",
                                                     month: "short",
                                                     day: "numeric",
@@ -77,7 +78,7 @@ export default function MissionDetailView({ data, timelineComponent }: MissionDe
                                     </Tooltip>
                                 </div>
                             </div>
-                            <Button as="a" href={data.github_link} target="_blank" variant="light" onPress={() => {}}>
+                            <Button as="a" href={data.githubLink} target="_blank" variant="light" onPress={() => {}}>
                                 GitHub
                                 <CustomIcon width={28} icon={icGithubFill} />
                             </Button>
@@ -92,14 +93,14 @@ export default function MissionDetailView({ data, timelineComponent }: MissionDe
                             </div>
                             <div className="mt-4 space-y-2">
                                 <h3 className="text-md font-medium">Goal</h3>
-                                <p>{data.description_goal}</p>
+                                <p>{data.descriptionGoal}</p>
                             </div>
                         </div>
                         <div className="space-y-4 flex flex-col items-end text-right">
                             <div className="space-y-2">
                                 <h3 className="text-md font-medium">Needed Skills</h3>
                                 <div className="flex flex-wrap gap-1 justify-end">
-                                    {data.description_skills.split(", ").map((skill) => (
+                                    {data.descriptionSkills.split(", ").map((skill) => (
                                         <Chip key={skill} className="text-xs" color="primary">
                                             {skill}
                                         </Chip>

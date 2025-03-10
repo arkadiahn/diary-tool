@@ -1,6 +1,10 @@
 "use client";
 
-import { type AccountPublic, type Mission, getAccount, patchMission, postMission } from "@/api/missionboard";
+import type { Mission } from "@arkadiahn/apis/intra/v1/mission_pb";
+import type { Account } from "@arkadiahn/apis/intra/v1/account_pb";
+import { createFieldMask, timestampToDate } from "@/api/utils";
+import webClient from "@/api";
+
 import CustomIcon from "@/components/CustomIcon";
 import { DatePicker } from "@heroui/date-picker";
 import { BreadcrumbItem, Breadcrumbs, Button, Chip, Input, Textarea } from "@heroui/react";
@@ -11,13 +15,15 @@ import { useEffect, useState } from "react";
 import MissionState from "../../../missions/MissionState";
 
 function ProjectLeaderChip({ account }: { account: string }) {
-    const [accountData, setAccountData] = useState<AccountPublic | null>(null);
+    const [accountData, setAccountData] = useState<Account | null>(null);
 
     useEffect(() => {
         const fetchLeader = async () => {
             try {
-                const { data } = await getAccount(account);
-                setAccountData(data);
+				const accountResponse = await webClient.getAccount({
+					name: account
+				});
+                setAccountData(accountResponse);
             } catch (_error) {
                 setAccountData(null);
             }
@@ -50,18 +56,23 @@ interface MissionEditProps {
 
 export default function MissionEdit({ data }: MissionEditProps) {
     const [formData, setFormData] = useState<Mission>(data);
-    const [skills, setSkills] = useState(data.description_skills.split(", "));
+    const [skills, setSkills] = useState(data.descriptionSkills.split(", "));
     const [newSkill, setNewSkill] = useState("");
     const router = useRouter();
 
     const onSave = async (mission: Mission) => {
         try {
             if (mission.name !== "---") {
-                await patchMission(mission.name, mission);
+                await webClient.updateMission({
+                    mission: mission,
+					updateMask: createFieldMask(mission)
+                });
                 router.push(`/${mission.name}`);
             } else {
-                const { data } = await postMission(mission);
-                router.push(`/${data.name}`);
+                await webClient.createMission({
+                    mission: mission,
+                });
+                router.push(`/${mission.name}`);
             }
         } catch (error) {
             console.error("Failed to save project:", error);
@@ -121,13 +132,13 @@ export default function MissionEdit({ data }: MissionEditProps) {
                             maxLength={255}
                             errorMessage={formData.title.length > 255 && "Title must be less than 255 characters"}
                         />
-                        <MissionState state={data.mission_state} />
+                        <MissionState state={data.state} />
                     </div>
                     <div className="flex gap-2 items-center">
                         <div className="flex items-center gap-2">
                             <DatePicker
                                 label="Start Date"
-                                value={parseDate(formData.kickoff_time.split("T")[0])}
+                                value={parseDate(timestampToDate(formData.kickoffTime)?.toISOString().split("T")[0] ?? "")}
                                 onChange={(date) => {
                                     if (date) {
                                         setFormData((prev) => ({
@@ -140,7 +151,7 @@ export default function MissionEdit({ data }: MissionEditProps) {
                             />
                             <DatePicker
                                 label="End Date"
-                                value={formData.end_time ? parseDate(formData.end_time.split("T")[0]) : null}
+                                value={formData.endTime ? parseDate(timestampToDate(formData.endTime)?.toISOString().split("T")[0] ?? "") : null}
                                 onChange={(date) => {
                                     setFormData((prev) => ({
                                         ...prev,
@@ -151,14 +162,14 @@ export default function MissionEdit({ data }: MissionEditProps) {
                         </div>
                         <Input
                             label="GitHub Link"
-                            value={formData.github_link}
+                            value={formData.githubLink}
                             onChange={(e) => setFormData((prev) => ({ ...prev, github_link: e.target.value }))}
                             startContent={<CustomIcon icon={icGithubFill} width={16} />}
                             type="url"
                             pattern="https://github.com/.*"
                             errorMessage={
-                                formData.github_link &&
-                                !/^https:\/\/github\.com\/.*/.test(formData.github_link) &&
+                                formData.githubLink &&
+                                !/^https:\/\/github\.com\/.*/.test(formData.githubLink) &&
                                 "Must be a valid GitHub URL"
                             }
                         />
@@ -180,13 +191,13 @@ export default function MissionEdit({ data }: MissionEditProps) {
                         />
                         <Textarea
                             label="Goal"
-                            value={formData.description_goal}
-                            onChange={(e) => setFormData((prev) => ({ ...prev, description_goal: e.target.value }))}
+                            value={formData.descriptionGoal}
+                            onChange={(e) => setFormData((prev) => ({ ...prev, descriptionGoal: e.target.value }))}
                             minRows={4}
                             isRequired={true}
                             maxLength={1000}
                             errorMessage={
-                                formData.description_goal.length > 1000 && "Goal must be less than 1000 characters"
+                                formData.descriptionGoal.length > 1000 && "Goal must be less than 1000 characters"
                             }
                         />
                         <ProjectLeaderChip account={formData.leader} />

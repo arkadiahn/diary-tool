@@ -10,7 +10,7 @@ interface EditModalProps<T> {
     onUpdate?: (data: T) => Promise<void>;
     onCreate?: (data: T) => Promise<void>;
     // @todo fix types to automatically infer the correct types from T
-	children: React.ReactElement;
+    children: React.ReactNode;
     data: T | null;
     createButtonText?: string;
     updateButtonText?: string;

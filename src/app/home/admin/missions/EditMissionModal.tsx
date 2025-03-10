@@ -1,5 +1,6 @@
-import { MissionMilestone_State } from "@arkadiahn/apis/intra/v1/mission_milestone_pb";
-import { type Mission, Mission_State } from "@arkadiahn/apis/intra/v1/mission_pb";
+import { type MissionMilestone, MissionMilestone_State } from "@arkadiahn/apis/intra/v1/mission_milestone_pb";
+import type { MissionAccount } from "@arkadiahn/apis/intra/v1/mission_account_pb";
+import { timestampToDate } from "@/api/utils";
 
 import CustomIcon from "@/components/CustomIcon";
 import { Button, Chip, type ChipProps, DatePicker, Input, TableCell, TableRow, Textarea, Tooltip } from "@heroui/react";
@@ -99,9 +100,12 @@ export default function EditMissionModal() {
                 <DatePicker
 					size="sm"
 					label="Kickoff Time"
-					name="kickoff_time"
+					name="kickoffTime"
 					defaultValue={
-						mission?.kickoff_time ? parseAbsolute(mission.kickoff_time, "Europe/Berlin") : null
+						mission?.kickoffTime ? parseAbsolute(
+							timestampToDate(mission.kickoffTime)?.toISOString() ?? "", 
+							"Europe/Berlin"
+						) : null
 					}
 					placeholderValue={now("Europe/Berlin")}
 					isRequired={true}
@@ -109,10 +113,10 @@ export default function EditMissionModal() {
                 <Input
                     size="sm"
                     label="GitHub Link"
-                    name="github_link"
+                    name="githubLink"
                     placeholder="Enter GitHub repository URL"
                     type="url"
-                    defaultValue={mission?.github_link}
+                    defaultValue={mission?.githubLink}
                 />
                 <Textarea
                     label="Description"
@@ -125,16 +129,16 @@ export default function EditMissionModal() {
                 />
                 <Textarea
                     label="Goals"
-                    name="description_goal"
-                    defaultValue={mission?.description_goal ?? ""}
+                    name="descriptionGoal"
+                    defaultValue={mission?.descriptionGoal ?? ""}
                     placeholder="Enter mission goals"
                     minRows={6}
                     size="sm"
                 />
                 <Textarea
                     label="Required Skills"
-                    name="description_skills"
-                    defaultValue={mission?.description_skills ?? ""}
+                    name="descriptionSkills"
+                    defaultValue={mission?.descriptionSkills ?? ""}
                     placeholder="Enter required skills"
                     minRows={6}
                     size="sm"
@@ -147,25 +151,25 @@ export default function EditMissionModal() {
                             emptyContent="No milestones found"
                             title="Milestones"
                             onAdd={() => selectMilestone(null)}
-                            header={["Description", "State", "End Time", "Actions"]}
+                            header={["Title", "State", "End Time", "Actions"]}
                         >
-                            {milestones.map((milestone) => (
+                            {milestones.map((milestone: MissionMilestone) => (
                                 <TableRow key={milestone.name}>
-                                    <TableCell>{milestone.description}</TableCell>
+                                    <TableCell>{milestone.title}</TableCell>
                                     <TableCell>{<MilestoneState milestoneState={milestone.state} />}</TableCell>
                                     <TableCell width={200}>
-                                        <DateComponent date={milestone.end_time} />
+                                        <DateComponent date={timestampToDate(milestone.endTime)?.toISOString() ?? ""} />
                                     </TableCell>
                                     <TableCell className="flex flex-row gap-2 items-center justify-center">
                                         <Tooltip color="danger" content="Delete">
                                             <span
                                                 className="text-sm text-danger cursor-pointer active:opacity-50"
                                                 onClick={() => {
-                                                    deleteMilestone(mission?.name, milestone);
+                                                    deleteMilestone(mission.name, milestone);
                                                 }}
                                                 onKeyDown={(e) => {
                                                     if (e.key === "Enter") {
-                                                        deleteMilestone(mission?.name, milestone);
+                                                        deleteMilestone(mission.name, milestone);
                                                     }
                                                 }}
                                             >
@@ -197,9 +201,9 @@ export default function EditMissionModal() {
                             onAdd={toggleAddAccount}
                             header={["Nickname", "Approved", "Actions"]}
                         >
-                            {accounts.map((account) => (
+                            {accounts.map((account: MissionAccount) => (
                                 <TableRow key={account.name}>
-                                    <TableCell>{account.account.nick}</TableCell>
+                                    <TableCell>{account.name}</TableCell>
                                     <TableCell width={200}>
                                         <div className="flex flex-row gap-2 items-center">
                                             {account.approved ? (
@@ -212,7 +216,7 @@ export default function EditMissionModal() {
                                                         size="sm"
                                                         color="success"
                                                         onPress={() => {
-                                                            approveAccount(mission?.name, account);
+                                                            approveAccount(mission.name, account);
                                                         }}
                                                     >
                                                         Approve
@@ -221,7 +225,7 @@ export default function EditMissionModal() {
                                                         size="sm"
                                                         color="danger"
                                                         onPress={() => {
-                                                            rejectAccount(mission?.name, account);
+                                                            rejectAccount(mission.name, account);
                                                         }}
                                                     >
                                                         Reject
@@ -236,11 +240,11 @@ export default function EditMissionModal() {
                                                 <span
                                                     className="text-sm text-danger cursor-pointer active:opacity-50"
                                                     onClick={() => {
-                                                        removeAccount(mission?.name, account);
+                                                        removeAccount(mission.name, account);
                                                     }}
                                                     onKeyDown={(e) => {
                                                         if (e.key === "Enter") {
-                                                            removeAccount(mission?.name, account);
+                                                            removeAccount(mission.name, account);
                                                         }
                                                     }}
                                                 >
