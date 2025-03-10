@@ -19,7 +19,7 @@ export default function MissionLayout({ missions, accounts, milestones }: Missio
 
 	return (<div className="flex flex-col gap-6">
 		<div>
-			<h3 className="text-xl font-bold pl-1">Featured Missions</h3>
+			<h3 className="text-xl font-bold pl-1">Launching Soon</h3>
 			<div className="relative rounded-large p-[2px] overflow-hidden bg-gradient-to-r from-green-500 via-blue-500 to-indigo-500">
 				<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 p-2 bg-background rounded-[calc(theme(borderRadius.large)-1px)]">
 					{featuredMissions.map((mission) => (

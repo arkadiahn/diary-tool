@@ -91,7 +91,7 @@ function AdminMissions() {
                 loading={loading}
                 columnDefs={[
                     { field: "name", sortable: true },
-                    { field: "title", sortable: true, minWidth: 180 },
+                    { field: "title", sortable: true, minWidth: 180, pinned: "left" },
                     {
                         field: "state",
                         headerName: "State",

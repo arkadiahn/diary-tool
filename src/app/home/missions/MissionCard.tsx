@@ -23,9 +23,7 @@ interface MissionCardProps {
 }
 export default function MissionCard({ mission, accounts, milestones }: MissionCardProps) {
     const [likes, setLikes] = useState(mission.likeCount);
-    const rejected = mission.approvalState === Mission_ApprovalState.REJECTED;
     const approved = mission.approvalState === Mission_ApprovalState.APPROVED;
-    const pending = mission.approvalState === Mission_ApprovalState.PENDING;
     const router = useRouter();
 
     const onLike = async () => {
@@ -37,15 +35,15 @@ export default function MissionCard({ mission, accounts, milestones }: MissionCa
 
     return (
         <div className="relative w-full h-full">
-            {!approved && (
+            {mission.approvalState !== Mission_ApprovalState.APPROVED && (
                 <div className="z-10 absolute h-full w-full top-0 right-0 flex items-center justify-center isolate opacity-100 cursor-not-allowed">
                     <h3
                         className={clsx("text-xl font-medium", {
-                            "text-red-600": rejected,
-                            "text-yellow-600": pending,
+                            "text-red-600": mission.approvalState === Mission_ApprovalState.REJECTED,
+                            "text-yellow-600": mission.approvalState !== Mission_ApprovalState.REJECTED,
                         })}
                     >
-                        {rejected ? "Mission rejected!" : "Mission under review..."}
+                        {mission.approvalState === Mission_ApprovalState.REJECTED ? "Mission rejected!" : "Mission under review..."}
                     </h3>
                 </div>
             )}

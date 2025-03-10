@@ -29,7 +29,7 @@ function AdminEvents() {
                 onCreate={selectEvent}
                 onDelete={deleteEvent}
                 columnDefs={[
-                    { field: "title", minWidth: 200 },
+                    { field: "title", minWidth: 200, pinned: "left" },
                     { field: "topic", minWidth: 150 },
                     { field: "shortDescription", headerName: "Short Description", minWidth: 200 },
                     { field: "beginTime", headerName: "Start Time", minWidth: 190, sort: "asc", valueFormatter: (params) => timestampToDate(params.value)?.toISOString() ?? "null" },

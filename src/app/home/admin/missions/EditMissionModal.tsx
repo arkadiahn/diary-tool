@@ -110,6 +110,11 @@ export default function EditMissionModal() {
 					placeholderValue={now("Europe/Berlin")}
 					isRequired={true}
 				/>
+				<AccountsComponent
+					title="Mission Leader"
+					name="leader"
+					defaultAccount={mission?.leader}
+				/>
                 <Input
                     size="sm"
                     label="GitHub Link"

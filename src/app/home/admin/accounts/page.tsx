@@ -41,7 +41,7 @@ function Accounts() {
 				onDelete={deleteUser}
                 columnDefs={[
                     { field: "name", headerName: "Name", width: 120 },
-                    { field: "nick", headerName: "Nickname" },
+                    { field: "nick", headerName: "Nickname", pinned: "left" },
                     { field: "email", headerName: "Email" },
                     // {
                     //     field: "lastLoginTime",

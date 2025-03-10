@@ -3,7 +3,7 @@ import webClient from "@/api";
 
 import { DatePicker, Input, Textarea } from "@heroui/react";
 import { now, parseAbsolute } from "@internationalized/date";
-import MDEditor from "@uiw/react-md-editor";
+import MDEditor, { getCommands, commands } from "@uiw/react-md-editor";
 import CustomEditModal from "../CustomEditModal";
 import { useEventsStore } from "./_eventsStore";
 import CustomIcon from "@/components/CustomIcon";
@@ -52,12 +52,18 @@ export function EditEventModal() {
                     }}
                     value={description}
                     onChange={(value) => setDescription(value ?? "")}
-					extraCommands={[
+					commands={[
+						...getCommands(),
+						commands.divider,
 						{
-							name: "Upload Image",
+							name: "Upload image",
 							keyCommand: "upload-image",
-							icon: <CustomIcon icon={icImage} className="w-4 h-4" />,
-							buttonProps: { 'aria-label': 'Upload Image' },
+							shortcuts: "ctrl+shift+i",
+							icon: <CustomIcon icon={icImage} className="w-3 h-3" />,
+							buttonProps: {
+								'aria-label': 'Upload image (ctrl + shift + i)',
+								title: 'Upload image (ctrl + shift + i)'
+							},
 							async execute() {
 								try {
 									const input = document.createElement("input");
