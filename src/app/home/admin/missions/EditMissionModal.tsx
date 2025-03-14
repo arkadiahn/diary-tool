@@ -1,6 +1,6 @@
-import { type MissionMilestone, MissionMilestone_State } from "@arkadiahn/apis/intra/v1/mission_milestone_pb";
-import type { MissionAccount } from "@arkadiahn/apis/intra/v1/mission_account_pb";
 import { timestampToDate } from "@/api/utils";
+import type { MissionAccount } from "@arkadiahn/apis/intra/v1/mission_account_pb";
+import { type MissionMilestone, MissionMilestone_State } from "@arkadiahn/apis/intra/v1/mission_milestone_pb";
 
 import CustomIcon from "@/components/CustomIcon";
 import { Button, Chip, type ChipProps, DatePicker, Input, TableCell, TableRow, Textarea, Tooltip } from "@heroui/react";
@@ -27,26 +27,26 @@ function MilestoneState({ milestoneState }: { milestoneState: MissionMilestone_S
         variant: "dot",
     };
 
-	switch (milestoneState) {
-		case MissionMilestone_State.COMPLETED:
-			return (
-				<Chip color="success" {...props}>
-					Completed
-				</Chip>
-			);
-		case MissionMilestone_State.FAILED:
-			return (
-				<Chip color="danger" {...props}>
-					Failed
-				</Chip>
-			);
-		default:
-			return (
-				<Chip color="primary" {...props}>
-					Planned
-				</Chip>
-			);
-	}
+    switch (milestoneState) {
+        case MissionMilestone_State.COMPLETED:
+            return (
+                <Chip color="success" {...props}>
+                    Completed
+                </Chip>
+            );
+        case MissionMilestone_State.FAILED:
+            return (
+                <Chip color="danger" {...props}>
+                    Failed
+                </Chip>
+            );
+        default:
+            return (
+                <Chip color="primary" {...props}>
+                    Planned
+                </Chip>
+            );
+    }
 }
 
 export default function EditMissionModal() {
@@ -96,25 +96,19 @@ export default function EditMissionModal() {
                     defaultValue={mission?.title}
                     isRequired={true}
                 />
-                {mission && <AccountsComponent defaultAccount={mission.leader} title="Leader" name="leader" />}
+                <AccountsComponent title="Mission Leader" name="leader" defaultAccount={mission?.leader} />
                 <DatePicker
-					size="sm"
-					label="Kickoff Time"
-					name="kickoffTime"
-					defaultValue={
-						mission?.kickoffTime ? parseAbsolute(
-							timestampToDate(mission.kickoffTime)?.toISOString() ?? "", 
-							"Europe/Berlin"
-						) : null
-					}
-					placeholderValue={now("Europe/Berlin")}
-					isRequired={true}
-				/>
-				<AccountsComponent
-					title="Mission Leader"
-					name="leader"
-					defaultAccount={mission?.leader}
-				/>
+                    size="sm"
+                    label="Kickoff Time"
+                    name="kickoffTime"
+                    defaultValue={
+                        mission?.kickoffTime
+                            ? parseAbsolute(timestampToDate(mission.kickoffTime)?.toISOString() ?? "", "Europe/Berlin")
+                            : null
+                    }
+                    placeholderValue={now("Europe/Berlin")}
+                    isRequired={true}
+                />
                 <Input
                     size="sm"
                     label="GitHub Link"

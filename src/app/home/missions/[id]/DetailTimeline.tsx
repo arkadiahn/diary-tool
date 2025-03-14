@@ -1,5 +1,5 @@
-import { timestampToDate } from "@/api/utils";
 import webClient from "@/api";
+import { timestampToDate } from "@/api/utils";
 
 import CustomIcon from "@/components/CustomIcon";
 import { CardBody, Chip } from "@heroui/react";
@@ -29,7 +29,10 @@ export default async function DetailTimeline({ name }: TimelineProps) {
                 stepsCount={milestonesCount}
                 currentStep={completedMilestonesCount}
                 milestoneInfo={missionMilestones
-                    .sort((a, b) => (timestampToDate(a.endTime)?.getTime() ?? 0) - (timestampToDate(b.endTime)?.getTime() ?? 0))
+                    .sort(
+                        (a, b) =>
+                            (timestampToDate(a.endTime)?.getTime() ?? 0) - (timestampToDate(b.endTime)?.getTime() ?? 0),
+                    )
                     .map((milestone) => ({
                         description: milestone.description,
                         timestamp: timestampToDate(milestone.endTime)?.toLocaleString() ?? "",
@@ -40,13 +43,7 @@ export default async function DetailTimeline({ name }: TimelineProps) {
                     <Card key={milestone.name} className="border-1 border-default-100">
                         <CardBody className="flex flex-row items-center gap-4">
                             <div className="flex-none">
-                                <Chip
-                                    size="lg"
-                                    variant="dot"
-                                    color={
-										milestone.completed ? "success" : "primary"
-                                    }
-                                >
+                                <Chip size="lg" variant="dot" color={milestone.completed ? "success" : "primary"}>
                                     {index + 1}
                                 </Chip>
                             </div>
@@ -55,7 +52,9 @@ export default async function DetailTimeline({ name }: TimelineProps) {
                                 <p className="text-small text-default-500">{milestone.description}</p>
                                 <div className="flex items-center gap-2 mt-2">
                                     <CustomIcon icon={icCalendarEventFill} className="w-4 h-4 text-default-400" />
-                                    <span className="text-small text-default-400">{timestampToDate(milestone.endTime)?.toLocaleString() ?? ""}</span>
+                                    <span className="text-small text-default-400">
+                                        {timestampToDate(milestone.endTime)?.toLocaleString() ?? ""}
+                                    </span>
                                 </div>
                             </div>
                         </CardBody>

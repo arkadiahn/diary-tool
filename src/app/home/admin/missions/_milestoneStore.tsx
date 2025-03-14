@@ -1,10 +1,10 @@
-import type { MissionMilestone } from "@arkadiahn/apis/intra/v1/mission_milestone_pb";
 import webClient from "@/api";
+import type { MissionMilestone } from "@arkadiahn/apis/intra/v1/mission_milestone_pb";
 
+import { createFieldMask } from "@/api/utils";
 import { toast } from "react-hot-toast";
 import { confirm } from "../AreYouSurePopup";
 import createCustomStore from "../CreateCustomStore";
-import { createFieldMask } from "@/api/utils";
 
 type MilestoneStore = {
     milestones: MissionMilestone[];
@@ -31,9 +31,9 @@ export const { StoreProvider: MilestoneStoreProvider, useStore: useMilestoneStor
         fetchMilestones: async (missionName: string) => {
             set({ loading: true, milestones: [] });
             try {
-				const { missionMilestones } = await webClient.listMissionMilestones({
-					parent: missionName,
-				});
+                const { missionMilestones } = await webClient.listMissionMilestones({
+                    parent: missionName,
+                });
                 set({ milestones: missionMilestones, missionName, loading: false });
             } catch {
                 toast.error("Failed to fetch milestones");
@@ -45,10 +45,10 @@ export const { StoreProvider: MilestoneStoreProvider, useStore: useMilestoneStor
         },
         createMilestone: async (missionName: string, milestone: MissionMilestone) => {
             try {
-				await webClient.createMissionMilestone({
-					parent: missionName,
-					missionMilestone: milestone,
-				});
+                await webClient.createMissionMilestone({
+                    parent: missionName,
+                    missionMilestone: milestone,
+                });
                 toast.success("Milestone created successfully");
                 get().fetchMilestones(missionName);
                 set({ editOpen: false });
@@ -58,10 +58,10 @@ export const { StoreProvider: MilestoneStoreProvider, useStore: useMilestoneStor
         },
         updateMilestone: async (missionName: string, milestone: MissionMilestone) => {
             try {
-				await webClient.updateMissionMilestone({
-					missionMilestone: milestone,
-					updateMask: createFieldMask(milestone),
-				});
+                await webClient.updateMissionMilestone({
+                    missionMilestone: milestone,
+                    updateMask: createFieldMask(milestone),
+                });
                 toast.success("Milestone updated successfully");
                 get().fetchMilestones(missionName);
                 set({ editOpen: false });
@@ -75,9 +75,9 @@ export const { StoreProvider: MilestoneStoreProvider, useStore: useMilestoneStor
                 return;
             }
             try {
-				await webClient.deleteMissionMilestone({
-					name: milestone.name,
-				});
+                await webClient.deleteMissionMilestone({
+                    name: milestone.name,
+                });
                 toast.success("Milestone deleted successfully");
                 get().fetchMilestones(missionName);
             } catch {

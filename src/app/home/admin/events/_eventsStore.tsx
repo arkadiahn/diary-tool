@@ -1,6 +1,8 @@
-import type { Event } from "@arkadiahn/apis/intra/v1/event_pb";
-import { createFieldMask } from "@/api/utils";
+"use client";
+
 import webClient from "@/api";
+import { createFieldMask } from "@/api/utils";
+import type { Event } from "@arkadiahn/apis/intra/v1/event_pb";
 
 import { toast } from "react-hot-toast";
 import { confirm } from "../AreYouSurePopup";
@@ -14,7 +16,7 @@ type EventsStore = {
     description: string;
     setDescription: (description: string) => void;
     toggleEdit: () => void;
-    fetchEvents: () => Promise<void>;
+    fetchEvents: (onlyUpcoming?: boolean) => Promise<void>;
     selectEvent: (event: Event | null) => void;
     createEvent: (event: Event) => Promise<void>;
     updateEvent: (event: Event) => Promise<void>;
@@ -29,12 +31,14 @@ export const { StoreProvider: EventsStoreProvider, useStore: useEventsStore } = 
         description: "",
         setDescription: (description: string) => set({ description }),
         toggleEdit: () => set((state) => ({ editOpen: !state.editOpen })),
-        fetchEvents: async () => {
+        fetchEvents: async (onlyUpcoming?: boolean) => {
             set({ loading: true, events: [] });
             try {
-				// @todo add fetching for all events
-				const { events } = await webClient.listEvents({});
-                set({ events, loading: false });
+                // @todo add fetching for all events
+                const { events } = await webClient.listEvents({
+                    filter: onlyUpcoming ? `begin_time>="${new Date().toISOString()}"` : undefined,
+                });
+                set({ loading: false, events });
             } catch {
                 toast.error("Failed to fetch events");
                 set({ loading: false });
@@ -45,7 +49,7 @@ export const { StoreProvider: EventsStoreProvider, useStore: useEventsStore } = 
         },
         createEvent: async (event: Event) => {
             try {
-				await webClient.createEvent({ event });
+                await webClient.createEvent({ event });
                 toast.success("Event created successfully");
                 get().fetchEvents();
                 set({ editOpen: false });
@@ -55,10 +59,10 @@ export const { StoreProvider: EventsStoreProvider, useStore: useEventsStore } = 
         },
         updateEvent: async (event: Event) => {
             try {
-				await webClient.updateEvent({
-					event, 
-					updateMask: createFieldMask(event)
-				});
+                await webClient.updateEvent({
+                    event,
+                    updateMask: createFieldMask(event),
+                });
                 toast.success("Event updated successfully");
                 get().fetchEvents();
                 set({ editOpen: false });

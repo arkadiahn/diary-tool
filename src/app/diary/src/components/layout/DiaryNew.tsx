@@ -1,7 +1,7 @@
 "use client";
 
-import type { Diary, Diary_DiaryGoal } from "@arkadiahn/apis/intra/v1/diary_pb";
 import webClient from "@/api";
+import type { Diary, Diary_DiaryGoal } from "@arkadiahn/apis/intra/v1/diary_pb";
 
 import type { Session } from "@/auth/models";
 import { Button, Card, CardBody, Input, Select, SelectItem, Slider, Textarea } from "@heroui/react";
@@ -54,14 +54,16 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
         motivation: initialDiary?.motivation || 5,
         learnings: initialDiary?.learnings || "",
         obstacles: initialDiary?.obstacles || "",
-        goals: initialDiary?.goals || [{
-            $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal",
-            title: "",
-            completed: false
-        }],
+        goals: initialDiary?.goals || [
+            {
+                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal",
+                title: "",
+                completed: false,
+            },
+        ],
         accountId: session?.user.id || "",
         editableDiary: true,
-        editableGoalCompletion: true
+        editableGoalCompletion: true,
     });
 
     const router = useRouter();
@@ -79,19 +81,19 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
             if (initialDiary) {
                 // Handle update
                 try {
-                    const response = await webClient.updateDiary({
+                    const _response = await webClient.updateDiary({
                         diary: {
                             ...newEntry,
                             name: initialDiary.name,
-                            goals: filteredGoals
-                        }
+                            goals: filteredGoals,
+                        },
                     });
                     router.push("/");
                 } catch (err: unknown) {
                     if (err instanceof Error) {
                         // Handle specific gRPC error codes if available
                         const grpcError = err as { code?: number; message: string };
-                        const errorMessage = grpcError.code 
+                        const errorMessage = grpcError.code
                             ? `Error (${grpcError.code}): ${grpcError.message}`
                             : grpcError.message;
                         setError(`Failed to update diary: ${errorMessage}`);
@@ -103,19 +105,19 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
             } else {
                 // Handle create
                 try {
-                    const response = await webClient.createDiary({
+                    const _response = await webClient.createDiary({
                         parent: `accounts/${session.user.id}`,
                         diary: {
                             ...newEntry,
-                            goals: filteredGoals
-                        }
+                            goals: filteredGoals,
+                        },
                     });
                     router.push("/");
                 } catch (err: unknown) {
                     if (err instanceof Error) {
                         // Handle specific gRPC error codes if available
                         const grpcError = err as { code?: number; message: string };
-                        const errorMessage = grpcError.code 
+                        const errorMessage = grpcError.code
                             ? `Error (${grpcError.code}): ${grpcError.message}`
                             : grpcError.message;
                         setError(`Failed to create diary: ${errorMessage}`);
@@ -265,7 +267,7 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
                                             onChange={(e) => {
                                                 const newGoals = [...newEntry.goals];
                                                 newGoals[index].title = e.target.value;
-                                                setNewEntry({ ...newEntry, goals: newGoals  });
+                                                setNewEntry({ ...newEntry, goals: newGoals });
                                             }}
                                             placeholder="Enter a goal"
                                         />
@@ -273,7 +275,7 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
                                             color="danger"
                                             onClick={() => {
                                                 const newGoals = newEntry.goals.filter((_, i) => i !== index);
-                                                setNewEntry({ ...newEntry, goals: newGoals  });
+                                                setNewEntry({ ...newEntry, goals: newGoals });
                                             }}
                                         >
                                             Remove
@@ -285,7 +287,14 @@ export default function DiaryPage({ session, initialDiary }: DiaryPageProps) {
                                     onPress={() =>
                                         setNewEntry({
                                             ...newEntry,
-                                            goals: [...newEntry.goals, { title: "", completed: false, $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal" }] ,
+                                            goals: [
+                                                ...newEntry.goals,
+                                                {
+                                                    title: "",
+                                                    completed: false,
+                                                    $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal",
+                                                },
+                                            ],
                                         })
                                     }
                                 >

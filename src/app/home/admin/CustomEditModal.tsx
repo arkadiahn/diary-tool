@@ -1,5 +1,5 @@
 import { dateToTimestamp } from "@/api/utils";
-import { Button, Form, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, type Input } from "@heroui/react";
+import { Button, Form, type Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/react";
 import { parseZonedDateTime } from "@internationalized/date";
 import { useTheme } from "next-themes";
 
@@ -68,8 +68,7 @@ export default function CustomEditModal<T>({
                 }),
         );
 
-		// @todo check for key thats not in T and check for correct type
-
+        // @todo check for key thats not in T and check for correct type
 
         if (data && onUpdate) {
             await onUpdate(filteredData as unknown as T);

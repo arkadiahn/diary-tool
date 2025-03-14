@@ -1,5 +1,5 @@
-import type { Event } from "@arkadiahn/apis/intra/v1/event_pb";
 import { timestampToDate } from "@/api/utils";
+import type { Event } from "@arkadiahn/apis/intra/v1/event_pb";
 
 import { Card } from "@heroui/react";
 
@@ -34,9 +34,9 @@ export default function CalendarLayout({ events }: { events: Event[] }) {
 
     if (events.length === 0) {
         return (
-            <Card className="text-center p-6 col-span-full">
-                <p className="text-default-500">No upcoming events</p>
-            </Card>
+            <div className="text-center p-6 col-span-full">
+                <p className="text-default-500 text-xl">No upcoming events</p>
+            </div>
         );
     }
 

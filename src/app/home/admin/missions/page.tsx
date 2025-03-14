@@ -2,6 +2,7 @@
 
 import { type Mission, Mission_ApprovalState, Mission_State } from "@arkadiahn/apis/intra/v1/mission_pb";
 
+import { timestampToDate } from "@/api/utils";
 import { Button, Chip } from "@heroui/react";
 import { useEffect } from "react";
 import { AreYouSure } from "../AreYouSurePopup";
@@ -10,7 +11,6 @@ import EditMissionModal from "./EditMissionModal";
 import { AccountStoreProvider } from "./_accountStore";
 import { MilestoneStoreProvider } from "./_milestoneStore";
 import { MissionsStoreProvider, useMissionsStore } from "./_missionsStore";
-import { timestampToDate } from "@/api/utils";
 
 function StateRenderer(props: { value: Mission_State }) {
     return (
@@ -29,13 +29,15 @@ function StateRenderer(props: { value: Mission_State }) {
                 radius="lg"
                 variant="dot"
             >
-                {{
-                    [Mission_State.COMPLETED]: "Completed",
-                    [Mission_State.ACTIVE]: "Active",
-                    [Mission_State.FAILED]: "Failed",
-                    [Mission_State.PENDING]: "Pending",
-                    [Mission_State.UNSPECIFIED]: "Unspecified",
-                }[props.value]}
+                {
+                    {
+                        [Mission_State.COMPLETED]: "Completed",
+                        [Mission_State.ACTIVE]: "Active",
+                        [Mission_State.FAILED]: "Failed",
+                        [Mission_State.PENDING]: "Pending",
+                        [Mission_State.UNSPECIFIED]: "Unspecified",
+                    }[props.value]
+                }
             </Chip>
         </div>
     );
@@ -48,7 +50,12 @@ function ApproveRenderer(props: { value: Mission_ApprovalState; data: Mission })
     if (props.value === Mission_ApprovalState.APPROVED || props.value === Mission_ApprovalState.REJECTED) {
         return (
             <div className="flex items-center justify-center h-full">
-                <Chip color={props.value === Mission_ApprovalState.APPROVED ? "success" : "danger"} size="sm" radius="lg" variant="dot">
+                <Chip
+                    color={props.value === Mission_ApprovalState.APPROVED ? "success" : "danger"}
+                    size="sm"
+                    radius="lg"
+                    variant="dot"
+                >
                     {props.value === Mission_ApprovalState.APPROVED ? "Approved" : "Rejected"}
                 </Chip>
             </div>
@@ -164,7 +171,8 @@ function AdminMissions() {
                         field: "kickoffTime",
                         headerName: "Kickoff",
                         sortable: true,
-                        valueFormatter: (params) => (params.value ? timestampToDate(params.value)?.toLocaleString() ?? "" : ""),
+                        valueFormatter: (params) =>
+                            params.value ? (timestampToDate(params.value)?.toLocaleString() ?? "") : "",
                         comparator: (valueA, valueB) => {
                             if (!valueA) {
                                 return 1;
@@ -181,7 +189,8 @@ function AdminMissions() {
                         field: "endTime",
                         headerName: "End Time",
                         sortable: true,
-                        valueFormatter: (params) => (params.value ? timestampToDate(params.value)?.toLocaleString() ?? "" : ""),
+                        valueFormatter: (params) =>
+                            params.value ? (timestampToDate(params.value)?.toLocaleString() ?? "") : "",
                         comparator: (valueA, valueB) => {
                             if (!valueA) {
                                 return 1;
@@ -201,7 +210,8 @@ function AdminMissions() {
                         minWidth: 180,
                         sort: "desc",
                         sortIndex: 1,
-                        valueFormatter: (params) => (params.value ? timestampToDate(params.value)?.toLocaleString() ?? "" : ""),
+                        valueFormatter: (params) =>
+                            params.value ? (timestampToDate(params.value)?.toLocaleString() ?? "") : "",
                         comparator: (valueA, valueB) => {
                             if (!valueA) {
                                 return 1;

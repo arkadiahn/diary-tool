@@ -1,11 +1,10 @@
-import { type NextRequest, NextResponse } from "next/server";
+import * as jose from "jose";
 import type { NextURL } from "next/dist/server/web/next-url";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { type NextRequest, NextResponse } from "next/server";
 import setCookie from "set-cookie-parser";
 import type { Session } from "./models";
-import * as jose from "jose";
-
 
 /* -------------------------------------------------------------------------- */
 /*                                Login/Logout                                */
@@ -76,7 +75,7 @@ interface TokenData {
     expires_in: number;
     refresh_token: string;
     refresh_expires_in: number;
-	id_token: string;
+    id_token: string;
 }
 const setResponseCookies = (response: NextResponse, tokenData?: TokenData) => {
     response.cookies.set("session", tokenData?.access_token ?? "", {
@@ -90,20 +89,20 @@ const setResponseCookies = (response: NextResponse, tokenData?: TokenData) => {
     response.cookies.set("refresh", tokenData?.refresh_token ?? "", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-		path: "/", //"/api/session",
+        path: "/", //"/api/session",
         sameSite: "strict",
         maxAge: tokenData?.refresh_expires_in ?? 0,
         domain: process.env.COOKIE_DOMAINS,
         priority: "high",
     });
-	response.cookies.set("id", tokenData?.id_token ?? "", {
-		httpOnly: true,
-		secure: process.env.NODE_ENV === "production",
-		sameSite: "lax",
-		maxAge: tokenData?.expires_in ?? 0,
-		domain: process.env.COOKIE_DOMAINS,
-		priority: "high",
-	});
+    response.cookies.set("id", tokenData?.id_token ?? "", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: tokenData?.expires_in ?? 0,
+        domain: process.env.COOKIE_DOMAINS,
+        priority: "high",
+    });
     return response;
 };
 
@@ -143,7 +142,7 @@ export async function auth({
         const decodedAccessPayload = await jose.decodeJwt(requestCookies.get("session")?.value ?? "");
         const decodedIdPayload = await jose.decodeJwt(requestCookies.get("id")?.value ?? "");
         if (!decodedIdPayload || !decodedAccessPayload) {
-			throw new Error("Unauthorized");
+            throw new Error("Unauthorized");
         }
 
         // @todo better way to "parse/validate" session?
@@ -190,9 +189,9 @@ export function authMiddleware(wrappedMiddleware: (request: NextRequest) => Next
 
         const requestCookies = request.cookies.getAll();
         if (!searchParams.has("session_state") && !code && !searchParams.has("iss")) {
-			// const decodedSessionToken = await decodeJWTToken(request.cookies.get("session")?.value, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER, false);
-			// only do session request if session token is expired
-			// dont do request, create a seperate method for handling this and also use it in the apiroute
+            // const decodedSessionToken = await decodeJWTToken(request.cookies.get("session")?.value, process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER, false);
+            // only do session request if session token is expired
+            // dont do request, create a seperate method for handling this and also use it in the apiroute
             let sessionResponse: Response | null = null;
             if (requestCookies.some((cookie) => cookie.name === "session" || cookie.name === "refresh")) {
                 sessionResponse = await fetch(`${buildRealUrl(request).origin}/api/session`, {
@@ -332,10 +331,7 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
             //     process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER,
             //     false,
             // );
-            return setResponseCookies(
-                NextResponse.json({ accessClaims: decodedToken }),
-                tokenData,
-            );
+            return setResponseCookies(NextResponse.json({ accessClaims: decodedToken }), tokenData);
         }
 
         /* -------------------------- Existing Session Auth ------------------------- */
@@ -436,7 +432,7 @@ export const authRoute = async (request: NextRequest, { params }: { params: Prom
         );
     }
 
-	/* ------------------------------ SILENT LOGIN ------------------------------ */
+    /* ------------------------------ SILENT LOGIN ------------------------------ */
     if (path[0] === "silent") {
         return NextResponse.json(
             {

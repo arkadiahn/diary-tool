@@ -16,6 +16,7 @@ try {
 /* -------------------------------------------------------------------------- */
 const nextConfig: NextConfig = {
     output: "standalone",
+    reactStrictMode: true,
     devIndicators: {
         buildActivityPosition: "top-right",
     },
@@ -43,9 +44,9 @@ const nextConfig: NextConfig = {
             },
         ],
     },
-	experimental: {
-		serverComponentsHmrCache: false,
-	},
+    experimental: {
+        serverComponentsHmrCache: false,
+    },
 };
 
 export default nextConfig;

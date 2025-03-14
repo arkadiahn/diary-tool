@@ -11,18 +11,21 @@ import {
     PopoverTrigger,
     ScrollShadow,
 } from "@heroui/react";
-import MainPageLayout from "../src/components/MainPageLayout";
-import CalendarLayout from "./CalendarLayout";
 /* ---------------------------------- Icons --------------------------------- */
 import icRoundFilterList from "@iconify/icons-ic/round-filter-list";
 import icRoundSearch from "@iconify/icons-ic/round-search";
-
+import MainPageLayout from "../src/components/MainPageLayout";
+import CalendarLayout from "./CalendarLayout";
 
 /* -------------------------------------------------------------------------- */
 /*                                    Page                                    */
 /* -------------------------------------------------------------------------- */
 export default async function CalendarPage() {
-	const { events } = await webClient.listEvents({});
+    const twoDaysAgo = new Date();
+    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+    const { events } = await webClient.listEvents({
+        filter: `begin_time>="${twoDaysAgo.toISOString()}"`,
+    });
 
     return (
         <MainPageLayout

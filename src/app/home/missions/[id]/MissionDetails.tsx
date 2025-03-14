@@ -1,7 +1,7 @@
 "use client";
 
-import { Mission_State, type Mission } from "@arkadiahn/apis/intra/v1/mission_pb";
 import type { MissionAccount } from "@arkadiahn/apis/intra/v1/mission_account_pb";
+import { type Mission, Mission_State } from "@arkadiahn/apis/intra/v1/mission_pb";
 
 import { useSession } from "@/auth/client";
 import CustomIcon from "@/components/CustomIcon";
@@ -59,23 +59,31 @@ export default function MissionDetails({ mission, timelineComponent, accounts }:
                                 <Divider orientation="vertical" className="h-5" />
                                 <Chip
                                     color={
-										{
-											[Mission_State.COMPLETED]: "success",
-											[Mission_State.ACTIVE]: "primary",
-											[Mission_State.FAILED]: "danger",
-											[Mission_State.PENDING]: "warning",
-											[Mission_State.UNSPECIFIED]: "warning",
-										}[mission.state] as "success" | "primary" | "danger" | "warning" | "default" | "secondary"
-									}
+                                        {
+                                            [Mission_State.COMPLETED]: "success",
+                                            [Mission_State.ACTIVE]: "primary",
+                                            [Mission_State.FAILED]: "danger",
+                                            [Mission_State.PENDING]: "warning",
+                                            [Mission_State.UNSPECIFIED]: "warning",
+                                        }[mission.state] as
+                                            | "success"
+                                            | "primary"
+                                            | "danger"
+                                            | "warning"
+                                            | "default"
+                                            | "secondary"
+                                    }
                                     variant="dot"
                                 >
-                                    {{
-										0: "Unspecified",
-										1: "Pending",
-										2: "Active",
-										3: "Completed",
-										4: "Failed"
-									}[mission.state]}
+                                    {
+                                        {
+                                            0: "Unspecified",
+                                            1: "Pending",
+                                            2: "Active",
+                                            3: "Completed",
+                                            4: "Failed",
+                                        }[mission.state]
+                                    }
                                 </Chip>
                             </div>
                         </div>
@@ -117,12 +125,8 @@ export default function MissionDetails({ mission, timelineComponent, accounts }:
                                                     size="sm"
                                                 />
                                                 <div className="flex flex-col subpixel-antialiased">
-                                                    <span className="text-small font-medium">
-                                                        {account.name}
-                                                    </span>
-                                                    <span className="text-xs text-default-500">
-                                                        {account.name}
-                                                    </span>
+                                                    <span className="text-small font-medium">{account.name}</span>
+                                                    <span className="text-xs text-default-500">{account.name}</span>
                                                 </div>
                                             </div>
                                         ))}

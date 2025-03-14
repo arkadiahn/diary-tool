@@ -5,7 +5,7 @@ const example_entries: Diary[] = [
         name: "accounts/83f11e35-a97e-4c21-bf9a-716a6f853889/diaries/2024-W04",
         accountId: "83f11e35-a97e-4c21-bf9a-716a6f853889",
         entryTime: { seconds: BigInt(1741474800), nanos: 0, $typeName: "google.protobuf.Timestamp" },
-        project: "printf", 
+        project: "printf",
         completionWeeks: 3,
         motivation: 8,
         learnings: "Learned about memory management and string manipulation in C",
@@ -16,15 +16,15 @@ const example_entries: Diary[] = [
             {
                 title: "Complete ft_split implementation",
                 completed: false,
-                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal"
+                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal",
             },
             {
-                title: "Write tests for string functions", 
+                title: "Write tests for string functions",
                 completed: true,
-                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal"
-            }
+                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal",
+            },
         ],
-        $typeName: "arkadiahn.intra.v1.Diary"
+        $typeName: "arkadiahn.intra.v1.Diary",
     },
     {
         name: "accounts/83f11e35-a97e-4c21-bf9a-716a6f853889/diaries/2024-W03",
@@ -41,15 +41,15 @@ const example_entries: Diary[] = [
             {
                 title: "Implement basic string functions",
                 completed: true,
-                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal"
+                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal",
             },
             {
                 title: "Start working on memory functions",
                 completed: true,
-                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal"
-            }
+                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal",
+            },
         ],
-        $typeName: "arkadiahn.intra.v1.Diary"
+        $typeName: "arkadiahn.intra.v1.Diary",
     },
     {
         name: "accounts/83f11e35-a97e-4c21-bf9a-716a6f853889/diaries/2024-W02",
@@ -66,15 +66,15 @@ const example_entries: Diary[] = [
             {
                 title: "Set up development environment",
                 completed: true,
-                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal"
+                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal",
             },
             {
                 title: "Complete first 5 functions",
                 completed: true,
-                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal"
-            }
+                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal",
+            },
         ],
-        $typeName: "arkadiahn.intra.v1.Diary"
+        $typeName: "arkadiahn.intra.v1.Diary",
     },
     {
         name: "accounts/83f11e35-a97e-4c21-bf9a-716a6f853889/diaries/2024-W01",
@@ -91,15 +91,15 @@ const example_entries: Diary[] = [
             {
                 title: "Complete BSQ project",
                 completed: true,
-                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal"
+                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal",
             },
             {
                 title: "Prepare for final exam",
                 completed: true,
-                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal"
-            }
+                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal",
+            },
         ],
-        $typeName: "arkadiahn.intra.v1.Diary"
+        $typeName: "arkadiahn.intra.v1.Diary",
     },
     {
         name: "accounts/83f11e35-a97e-4c21-bf9a-716a6f853889/diaries/2023-W52",
@@ -116,15 +116,15 @@ const example_entries: Diary[] = [
             {
                 title: "Complete rush01 project",
                 completed: true,
-                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal"
+                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal",
             },
             {
                 title: "Study for C09",
                 completed: true,
-                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal"
-            }
+                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal",
+            },
         ],
-        $typeName: "arkadiahn.intra.v1.Diary"
+        $typeName: "arkadiahn.intra.v1.Diary",
     },
     {
         name: "accounts/83f11e35-a97e-4c21-bf9a-716a6f853889/diaries/2023-W51",
@@ -141,17 +141,16 @@ const example_entries: Diary[] = [
             {
                 title: "Complete Shell01",
                 completed: true,
-                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal"
+                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal",
             },
             {
                 title: "Start C03 exercises",
                 completed: false,
-                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal"
-            }
+                $typeName: "arkadiahn.intra.v1.Diary.DiaryGoal",
+            },
         ],
-        $typeName: "arkadiahn.intra.v1.Diary"
-    }
+        $typeName: "arkadiahn.intra.v1.Diary",
+    },
 ];
-
 
 export default example_entries;

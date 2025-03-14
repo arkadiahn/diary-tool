@@ -1,7 +1,7 @@
 "use client";
 
-import type { Event } from "@arkadiahn/apis/intra/v1/event_pb";
 import CustomIcon from "@/components/CustomIcon";
+import type { Event } from "@arkadiahn/apis/intra/v1/event_pb";
 import { Button } from "@heroui/react";
 import share from "@iconify/icons-ic/outline-share";
 import toast from "react-hot-toast";

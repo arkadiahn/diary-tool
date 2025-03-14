@@ -1,6 +1,6 @@
-import type { MissionAccount } from "@arkadiahn/apis/intra/v1/mission_account_pb";
-import { createFieldMask } from "@/api/utils";
 import webClient from "@/api";
+import { createFieldMask } from "@/api/utils";
+import type { MissionAccount } from "@arkadiahn/apis/intra/v1/mission_account_pb";
 
 import { toast } from "react-hot-toast";
 import { confirm } from "../AreYouSurePopup";
@@ -29,9 +29,9 @@ export const { StoreProvider: AccountStoreProvider, useStore: useAccountStore } 
         fetchAccounts: async (missionName: string) => {
             set({ loading: true, accounts: [] });
             try {
-				const { missionAccounts } = await webClient.listMissionAccounts({
-					parent: missionName,
-				});
+                const { missionAccounts } = await webClient.listMissionAccounts({
+                    parent: missionName,
+                });
                 set({ accounts: missionAccounts, missionName, loading: false });
             } catch {
                 toast.error("Failed to fetch accounts");
@@ -44,9 +44,9 @@ export const { StoreProvider: AccountStoreProvider, useStore: useAccountStore } 
                 return;
             }
             try {
-				await webClient.deleteMissionAccount({
-					name: account.name
-				});
+                await webClient.deleteMissionAccount({
+                    name: account.name,
+                });
                 toast.success("Account deleted successfully");
                 get().fetchAccounts(missionName);
             } catch {
@@ -55,10 +55,10 @@ export const { StoreProvider: AccountStoreProvider, useStore: useAccountStore } 
         },
         addAccount: async (missionName: string, account: MissionAccount) => {
             try {
-				await webClient.createMissionAccount({
-					parent: missionName,
-					missionAccount: account,
-				});
+                await webClient.createMissionAccount({
+                    parent: missionName,
+                    missionAccount: account,
+                });
                 toast.success("Account added successfully");
                 get().fetchAccounts(missionName);
                 set({ addOpen: false });
@@ -68,11 +68,11 @@ export const { StoreProvider: AccountStoreProvider, useStore: useAccountStore } 
         },
         approveAccount: async (missionName: string, account: MissionAccount) => {
             try {
-				account.approved = true;
-				await webClient.updateMissionAccount({
-					missionAccount: account,
-					updateMask: createFieldMask(account),
-				});
+                account.approved = true;
+                await webClient.updateMissionAccount({
+                    missionAccount: account,
+                    updateMask: createFieldMask(account),
+                });
                 toast.success("Account approved successfully");
                 get().fetchAccounts(missionName);
             } catch {
@@ -85,7 +85,7 @@ export const { StoreProvider: AccountStoreProvider, useStore: useAccountStore } 
                 return;
             }
             try {
-				await get().removeAccount(missionName, account);
+                await get().removeAccount(missionName, account);
                 toast.success("Account rejected successfully");
                 get().fetchAccounts(missionName);
             } catch {

@@ -1,6 +1,6 @@
 import type { Mission } from "@arkadiahn/apis/intra/v1/mission_pb";
 import { Mission_State } from "@arkadiahn/apis/intra/v1/mission_pb";
-import { ConnectError, Code } from "@connectrpc/connect";
+import { Code, ConnectError } from "@connectrpc/connect";
 
 import { useSession } from "@/auth/client";
 import CustomIcon from "@/components/CustomIcon";
@@ -8,10 +8,10 @@ import { Button } from "@heroui/react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 
+import webClient from "@/api";
 /* ---------------------------------- Icons --------------------------------- */
 import icLockClock from "@iconify/icons-ic/baseline-lock-clock";
 import icCheckFill from "@iconify/icons-ri/check-fill";
-import webClient from "@/api";
 
 interface JoinMissionButtonProps {
     mission: Mission;
@@ -20,25 +20,25 @@ export default function JoinMissionButton({ mission }: JoinMissionButtonProps) {
     const [state, setState] = useState<"loading" | "joined" | "not_joined" | "awaiting_approval">("loading");
     const { session } = useSession();
 
-	const fetchMissionStatus = useCallback(async () => {
-		if (!session || mission.state === Mission_State.COMPLETED) {
-			return;
-		}
-		
-		try {
-			const { missionAccounts } = await webClient.listMissionAccounts({
-				filter: `account="accounts/${session.user.id}"`,
-				parent: mission.name,
-				pageSize: 1,
-			});
-			const missionAccount = missionAccounts[0];
+    const fetchMissionStatus = useCallback(async () => {
+        if (!session || mission.state === Mission_State.COMPLETED) {
+            return;
+        }
 
-			setState(!missionAccount ? "not_joined" : missionAccount.approved ? "joined" : "awaiting_approval");
-		} catch {
-			toast.error("Failed to fetch mission status");
-			setState("not_joined");
-		}
-	}, [session, mission.name, mission.state]);
+        try {
+            const { missionAccounts } = await webClient.listMissionAccounts({
+                filter: `account="accounts/${session.user.id}"`,
+                parent: mission.name,
+                pageSize: 1,
+            });
+            const missionAccount = missionAccounts[0];
+
+            setState(!missionAccount ? "not_joined" : missionAccount.approved ? "joined" : "awaiting_approval");
+        } catch {
+            toast.error("Failed to fetch mission status");
+            setState("not_joined");
+        }
+    }, [session, mission.name, mission.state]);
 
     useEffect(() => {
         fetchMissionStatus();
@@ -50,19 +50,19 @@ export default function JoinMissionButton({ mission }: JoinMissionButtonProps) {
             try {
                 await webClient.createMissionAccount({
                     parent: mission.name,
-					missionAccount: {
-						account: `accounts/${session.user.id}`
-					}
-				});
+                    missionAccount: {
+                        account: `accounts/${session.user.id}`,
+                    },
+                });
             } catch (error) {
-				if (error instanceof ConnectError && error.code === Code.AlreadyExists) {
-					toast.error("You are already a member of this mission");
-					fetchMissionStatus();
-				} else {
-					toast.error("Failed to join mission");
-					setState("not_joined");
-				}
-			}
+                if (error instanceof ConnectError && error.code === Code.AlreadyExists) {
+                    toast.error("You are already a member of this mission");
+                    fetchMissionStatus();
+                } else {
+                    toast.error("Failed to join mission");
+                    setState("not_joined");
+                }
+            }
         }
     };
 

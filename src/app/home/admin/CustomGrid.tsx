@@ -1,5 +1,7 @@
+"use client";
+
 import CustomIcon from "@/components/CustomIcon";
-import { Button } from "@heroui/react";
+import { Button, Divider } from "@heroui/react";
 import {
     AllCommunityModule,
     type ColDef,
@@ -10,7 +12,6 @@ import {
 } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import { useTheme } from "next-themes";
-import { type ForwardedRef, forwardRef } from "react";
 
 /* ---------------------------------- Icons --------------------------------- */
 import plus from "@iconify/icons-ic/baseline-plus";
@@ -59,6 +60,7 @@ interface CustomGridProps<T> {
     onDelete?: (data: T) => void | Promise<void>;
     onUndelete?: (data: T) => void | Promise<void>;
     onCreate?: (data: null) => void | Promise<void>;
+    extraButtons?: React.ReactNode;
 }
 
 function CustomGrid<T>({
@@ -70,6 +72,7 @@ function CustomGrid<T>({
     onDelete,
     onCreate,
     onUndelete,
+    extraButtons,
 }: CustomGridProps<T>) {
     const { resolvedTheme } = useTheme();
 
@@ -89,16 +92,20 @@ function CustomGrid<T>({
         <>
             <div className="flex justify-between items-center w-full mb-4">
                 <h1 className="text-2xl font-medium">{tableTitle}</h1>
-                {onCreate && (
-                    <Button
-                        size="sm"
-                        color="primary"
-                        onPress={() => onCreate?.(null)}
-                        startContent={<CustomIcon icon={plus} width={16} height={16} />}
-                    >
-                        Create
-                    </Button>
-                )}
+                <div className="flex items-center gap-2">
+                    {extraButtons}
+                    {extraButtons && <Divider orientation="vertical" className="h-7" />}
+                    {onCreate && (
+                        <Button
+                            size="sm"
+                            color="primary"
+                            onPress={() => onCreate?.(null)}
+                            startContent={<CustomIcon icon={plus} width={16} height={16} />}
+                        >
+                            Create
+                        </Button>
+                    )}
+                </div>
             </div>
             <div className="max-h-[800px] h-full w-full">
                 <AgGridReact

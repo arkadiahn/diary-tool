@@ -6,7 +6,9 @@ export default function MissionState({ state }: { state: Mission_State }) {
         <Chip
             size="sm"
             className="text-xs"
-            color={state === Mission_State.ACTIVE ? "primary" : state === Mission_State.COMPLETED ? "success" : "danger"}
+            color={
+                state === Mission_State.ACTIVE ? "primary" : state === Mission_State.COMPLETED ? "success" : "danger"
+            }
         >
             {state}
         </Chip>

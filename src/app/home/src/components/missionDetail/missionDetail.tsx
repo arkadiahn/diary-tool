@@ -1,16 +1,16 @@
 "use client";
 
-import type { Mission } from "@arkadiahn/apis/intra/v1/mission_pb";
 import CustomIcon from "@/components/CustomIcon";
+import type { Mission } from "@arkadiahn/apis/intra/v1/mission_pb";
 import { BreadcrumbItem, Breadcrumbs, Button, Tooltip } from "@heroui/react";
 import { Chip } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import MissionState from "../../../missions/MissionState";
 
+import { timestampToDate } from "@/api/utils";
 import icCalendarEventFill from "@iconify/icons-ri/calendar-event-fill";
 import icGithubFill from "@iconify/icons-ri/github-fill";
 import icTimeFill from "@iconify/icons-ri/time-fill";
-import { timestampToDate } from "@/api/utils";
 
 interface MissionDetailViewProps {
     data: Mission;
@@ -68,11 +68,14 @@ export default function MissionDetailView({ data, timelineComponent }: MissionDe
                                         <div className="flex items-center gap-1.5 bg-primary-50 dark:bg-primary-900/20 text-primary rounded-full px-3 py-1 cursor-help">
                                             <CustomIcon icon={icTimeFill} width={16} />
                                             <span className="text-sm font-medium">
-                                                {(timestampToDate(data.endTime) ?? new Date()).toLocaleDateString("en-US", {
-                                                    year: "numeric",
-                                                    month: "short",
-                                                    day: "numeric",
-                                                })}
+                                                {(timestampToDate(data.endTime) ?? new Date()).toLocaleDateString(
+                                                    "en-US",
+                                                    {
+                                                        year: "numeric",
+                                                        month: "short",
+                                                        day: "numeric",
+                                                    },
+                                                )}
                                             </span>
                                         </div>
                                     </Tooltip>

@@ -1,5 +1,5 @@
-import type { Account } from "@arkadiahn/apis/intra/v1/account_pb";
 import webClient from "@/api";
+import type { Account } from "@arkadiahn/apis/intra/v1/account_pb";
 
 import Fuse from "fuse.js";
 import { create } from "zustand";
@@ -42,9 +42,7 @@ export const useAccountsComponentStore = create<AccountsComponentStore>((set, ge
         try {
             set({ loading: true });
             const { accounts } = await webClient.listAccounts({});
-            const accountsMap = new Map(
-                (accounts as Account[]).map((account) => [account.name, account]),
-            );
+            const accountsMap = new Map((accounts as Account[]).map((account) => [account.name, account]));
 
             get().fuse.setCollection(Array.from(accountsMap.values()));
             set({

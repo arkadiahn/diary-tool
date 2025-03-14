@@ -19,7 +19,7 @@ export default function MainPageLayout({ children, title, description, className
                     {headerItems && <div className="flex justify-end items-center gap-2 w-full">{headerItems}</div>}
                 </div>
             )}
-			{children}
+            {children}
         </div>
     );
 }

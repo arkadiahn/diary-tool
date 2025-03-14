@@ -1,9 +1,9 @@
 "use client";
 
-import { type Mission, Mission_ApprovalState, Mission_State } from "@arkadiahn/apis/intra/v1/mission_pb";
-import type { MissionMilestone } from "@arkadiahn/apis/intra/v1/mission_milestone_pb";
-import type { Account } from "@arkadiahn/apis/intra/v1/account_pb";
 import webClient from "@/api";
+import type { Account } from "@arkadiahn/apis/intra/v1/account_pb";
+import type { MissionMilestone } from "@arkadiahn/apis/intra/v1/mission_milestone_pb";
+import { type Mission, Mission_ApprovalState, Mission_State } from "@arkadiahn/apis/intra/v1/mission_pb";
 
 import CustomIcon from "@/components/CustomIcon";
 import { Card, CardBody, CardFooter, CardHeader, Chip, Tooltip } from "@heroui/react";
@@ -17,9 +17,9 @@ import UserGroupIcon from "@iconify/icons-ic/sharp-account-circle";
 import HeartIcon from "@iconify/icons-solar/heart-bold";
 
 interface MissionCardProps {
-	mission: Mission;
-	accounts: Account[];
-	milestones: MissionMilestone[];
+    mission: Mission;
+    accounts: Account[];
+    milestones: MissionMilestone[];
 }
 export default function MissionCard({ mission, accounts, milestones }: MissionCardProps) {
     const [likes, setLikes] = useState(mission.likeCount);
@@ -28,9 +28,9 @@ export default function MissionCard({ mission, accounts, milestones }: MissionCa
 
     const onLike = async () => {
         setLikes((prev) => prev + 1);
-		await webClient.likeMission({
-			name: mission.name,
-		});
+        await webClient.likeMission({
+            name: mission.name,
+        });
     };
 
     return (
@@ -43,7 +43,9 @@ export default function MissionCard({ mission, accounts, milestones }: MissionCa
                             "text-yellow-600": mission.approvalState !== Mission_ApprovalState.REJECTED,
                         })}
                     >
-                        {mission.approvalState === Mission_ApprovalState.REJECTED ? "Mission rejected!" : "Mission under review..."}
+                        {mission.approvalState === Mission_ApprovalState.REJECTED
+                            ? "Mission rejected!"
+                            : "Mission under review..."}
                     </h3>
                 </div>
             )}
@@ -69,22 +71,24 @@ export default function MissionCard({ mission, accounts, milestones }: MissionCa
                         variant="dot"
                         radius="lg"
                         color={
-							{
-								[Mission_State.COMPLETED]: "success",
-								[Mission_State.ACTIVE]: "primary",
-								[Mission_State.FAILED]: "danger",
-								[Mission_State.PENDING]: "warning",
-								[Mission_State.UNSPECIFIED]: "warning",
-							}[mission.state] as "success" | "primary" | "danger" | "warning" | "default" | "secondary"
-						}
+                            {
+                                [Mission_State.COMPLETED]: "success",
+                                [Mission_State.ACTIVE]: "primary",
+                                [Mission_State.FAILED]: "danger",
+                                [Mission_State.PENDING]: "warning",
+                                [Mission_State.UNSPECIFIED]: "warning",
+                            }[mission.state] as "success" | "primary" | "danger" | "warning" | "default" | "secondary"
+                        }
                     >
-                        {{
-							0: "Unspecified",
-							1: "Pending",
-							2: "Active",
-							3: "Completed",
-							4: "Failed"
-						}[mission.state]}
+                        {
+                            {
+                                0: "Unspecified",
+                                1: "Pending",
+                                2: "Active",
+                                3: "Completed",
+                                4: "Failed",
+                            }[mission.state]
+                        }
                     </Chip>
                 </CardHeader>
 
@@ -109,7 +113,7 @@ export default function MissionCard({ mission, accounts, milestones }: MissionCa
                         <span className="text-sm">{accounts.length}</span>
                     </div>
                     <button
-						type="button"
+                        type="button"
                         className="hover:scale-110 active:scale-95 transition-transform flex items-center gap-1"
                         onClick={onLike}
                         onKeyDown={(e) => {

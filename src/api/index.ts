@@ -26,6 +26,7 @@ const sessionHandler: Interceptor = (next) => async (req) => {
 	try {
 		return next(req);
 	} catch (error) {
+		console.log("error", error);
 		if (error instanceof ConnectError && error.code === Code.Unauthenticated) {
 			try {
 				const decodedToken = await jose.decodeJwt(Cookies.get("session") ?? "");

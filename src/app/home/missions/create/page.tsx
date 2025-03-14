@@ -1,9 +1,10 @@
 "use client";
 
+import webClient from "@/api";
 import { type MissionMilestone, MissionMilestone_State } from "@arkadiahn/apis/intra/v1/mission_milestone_pb";
 import type { Mission } from "@arkadiahn/apis/intra/v1/mission_pb";
-import webClient from "@/api";
 
+import { dateToTimestamp, timestampToDate } from "@/api/utils";
 import {
     BreadcrumbItem,
     Breadcrumbs,
@@ -34,7 +35,6 @@ import DateComponent from "../../admin/missions/DateComponent";
 import MainPageLayout from "../../src/components/MainPageLayout";
 import RowSteps from "./RowSteps";
 import VerticalSteps from "./VerticalSteps";
-import { dateToTimestamp, timestampToDate } from "@/api/utils";
 
 interface MissionDetailsViewProps {
     children: React.ReactNode;
@@ -113,13 +113,17 @@ export default function CreateMissionPage() {
         formData.end_time = parseZonedDateTime(formData.end_time as string)
             .toDate()
             .toISOString();
-		const mission = await webClient.createMission({
-			mission: formData as unknown as Mission
-		});
-        await Promise.all(milestones.map((milestone) => webClient.createMissionMilestone({
-			parent: mission.name,
-			missionMilestone: milestone
-		})));
+        const mission = await webClient.createMission({
+            mission: formData as unknown as Mission,
+        });
+        await Promise.all(
+            milestones.map((milestone) =>
+                webClient.createMissionMilestone({
+                    parent: mission.name,
+                    missionMilestone: milestone,
+                }),
+            ),
+        );
         setLoading(false);
         setStep(2);
     };
@@ -130,7 +134,7 @@ export default function CreateMissionPage() {
         const milestone: MissionMilestone = {
             title: formData.get("title") as string,
             description: formData.get("description") as string,
-            endTime: dateToTimestamp(parseZonedDateTime(formData.get("end_time") as string).toDate())
+            endTime: dateToTimestamp(parseZonedDateTime(formData.get("end_time") as string).toDate()),
         } as MissionMilestone;
         setMilestones((prev) => [...prev, milestone]);
         setSelectedMilestone(null);
@@ -326,7 +330,9 @@ export default function CreateMissionPage() {
                                             <TableRow key={`${milestone.name}-${milestone.endTime}-${index}`}>
                                                 <TableCell>{milestone.description}</TableCell>
                                                 <TableCell>
-                                                    <DateComponent date={timestampToDate(milestone.endTime)?.toISOString() ?? ""} />
+                                                    <DateComponent
+                                                        date={timestampToDate(milestone.endTime)?.toISOString() ?? ""}
+                                                    />
                                                 </TableCell>
                                                 <TableCell>
                                                     <div className="flex flex-row gap-2">
@@ -392,7 +398,10 @@ export default function CreateMissionPage() {
                                 name="end_time"
                                 defaultValue={
                                     selectedMilestone?.endTime
-                                        ? parseAbsolute(timestampToDate(selectedMilestone.endTime)?.toISOString() ?? "", "Europe/Berlin")
+                                        ? parseAbsolute(
+                                              timestampToDate(selectedMilestone.endTime)?.toISOString() ?? "",
+                                              "Europe/Berlin",
+                                          )
                                         : null
                                 }
                                 placeholderValue={now("Europe/Berlin")}

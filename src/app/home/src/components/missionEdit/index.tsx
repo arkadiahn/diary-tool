@@ -1,9 +1,9 @@
 "use client";
 
-import type { Mission } from "@arkadiahn/apis/intra/v1/mission_pb";
-import type { Account } from "@arkadiahn/apis/intra/v1/account_pb";
-import { createFieldMask, timestampToDate } from "@/api/utils";
 import webClient from "@/api";
+import { createFieldMask, timestampToDate } from "@/api/utils";
+import type { Account } from "@arkadiahn/apis/intra/v1/account_pb";
+import type { Mission } from "@arkadiahn/apis/intra/v1/mission_pb";
 
 import CustomIcon from "@/components/CustomIcon";
 import { DatePicker } from "@heroui/date-picker";
@@ -20,9 +20,9 @@ function ProjectLeaderChip({ account }: { account: string }) {
     useEffect(() => {
         const fetchLeader = async () => {
             try {
-				const accountResponse = await webClient.getAccount({
-					name: account
-				});
+                const accountResponse = await webClient.getAccount({
+                    name: account,
+                });
                 setAccountData(accountResponse);
             } catch (_error) {
                 setAccountData(null);
@@ -65,7 +65,7 @@ export default function MissionEdit({ data }: MissionEditProps) {
             if (mission.name !== "---") {
                 await webClient.updateMission({
                     mission: mission,
-					updateMask: createFieldMask(mission)
+                    updateMask: createFieldMask(mission),
                 });
                 router.push(`/${mission.name}`);
             } else {
@@ -138,7 +138,9 @@ export default function MissionEdit({ data }: MissionEditProps) {
                         <div className="flex items-center gap-2">
                             <DatePicker
                                 label="Start Date"
-                                value={parseDate(timestampToDate(formData.kickoffTime)?.toISOString().split("T")[0] ?? "")}
+                                value={parseDate(
+                                    timestampToDate(formData.kickoffTime)?.toISOString().split("T")[0] ?? "",
+                                )}
                                 onChange={(date) => {
                                     if (date) {
                                         setFormData((prev) => ({
@@ -151,7 +153,13 @@ export default function MissionEdit({ data }: MissionEditProps) {
                             />
                             <DatePicker
                                 label="End Date"
-                                value={formData.endTime ? parseDate(timestampToDate(formData.endTime)?.toISOString().split("T")[0] ?? "") : null}
+                                value={
+                                    formData.endTime
+                                        ? parseDate(
+                                              timestampToDate(formData.endTime)?.toISOString().split("T")[0] ?? "",
+                                          )
+                                        : null
+                                }
                                 onChange={(date) => {
                                     setFormData((prev) => ({
                                         ...prev,

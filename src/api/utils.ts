@@ -13,6 +13,6 @@ export function dateToTimestamp(date: Date): Timestamp {
 
 export function createFieldMask(obj: object): FieldMask {
 	return {
-		paths: Object.keys(obj)
+		paths: Object.keys(obj).map(key => key.replace(/([A-Z])/g, '_$1').toLowerCase())
 	} as FieldMask;
 }

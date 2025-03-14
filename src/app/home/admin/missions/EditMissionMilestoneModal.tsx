@@ -1,11 +1,11 @@
 import { type MissionMilestone, MissionMilestone_State } from "@arkadiahn/apis/intra/v1/mission_milestone_pb";
 
+import { timestampToDate } from "@/api/utils";
 import { Checkbox, DatePicker, Input } from "@heroui/react";
 import { Textarea } from "@heroui/react";
 import { now, parseAbsolute } from "@internationalized/date";
 import CustomEditModal from "../CustomEditModal";
 import { useMilestoneStore } from "./_milestoneStore";
-import { timestampToDate } from "@/api/utils";
 
 export default function EditMissionMilestoneModal() {
     const selectedMilestone = useMilestoneStore((state) => state.selectedMilestone);
@@ -26,14 +26,14 @@ export default function EditMissionMilestoneModal() {
         >
             <input name="name" value={selectedMilestone?.name ?? ""} readOnly={true} className="hidden" />
             <Input
-				size="sm"
-				label="Title"
-				name="title"
-				placeholder="Enter mission title"
-				defaultValue={selectedMilestone?.title}
-				isRequired={true}
-			/>
-			<Textarea
+                size="sm"
+                label="Title"
+                name="title"
+                placeholder="Enter mission title"
+                defaultValue={selectedMilestone?.title}
+                isRequired={true}
+            />
+            <Textarea
                 label="Description"
                 name="description"
                 defaultValue={selectedMilestone?.description}
@@ -45,7 +45,12 @@ export default function EditMissionMilestoneModal() {
                 label="End Time"
                 name="endTime"
                 defaultValue={
-                    selectedMilestone?.endTime ? parseAbsolute(timestampToDate(selectedMilestone.endTime)?.toISOString() ?? "", "Europe/Berlin") : null
+                    selectedMilestone?.endTime
+                        ? parseAbsolute(
+                              timestampToDate(selectedMilestone.endTime)?.toISOString() ?? "",
+                              "Europe/Berlin",
+                          )
+                        : null
                 }
                 placeholderValue={now("Europe/Berlin")}
                 isRequired={true}

@@ -1,4 +1,3 @@
-
 import webClient from "@/api";
 
 import CustomIcon from "@/components/CustomIcon";
@@ -23,9 +22,9 @@ import icRoundFilterList from "@iconify/icons-ic/round-filter-list";
 import icRoundSearch from "@iconify/icons-ic/round-search";
 
 export default async function Home() {
-	const { missions } = await webClient.listMissions({});
-	const { accounts } = { accounts: [] };
-	const { milestones } = { milestones: [] };
+    const { missions } = await webClient.listMissions({});
+    const { accounts } = { accounts: [] };
+    const { milestones } = { milestones: [] };
     const { session } = await auth({});
 
     return (

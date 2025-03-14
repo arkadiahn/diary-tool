@@ -1,7 +1,7 @@
 "use client";
 
-import type { Event } from "@arkadiahn/apis/intra/v1/event_pb";
 import { timestampToDate } from "@/api/utils";
+import type { Event } from "@arkadiahn/apis/intra/v1/event_pb";
 
 import CustomIcon from "@/components/CustomIcon";
 import { Card, CardBody, CardHeader, Chip } from "@heroui/react";
