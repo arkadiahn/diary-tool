@@ -2,7 +2,7 @@ import webClient from "@/api";
 import { MissionMilestone_State } from "@arkadiahn/apis/intra/v1/mission_milestone_pb";
 
 import { timestampToDate } from "@/api/utils";
-import TimeStepper from "../../../missions/TimeStepper";
+import TimeStepper from "../../../(missions)/TimeStepper";
 
 interface TimelineProps {
     name: string;

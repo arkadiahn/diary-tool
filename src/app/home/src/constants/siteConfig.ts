@@ -1,4 +1,5 @@
 export const siteConfig = {
-    name: "OpenSpace",
-    description: "OpenSpace",
+    name: "MissionBoard",
+	company: "Arkadia",
+    description: "MissionBoard",
 } as const;

@@ -58,7 +58,7 @@ export default function MissionCard({ mission, accounts, milestones }: MissionCa
                 isHoverable={approved}
                 onPress={() => {
                     if (approved) {
-                        router.push(mission.name);
+                        router.push(mission.name.replace("missions/", ""));
                     }
                 }}
                 role="presentation"

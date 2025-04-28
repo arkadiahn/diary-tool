@@ -5,7 +5,7 @@ import type { Mission } from "@arkadiahn/apis/intra/v1/mission_pb";
 import { BreadcrumbItem, Breadcrumbs, Button, Tooltip } from "@heroui/react";
 import { Chip } from "@heroui/react";
 import { useRouter } from "next/navigation";
-import MissionState from "../../../missions/MissionState";
+import MissionState from "../../../(missions)/MissionState";
 
 import { timestampToDate } from "@/api/utils";
 import icCalendarEventFill from "@iconify/icons-ri/calendar-event-fill";

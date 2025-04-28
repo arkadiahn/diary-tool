@@ -35,6 +35,7 @@ import DateComponent from "../../admin/missions/DateComponent";
 import MainPageLayout from "../../src/components/MainPageLayout";
 import RowSteps from "./RowSteps";
 import VerticalSteps from "./VerticalSteps";
+import { useSession } from "@/auth/client";
 
 interface MissionDetailsViewProps {
     children: React.ReactNode;
@@ -102,9 +103,10 @@ export default function CreateMissionPage() {
     const [videoEnded, setVideoEnded] = useState(false);
     const [_loading, setLoading] = useState(false);
     const [step, setStep] = useState(0);
+	const { session } = useSession();
 
     const submitMission = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+		e.preventDefault();
         setLoading(true);
         const formData = Object.fromEntries(new FormData(e.currentTarget));
         formData.kickoff_time = parseZonedDateTime(formData.kickoff_time as string)
@@ -113,6 +115,7 @@ export default function CreateMissionPage() {
         formData.end_time = parseZonedDateTime(formData.end_time as string)
             .toDate()
             .toISOString();
+		formData.leader = `accounts/${session?.user.id}`
         const mission = await webClient.createMission({
             mission: formData as unknown as Mission,
         });
@@ -120,12 +123,15 @@ export default function CreateMissionPage() {
             milestones.map((milestone) =>
                 webClient.createMissionMilestone({
                     parent: mission.name,
-                    missionMilestone: milestone,
+                    missionMilestone: {
+                        ...milestone,
+                        name: ""
+                    },
                 }),
             ),
         );
         setLoading(false);
-        setStep(2);
+        setStep((prev) => prev + 1);
     };
 
     const onAddMilestone = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -136,7 +142,12 @@ export default function CreateMissionPage() {
             description: formData.get("description") as string,
             endTime: dateToTimestamp(parseZonedDateTime(formData.get("end_time") as string).toDate()),
         } as MissionMilestone;
-        setMilestones((prev) => [...prev, milestone]);
+        if (selectedMilestone) {
+            setMilestones(milestones.map((m) => (m.name === selectedMilestone.name ? milestone : m)));
+        } else {
+            milestone.name = `${milestones.length + 1}`;
+            setMilestones((prev) => [...prev, milestone]);
+        }
         setSelectedMilestone(null);
         onOpenChange();
     };
@@ -145,7 +156,7 @@ export default function CreateMissionPage() {
         <>
             <MainPageLayout className="overflow-visible flex flex-col gap-5">
                 <Breadcrumbs size="lg" className="self-start font-medium">
-                    <BreadcrumbItem href="/missions">Missions</BreadcrumbItem>
+                    <BreadcrumbItem href="/">Missions</BreadcrumbItem>
                     <BreadcrumbItem>Create Mission</BreadcrumbItem>
                 </Breadcrumbs>
                 <div className="flex-1 flex flex-col xl:flex-row min-h-0 w-full">
@@ -249,6 +260,14 @@ export default function CreateMissionPage() {
                                     description="The time where the team formation happens and the mission starts"
                                     isRequired={true}
                                 />
+								<DatePicker
+                                    size="sm"
+                                    label="End Time"
+                                    name="end_time"
+                                    placeholderValue={now("Europe/Berlin")}
+                                    description="The time where the mission ends"
+                                    isRequired={true}
+                                />
                                 <Textarea
                                     size="sm"
                                     label="Description"
@@ -321,13 +340,15 @@ export default function CreateMissionPage() {
                                     }
                                 >
                                     <TableHeader>
+                                        <TableColumn>Title</TableColumn>
                                         <TableColumn>Description</TableColumn>
                                         <TableColumn width={200}>End Time</TableColumn>
                                         <TableColumn width={200}>Actions</TableColumn>
                                     </TableHeader>
                                     <TableBody emptyContent="No milestones added yet">
                                         {milestones.map((milestone, index) => (
-                                            <TableRow key={`${milestone.name}-${milestone.endTime}-${index}`}>
+                                            <TableRow key={`${milestone.title}-${milestone.endTime}-${index}`}>
+                                                <TableCell>{milestone.title}</TableCell>
                                                 <TableCell>{milestone.description}</TableCell>
                                                 <TableCell>
                                                     <DateComponent
@@ -351,7 +372,7 @@ export default function CreateMissionPage() {
                                                             color="danger"
                                                             onPress={() => {
                                                                 setMilestones(
-                                                                    milestones.filter((m) => m.name !== milestone.name),
+                                                                    milestones.filter((_, i) => i !== index),
                                                                 );
                                                             }}
                                                         >
@@ -385,7 +406,16 @@ export default function CreateMissionPage() {
                             <h1 className="text-2xl font-bold">Milestone Details</h1>
                         </ModalHeader>
                         <ModalBody className="w-full flex flex-col gap-6">
+                            <Input
+                                size="sm"
+                                label="Title"
+                                name="title"
+                                defaultValue={selectedMilestone?.title}
+                                placeholder="Enter milestone title"
+                                isRequired={true}
+                            />
                             <Textarea
+                                size="sm"
                                 label="Description"
                                 name="description"
                                 defaultValue={selectedMilestone?.description}
@@ -410,7 +440,7 @@ export default function CreateMissionPage() {
                         </ModalBody>
                         <ModalFooter>
                             <Button color="primary" type="submit">
-                                Add Milestone
+                                {selectedMilestone ? "Edit Milestone" : "Add Milestone"}
                             </Button>
                         </ModalFooter>
                     </Form>

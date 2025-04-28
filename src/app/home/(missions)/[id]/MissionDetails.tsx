@@ -1,6 +1,6 @@
 "use client";
 
-import type { MissionAccount } from "@arkadiahn/apis/intra/v1/mission_account_pb";
+import type { Account } from "@arkadiahn/apis/intra/v1/account_pb";
 import { type Mission, Mission_State } from "@arkadiahn/apis/intra/v1/mission_pb";
 
 import { useSession } from "@/auth/client";
@@ -24,25 +24,47 @@ import JoinMissionButton from "./JoinMissionButton";
 import icCalendarEventFill from "@iconify/icons-ri/calendar-event-fill";
 import icGithubFill from "@iconify/icons-ri/github-fill";
 import HeartIcon from "@iconify/icons-solar/heart-bold";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import webClient from "@/api";
+import type { MissionAccount } from "@arkadiahn/apis/intra/v1/mission_account_pb";
 
 interface MissionDetailsProps {
     mission: Mission;
     timelineComponent?: React.ReactNode;
-    accounts: MissionAccount[];
+    accounts: Account[];
+	missionAccounts: MissionAccount[];
+    leaderAccount: Account;
 }
-export default function MissionDetails({ mission, timelineComponent, accounts }: MissionDetailsProps) {
+export default function MissionDetails({ mission, timelineComponent, accounts, leaderAccount, missionAccounts }: MissionDetailsProps) {
     const { session } = useSession();
 
     const isLeader = useMemo(() => {
         return `accounts/${session?.user.id}` === mission.leader;
     }, [session, mission.leader]);
 
+	const onApprove = async (account: Account) => {
+		await webClient.updateMissionAccount({
+			missionAccount: {
+				name: `${mission.name}/${account.name}`,
+				approved: true
+			},
+			updateMask: {
+				paths: ["approved"],
+			},
+		});
+	}
+
+	const onReject = async (account: Account) => {
+		await webClient.deleteMissionAccount({
+			name: `${mission.name}/${account.name}`,
+		});
+	}
+
     return (
         <MainPageLayout>
             <div className="min-h-full w-full flex flex-col gap-6">
                 <Breadcrumbs size="lg" className="self-start font-medium">
-                    <BreadcrumbItem href="/missions">Missions</BreadcrumbItem>
+                    <BreadcrumbItem href="/">Missions</BreadcrumbItem>
                     <BreadcrumbItem>{mission.title}</BreadcrumbItem>
                 </Breadcrumbs>
 
@@ -50,7 +72,7 @@ export default function MissionDetails({ mission, timelineComponent, accounts }:
                     <div className="flex justify-between items-center gap-2">
                         <div className="space-y-1">
                             <h1 className="text-3xl font-bold">{mission.title}</h1>
-                            <p className="text-default-500">Led by {mission.leader}</p>
+                            <p className="text-default-500">Led by: {leaderAccount.nick}</p>
                             <div className="flex items-center gap-3">
                                 <div className="flex items-center gap-1">
                                     <CustomIcon icon={HeartIcon} className="w-5 h-5 text-danger" />
@@ -87,7 +109,7 @@ export default function MissionDetails({ mission, timelineComponent, accounts }:
                                 </Chip>
                             </div>
                         </div>
-                        <JoinMissionButton mission={mission} />
+                        {!isLeader && <JoinMissionButton mission={mission} />}
                     </div>
                     <Divider />
                 </div>
@@ -118,16 +140,25 @@ export default function MissionDetails({ mission, timelineComponent, accounts }:
                                     <Divider className="my-3" />
                                     <div className="flex flex-col gap-4">
                                         {accounts.map((account) => (
-                                            <div className="flex items-center gap-3" key={account.account}>
+                                            <div className="flex items-center gap-3" key={account.nick}>
                                                 <Avatar
-                                                    name={account.name}
+                                                    name={account.nick}
                                                     className="bg-primary/10 text-primary"
                                                     size="sm"
                                                 />
                                                 <div className="flex flex-col subpixel-antialiased">
-                                                    <span className="text-small font-medium">{account.name}</span>
-                                                    <span className="text-xs text-default-500">{account.name}</span>
+                                                    <span className="text-small font-medium">{account.nick}</span>
+                                                    <span className="text-xs text-default-500">{account.email}</span>
                                                 </div>
+												{(!missionAccounts.find((missionAccount) => missionAccount.account === account.name)?.approved && isLeader) && (<div className="ml-auto flex items-center gap-1">
+													<Button size="sm" color="success" onPress={() => onApprove(account)}>
+														Appr.
+													</Button>
+													<Button size="sm" color="danger" onPress={() => onReject(account)}>
+														Reject
+														</Button>
+													</div>
+												)}
                                             </div>
                                         ))}
                                     </div>

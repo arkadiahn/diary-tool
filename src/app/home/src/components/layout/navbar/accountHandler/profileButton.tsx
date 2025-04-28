@@ -2,46 +2,58 @@
 
 import { signOut } from "@/auth/client";
 import type { Session } from "@/auth/models";
-import { Avatar, Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/react";
-import clsx from "clsx";
-import { useRouter } from "next/navigation";
-import SidebarItem from "../sidebarItem";
+import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, User } from "@heroui/react";
 
 import CustomIcon from "@/components/CustomIcon";
 import icRoundLogout from "@iconify/icons-ic/round-logout";
 import solarLaptopLinear from "@iconify/icons-solar/laptop-linear";
 /* ---------------------------------- Icons --------------------------------- */
 import solarSettingsOutline from "@iconify/icons-solar/settings-outline";
+import solarCalendarOutline from "@iconify/icons-solar/calendar-outline";
 import solarUserOutline from "@iconify/icons-solar/user-outline";
 import { useTheme } from "next-themes";
 
 interface ProfileButtonProps {
-    className?: string;
     session: Session;
-    forceSmall?: boolean;
 }
-export default function ProfileButton({ session, className, forceSmall }: ProfileButtonProps) {
+export default function ProfileButton({ session }: ProfileButtonProps) {
     const { theme, setTheme } = useTheme();
-    const _router = useRouter();
 
     return (
-        <Dropdown placement={forceSmall ? "bottom-end" : "right-end"}>
-            <DropdownTrigger>
-                <SidebarItem
-                    onPress={() => {}}
-                    className={clsx("!p-2", className)}
-                    leading={<Avatar size="sm" isBordered={true} src={session.user.picture} alt={session.user.name} />}
-                    trailing={
-                        !forceSmall && (
-                            <div className="inline-flex flex-col items-start ml-1 subpixel-antialiased">
-                                <span className="text-small text-inherit">{session.user.name}</span>
-                                <span className="text-tiny text-foreground-400">{session.user.email}</span>
-                            </div>
-                        )
-                    }
-                />
+        <Dropdown placement="bottom-end">
+            <DropdownTrigger className="p-2 px-3 hover:bg-default-100 rounded-medium">
+				<User
+					as="button"
+					avatarProps={{
+						src: session.user.picture,
+						alt: session.user.name,
+						isBordered: true,
+						size: "sm",
+					}}
+					classNames={{
+						description: "hidden sm:block",
+						name: "hidden sm:block",
+						base: "gap-0 sm:gap-2",
+					}}
+					isFocusable={true}
+					description={session.user.email}
+					name={session.user.name}
+					className="transition-transform"
+				/>
             </DropdownTrigger>
             <DropdownMenu aria-label="Static Actions" disabledKeys={["settings"]}>
+				{
+					session.user.scopes.includes("mission.admin") ? (
+						<>
+							<DropdownItem key="missions" startContent={<CustomIcon icon={solarCalendarOutline} width={19} />} href="/admin/missions">
+								Admin - Missions
+							</DropdownItem>
+							<DropdownItem key="accounts" showDivider={true} startContent={<CustomIcon icon={solarUserOutline} width={19} />} href="/admin/accounts">
+								Admin - Accounts
+							</DropdownItem>
+						</>
+					) : null
+				}
                 <DropdownItem
                     key="account"
                     onPress={() => window.open(`${process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER}/account`, "_blank")}
