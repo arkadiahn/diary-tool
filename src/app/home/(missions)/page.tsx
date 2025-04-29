@@ -15,27 +15,42 @@ import {
 } from "@heroui/react";
 import MainPageLayout from "../src/components/MainPageLayout";
 import MissionLayout from "./MissionLayout";
-
+import type { Mission } from "@arkadiahn/apis/intra/v1/mission_pb";
+import type { MissionMilestone } from "@arkadiahn/apis/intra/v1/mission_milestone_pb";
+import type { MissionAccount } from "@arkadiahn/apis/intra/v1/mission_account_pb";
 import { auth } from "@/auth/server";
+
 /* ---------------------------------- Icons --------------------------------- */
 import icRoundFilterList from "@iconify/icons-ic/round-filter-list";
 import icRoundSearch from "@iconify/icons-ic/round-search";
 
-// async function getMilestones() {
-//     const { milestones } = await webClient.listMilestones({});
-//     return milestones;
-// }
+async function getMissionMilestones(missions: Mission[]) {
+	const allMilestones: MissionMilestone[][] = [];
+	for (const mission of missions) {
+		const { missionMilestones } = await webClient.listMissionMilestones({
+			parent: mission.name,
+		});
+		allMilestones.push(missionMilestones);
+	}
+	return allMilestones;
+}
 
-// async function getAccounts() {
-//     const { accounts } = await webClient.listAccounts({});
-//     return accounts;
-// }
+async function getMissionAccounts(missions: Mission[]) {
+	const allAccounts: MissionAccount[][] = [];
+	for (const mission of missions) {
+		const { missionAccounts } = await webClient.listMissionAccounts({
+			parent: mission.name,
+		});
+		allAccounts.push(missionAccounts);
+	}
+	return allAccounts;
+}
 
 export default async function Home() {
     const { missions } = await webClient.listMissions({});
-	// const allAccounts = await Promise.all(getAccounts());
-    const { accounts } = { accounts: [] };
-    const { milestones } = { milestones: [] };
+	const [missionMilestones, missionAccounts] = await Promise.all(
+		[getMissionMilestones(missions), getMissionAccounts(missions)]
+	);
     const { session } = await auth({});
 
     return (
@@ -72,6 +87,7 @@ export default async function Home() {
 					</PopoverContent>
 				</Popover>
 				<Input
+					isDisabled={true}
 					placeholder="Search..."
 					className="w-full self-center lg:max-w-lg"
 					isClearable={true}
@@ -79,7 +95,7 @@ export default async function Home() {
 				/>
 			</div>
 			<ScrollShadow className="w-full flex-1 scrollbar-thin scrollbar-thumb-default-300 scrollbar-track-transparent px-4 py-5 -ml-2">
-				<MissionLayout missions={missions} accounts={accounts} milestones={milestones} />
+				<MissionLayout missions={missions} accounts={missionAccounts} milestones={missionMilestones} />
 			</ScrollShadow>
 		</div>
     );

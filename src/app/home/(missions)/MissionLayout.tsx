@@ -1,6 +1,7 @@
 import { timestampToDate } from "@/api/utils";
 import type { Account } from "@arkadiahn/apis/intra/v1/account_pb";
 import type { MissionMilestone } from "@arkadiahn/apis/intra/v1/mission_milestone_pb";
+import type { MissionAccount } from "@arkadiahn/apis/intra/v1/mission_account_pb";
 import { Mission_State } from "@arkadiahn/apis/intra/v1/mission_pb";
 import type { Mission } from "@arkadiahn/apis/intra/v1/mission_pb";
 
@@ -9,8 +10,8 @@ import MissionCard from "./MissionCard";
 
 interface MissionLayoutProps {
     missions: Mission[];
-    accounts: Account[];
-    milestones: MissionMilestone[];
+    accounts: MissionAccount[][];
+    milestones: MissionMilestone[][];
 }
 export default function MissionLayout({ missions, accounts, milestones }: MissionLayoutProps) {
     // @todo needs to be fixed
@@ -29,8 +30,8 @@ export default function MissionLayout({ missions, accounts, milestones }: Missio
                                 <MissionCard
                                     key={mission.name}
                                     mission={mission}
-                                    accounts={accounts}
-                                    milestones={milestones}
+                                    accounts={accounts[missions.indexOf(mission)]}
+                                    milestones={milestones[missions.indexOf(mission)]}
                                 />
                             ))}
                         </div>
@@ -38,8 +39,8 @@ export default function MissionLayout({ missions, accounts, milestones }: Missio
                 </div>
             )}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
-                {missions.map((mission) => (
-                    <MissionCard key={mission.name} mission={mission} accounts={accounts} milestones={milestones} />
+                {missions.map((mission, index) => (
+                    <MissionCard key={mission.name} mission={mission} accounts={accounts[index]} milestones={milestones[index]} />
                 ))}
             </div>
         </div>

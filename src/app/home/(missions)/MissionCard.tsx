@@ -4,6 +4,7 @@ import webClient from "@/api";
 import type { Account } from "@arkadiahn/apis/intra/v1/account_pb";
 import type { MissionMilestone } from "@arkadiahn/apis/intra/v1/mission_milestone_pb";
 import { type Mission, Mission_ApprovalState, Mission_State } from "@arkadiahn/apis/intra/v1/mission_pb";
+import type { MissionAccount } from "@arkadiahn/apis/intra/v1/mission_account_pb";
 
 import CustomIcon from "@/components/CustomIcon";
 import { Card, CardBody, CardFooter, CardHeader, Chip, Tooltip } from "@heroui/react";
@@ -18,7 +19,7 @@ import HeartIcon from "@iconify/icons-solar/heart-bold";
 
 interface MissionCardProps {
     mission: Mission;
-    accounts: Account[];
+    accounts: MissionAccount[];
     milestones: MissionMilestone[];
 }
 export default function MissionCard({ mission, accounts, milestones }: MissionCardProps) {
