@@ -218,6 +218,7 @@ export default function CreateMissionPage() {
                                             autoplay: 1,
                                             controls: 0,
                                             rel: 0,
+											mute: 1
                                         },
                                     }}
                                     onEnd={() => setVideoEnded(true)}
