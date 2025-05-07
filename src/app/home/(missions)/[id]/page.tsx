@@ -2,6 +2,7 @@ import webClient from "@/api";
 
 import DetailTimeline from "./DetailTimeline";
 import MissionDetails from "./MissionDetails";
+import { Account } from "@arkadiahn/apis/intra/v1/account_pb";
 
 interface ProjectPageProps {
     params: Promise<{
@@ -13,10 +14,15 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     const { id } = await params;
     const mission = await webClient.getMission({ name: `missions/${id}` });
     const { missionAccounts } = await webClient.listMissionAccounts({ parent: mission.name });
-	const { accounts } = await webClient.batchGetAccounts({
-		names: missionAccounts.map((missionAccount) => missionAccount.account),
-	});
-	const leaderAccount = await webClient.getAccount({ name: mission.leader });
+	let accounts: Account[] | undefined = undefined;
+	let leaderAccount: Account | undefined = undefined;
+	try {
+		const response = await webClient.batchGetAccounts({
+			names: missionAccounts.map((missionAccount) => missionAccount.account),
+		});
+		accounts = response.accounts;
+		leaderAccount = await webClient.getAccount({ name: mission.leader });
+	} catch {}
 
     return (
         <MissionDetails

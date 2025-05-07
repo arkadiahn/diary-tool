@@ -31,9 +31,9 @@ import type { MissionAccount } from "@arkadiahn/apis/intra/v1/mission_account_pb
 interface MissionDetailsProps {
     mission: Mission;
     timelineComponent?: React.ReactNode;
-    accounts: Account[];
+    accounts: Account[] | undefined;
 	missionAccounts: MissionAccount[];
-    leaderAccount: Account;
+    leaderAccount: Account | undefined;
 }
 export default function MissionDetails({ mission, timelineComponent, accounts, leaderAccount, missionAccounts }: MissionDetailsProps) {
     const { session } = useSession();
@@ -72,7 +72,7 @@ export default function MissionDetails({ mission, timelineComponent, accounts, l
                     <div className="flex justify-between items-center gap-2">
                         <div className="space-y-1">
                             <h1 className="text-3xl font-bold">{mission.title}</h1>
-                            <p className="text-default-500">Led by: {leaderAccount.nick}</p>
+                            {leaderAccount && <p className="text-default-500">Led by: {leaderAccount.nick}</p>}
                             <div className="flex items-center gap-3">
                                 <div className="flex items-center gap-1">
                                     <CustomIcon icon={HeartIcon} className="w-5 h-5 text-danger" />
@@ -134,36 +134,38 @@ export default function MissionDetails({ mission, timelineComponent, accounts, l
                         </div>
 
                         <section className="w-80">
-                            <Card className="h-full min-h-[300px]">
-                                <CardBody>
-                                    <h2 className="text-xl font-semibold">Team Members</h2>
-                                    <Divider className="my-3" />
-                                    <div className="flex flex-col gap-4">
-                                        {accounts.map((account) => (
-                                            <div className="flex items-center gap-3" key={account.nick}>
-                                                <Avatar
-                                                    name={account.nick}
-                                                    className="bg-primary/10 text-primary"
-                                                    size="sm"
-                                                />
-                                                <div className="flex flex-col subpixel-antialiased">
-                                                    <span className="text-small font-medium">{account.nick}</span>
-                                                    <span className="text-xs text-default-500">{account.email}</span>
-                                                </div>
-												{(!missionAccounts.find((missionAccount) => missionAccount.account === account.name)?.approved && isLeader) && (<div className="ml-auto flex items-center gap-1">
-													<Button size="sm" color="success" onPress={() => onApprove(account)}>
-														Appr.
-													</Button>
-													<Button size="sm" color="danger" onPress={() => onReject(account)}>
-														Reject
-														</Button>
+							{accounts && (
+								<Card className="h-full min-h-[300px]">
+									<CardBody>
+										<h2 className="text-xl font-semibold">Team Members</h2>
+										<Divider className="my-3" />
+										<div className="flex flex-col gap-4">
+											{accounts.map((account) => (
+												<div className="flex items-center gap-3" key={account.nick}>
+													<Avatar
+														name={account.nick}
+														className="bg-primary/10 text-primary"
+														size="sm"
+													/>
+													<div className="flex flex-col subpixel-antialiased">
+														<span className="text-small font-medium">{account.nick}</span>
+														<span className="text-xs text-default-500">{account.email}</span>
 													</div>
-												)}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </CardBody>
-                            </Card>
+													{(!missionAccounts.find((missionAccount) => missionAccount.account === account.name)?.approved && isLeader) && (<div className="ml-auto flex items-center gap-1">
+														<Button size="sm" color="success" onPress={() => onApprove(account)}>
+															Appr.
+														</Button>
+														<Button size="sm" color="danger" onPress={() => onReject(account)}>
+															Reject
+															</Button>
+														</div>
+													)}
+												</div>
+											))}
+										</div>
+									</CardBody>
+								</Card>
+							)}
                         </section>
                     </div>
 
