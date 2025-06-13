@@ -1,9 +1,5 @@
 "use client";
 
-// import webClient from "@/api";
-import type { Diary } from "@arkadiahn/apis/intra/v1/diary_pb";
-
-// import type { Session } from "@/auth/models";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import { Button } from "@heroui/react";
 import {
@@ -24,9 +20,10 @@ import { format } from "date-fns";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import LoginButton from "../../layout/navbar/loginButton";
 import example_entries from "./example_entries";
-import type { Session } from "next-auth";
+import type { Session } from "@/auth";
+import type { Prisma } from "@/generated/prisma";
+// import prisma from "@/prisma";
 
 interface DiaryOverviewProps {
     session: Session | null;
@@ -54,42 +51,39 @@ export function getTargetSunday(): Timestamp {
     };
 }
 
+type DiaryWithGoals = Prisma.DiaryGetPayload<{
+	include: { goals: true }
+}>;
+
 export default function DiaryOverview({ session }: DiaryOverviewProps) {
-    const [diaries, setDiaries] = useState<Diary[]>([]);
+    const [diaries, setDiaries] = useState<DiaryWithGoals[]>([]);
     const [loading, setLoading] = useState(true);
     const [isExample, setIsExample] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [hasEntryThisWeek, setHasEntryThisWeek] = useState(false);
     const router = useRouter();
-    // const _isAdmin = session?.user?.scopes.includes("diary.admin");
-	const _isAdmin = false;
-
-    const convertProtoTimestampToDate = (timestamp: { seconds: bigint | number; nanos: number }) => {
-        const seconds = typeof timestamp.seconds === "bigint" ? Number(timestamp.seconds) : timestamp.seconds;
-        const milliseconds = seconds * 1000 + Math.floor(timestamp.nanos / 1_000_000); // Convert nanos to milliseconds
-        return new Date(milliseconds);
-    };
+    const _isAdmin = session?.user?.scope?.includes("diary.admin");
 
     useEffect(() => {
         const fetchDiaries = async () => {
-            let diaries: Diary[] = [];
+            let diaries: DiaryWithGoals[] = [];
             if (!session) {
                 setIsExample(true);
             }
             try {
-                // diaries = (
-                    // await webClient.listDiaries({
-                    //     parent: `accounts/${session?.user.id}`,
-                    // })
-                // ).diaries;
-				diaries = [];
+				// diaries = await prisma.diary.findMany({
+				// 	include: { goals: true },
+				// 	where: {
+				// 		accountId: session?.user.sub,
+				// 	},
+				// });
                 if (diaries.length === 0) {
                     setIsExample(true);
                     setHasEntryThisWeek(false);
                     return;
                 }
                 const lastEntry = diaries.at(-1)!;
-                if (lastEntry.entryTime?.seconds !== getTargetSunday().seconds) {
+                if (lastEntry.entryTime.getTime() !== Number(getTargetSunday().seconds) * 1000) {
                     setHasEntryThisWeek(false);
                     return;
                 }
@@ -104,8 +98,8 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
                 }
                 const sortedDiaries = diaries.sort(
                     (a, b) =>
-                        convertProtoTimestampToDate(a.entryTime!).getTime() -
-                        convertProtoTimestampToDate(b.entryTime!).getTime(),
+                        a.entryTime.getTime() -
+                        b.entryTime.getTime(),
                 );
                 setDiaries(sortedDiaries);
                 setLoading(false);
@@ -122,9 +116,10 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
                     ...diary,
                     goals: diary.goals.map((goal, idx) => (idx === goalIndex ? { ...goal, completed: checked } : goal)),
                 };
-                // await webClient.updateDiary({
-                //     diary: updatedDiary,
-                // });
+				// await prisma.diary.update({
+				// 	where: { id: diary.id },
+				// 	data: { goals: { update: { where: { id: updatedDiary.goals[goalIndex].id }, data: { completed: checked } } } },
+				// });
                 return updatedDiary;
             }
             return diary;
@@ -164,7 +159,7 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
         },
         xaxis: {
             type: "datetime",
-            categories: diaries.map((diary) => convertProtoTimestampToDate(diary.entryTime!).getTime()),
+            categories: diaries.map((diary) => diary.entryTime.getTime()),
             labels: {
                 style: {
                     colors: "#666",
@@ -181,7 +176,7 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
         },
         annotations: {
             xaxis: getProjectChangePoints().map((index) => ({
-                x: convertProtoTimestampToDate(diaries[index].entryTime!).getTime(),
+                x: diaries[index].entryTime.getTime(),
                 strokeDashArray: 2,
                 borderColor: "#FF4E4E",
                 label: {
@@ -383,7 +378,7 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
                         <CardHeader className="flex justify-between items-center py-2">
                             <div className="flex items-center gap-2">
                                 <h3 className="text-base font-semibold">
-                                    {format(convertProtoTimestampToDate(diary.entryTime!), "MMM d, yyyy")}
+                                    {format(diary.entryTime, "MMM d, yyyy")}
                                 </h3>
                                 <span className="text-sm text-default-500">{diary.project}</span>
                             </div>

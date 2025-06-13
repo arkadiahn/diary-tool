@@ -1,8 +1,8 @@
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, type NavbarProps } from "@heroui/react";
-import Image from "next/image";
-import { siteConfig } from "../../constants/siteConfig";
 import { AccountDropdown } from "./accountDropdown";
+import { siteConfig } from "@/siteConfig";
 import LoginButton from "./loginButton";
+import Image from "next/image";
 import { auth } from "@/auth";
 
 export default async function NavbarComponent(props: NavbarProps) {

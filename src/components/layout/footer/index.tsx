@@ -1,6 +1,6 @@
+import { siteConfig } from "@/siteConfig";
 import { Divider } from "@heroui/react";
 import Image from "next/image";
-import { siteConfig } from "../../constants/siteConfig";
 
 import SystemStatus from "./SystemStatus";
 import ThemeSwitch from "./themeSwitch";
@@ -22,7 +22,7 @@ export default function Footer() {
                         <SystemStatus />
                     </div>
                     <p className="text-center text-tiny text-default-400 md:text-start">
-                        &copy; {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
+                        &copy; {new Date().getFullYear()} DiaryTool. Made with ❤️ by <a href="https://arkadia.hn" target="_blank" rel="noopener noreferrer" className="text-primary">Arkadia Heilbronn gGmbH</a>
                     </p>
                 </div>
             </div>
