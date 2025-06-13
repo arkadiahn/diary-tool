@@ -1,9 +1,9 @@
 "use client";
 
-import webClient from "@/api";
+// import webClient from "@/api";
 import type { Diary } from "@arkadiahn/apis/intra/v1/diary_pb";
 
-import type { Session } from "@/auth/models";
+// import type { Session } from "@/auth/models";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import { Button } from "@heroui/react";
 import {
@@ -26,6 +26,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import LoginButton from "../../layout/navbar/loginButton";
 import example_entries from "./example_entries";
+import type { Session } from "next-auth";
 
 interface DiaryOverviewProps {
     session: Session | null;
@@ -60,7 +61,8 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
     const [error, setError] = useState<string | null>(null);
     const [hasEntryThisWeek, setHasEntryThisWeek] = useState(false);
     const router = useRouter();
-    const _isAdmin = session?.user?.scopes.includes("diary.admin");
+    // const _isAdmin = session?.user?.scopes.includes("diary.admin");
+	const _isAdmin = false;
 
     const convertProtoTimestampToDate = (timestamp: { seconds: bigint | number; nanos: number }) => {
         const seconds = typeof timestamp.seconds === "bigint" ? Number(timestamp.seconds) : timestamp.seconds;
@@ -75,11 +77,12 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
                 setIsExample(true);
             }
             try {
-                diaries = (
-                    await webClient.listDiaries({
-                        parent: `accounts/${session?.user.id}`,
-                    })
-                ).diaries;
+                // diaries = (
+                    // await webClient.listDiaries({
+                    //     parent: `accounts/${session?.user.id}`,
+                    // })
+                // ).diaries;
+				diaries = [];
                 if (diaries.length === 0) {
                     setIsExample(true);
                     setHasEntryThisWeek(false);
@@ -106,7 +109,6 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
                 );
                 setDiaries(sortedDiaries);
                 setLoading(false);
-                return;
             }
         };
 
@@ -120,9 +122,9 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
                     ...diary,
                     goals: diary.goals.map((goal, idx) => (idx === goalIndex ? { ...goal, completed: checked } : goal)),
                 };
-                await webClient.updateDiary({
-                    diary: updatedDiary,
-                });
+                // await webClient.updateDiary({
+                //     diary: updatedDiary,
+                // });
                 return updatedDiary;
             }
             return diary;
@@ -403,13 +405,13 @@ export default function DiaryOverview({ session }: DiaryOverviewProps) {
                                         size="sm"
                                         onPress={() => {
                                             if (window.confirm("Are you sure you want to delete this entry?")) {
-                                                webClient
-                                                    .deleteDiary({
-                                                        name: diary.name,
-                                                    })
-                                                    .then(() => {
-                                                        router.refresh();
-                                                    });
+                                                // webClient
+                                                //     .deleteDiary({
+                                                //         name: diary.name,
+                                                //     })
+                                                //     .then(() => {
+                                                //         router.refresh();
+                                                //     });
                                             }
                                         }}
                                     >

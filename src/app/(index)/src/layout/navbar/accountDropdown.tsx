@@ -1,8 +1,8 @@
 "use client";
 
-import { signOut } from "@/auth/client";
-import type { Session } from "@/auth/models";
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, User } from "@heroui/react";
+import { signOut } from "next-auth/react";
+import type { Session } from "next-auth";
 
 interface AccountDropdownProps {
     session: Session;
@@ -13,15 +13,15 @@ export function AccountDropdown({ session }: AccountDropdownProps) {
             <DropdownTrigger>
                 <User
                     as="button"
-                    name={session.user.name}
-                    description={session.user.email}
+                    name={session.user?.name}
+                    description={session.user?.email}
                     className="transition-all flex-row-reverse aria-expanded:scale-1"
                     classNames={{
                         wrapper: "items-end",
                     }}
                     avatarProps={{
-                        src: session.user.picture,
-                        alt: session.user.name,
+                        src: session.user?.image ?? "",
+                        alt: session.user?.name ?? "",
                         isBordered: true,
                         size: "sm",
                     }}
@@ -33,7 +33,7 @@ export function AccountDropdown({ session }: AccountDropdownProps) {
                     className="h-14 gap-2 cursor-default data-[hover=true]:bg-transparent data-[hover=true]:text-foreground"
                 >
                     <p className="font-semibold">Signed in as</p>
-                    <p className="font-semibold">{session.user.email}</p>
+                    <p className="font-semibold">{session.user?.email}</p>
                 </DropdownItem>
                 <DropdownItem key="logout" color="danger" onPress={() => signOut()}>
                     Log Out

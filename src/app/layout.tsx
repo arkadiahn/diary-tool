@@ -1,4 +1,3 @@
-import SessionProviderWrapper from "@/auth/wrapper";
 import Providers from "@/components/providers";
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
@@ -22,9 +21,7 @@ export default function RootLayout({
     return (
         <html suppressHydrationWarning={true} lang="en">
             <body suppressHydrationWarning={true} className={`${openSans.className} antialiased`}>
-                <SessionProviderWrapper>
-                    <Providers>{children}</Providers>
-                </SessionProviderWrapper>
+				<Providers>{children}</Providers>
             </body>
         </html>
     );

@@ -1,12 +1,12 @@
-import { auth } from "@/auth/server";
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, type NavbarProps } from "@heroui/react";
 import Image from "next/image";
 import { siteConfig } from "../../constants/siteConfig";
 import { AccountDropdown } from "./accountDropdown";
 import LoginButton from "./loginButton";
+import { auth } from "@/auth";
 
 export default async function NavbarComponent(props: NavbarProps) {
-    const { session } = await auth({});
+	const session = await auth();
 
     return (
         <Navbar
