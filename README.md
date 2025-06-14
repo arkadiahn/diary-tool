@@ -1,39 +1,37 @@
-## 📖 Diary-Tool
+# 📖 Diary-Tool
 
-1. about
-2. deploy
-3. develop
-4. "imprint"
+## About
+Diary-Tool is a lightweight application designed for students to write weekly diary entries and monitor their project progress over time. By regularly reflecting on their work, students can stay organized, track their pace, and identify areas for improvement. The tool also includes visual graphs to make progress more tangible and motivating.
 
-First, run the development server:
+## Deploy
+To deploy the Diary-Tool a few preqesites are required:
+1. Keycloak Setup (with a authenticated client)
+2. PostgreSQL DB
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+The `.env` file requires following values:
+```sh
+# ----------------------------------- Auth ----------------------------------- #
+AUTH_SECRET="RANDOM_SECRET"
+AUTH_KEYCLOAK_ID="{AUTH_KEYCLOAK_ID}"
+AUTH_KEYCLOAK_SECRET="{AUTH_KEYCLOAK_SECRET}"
+AUTH_KEYCLOAK_ISSUER="{AUTH_KEYCLOAK_ISSUER}"
+
+# --------------------------------- Database --------------------------------- #
+DATABASE_URL="{DATABASE_URL}"
+
+# --------------------------------- Metadata --------------------------------- #
+SITE_NAME="DiaryTool"			# Optional
+SITE_DESCRIPTION="DiaryTool"	# Optional
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Develop
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```sh
+bun install
+bun run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+Developed by Arkadia Heilbronn gGmbH
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

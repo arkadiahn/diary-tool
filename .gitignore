@@ -44,3 +44,4 @@ todo.txt
 /src/generated/prisma
 
 !.env.example
+docker-compose.yml
