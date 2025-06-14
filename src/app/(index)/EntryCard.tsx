@@ -4,6 +4,7 @@ import type { Prisma } from "@/generated/prisma";
 import { CardBody, Divider, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/react";
 import { Card, CardHeader } from "@heroui/react";
 import { Checkbox } from "@heroui/react";
+import { isEditable } from "@/helpers";
 import { Button } from "@heroui/react";
 import { format } from "date-fns";
 import Link from "next/link";
@@ -23,12 +24,12 @@ export default function EntryCard({ diary }: { diary: DiaryWithGoals }) {
                     <span className="text-sm text-default-500">{diary.project}</span>
                 </div>
                 <div className="flex gap-1">
-                    {true && (
-                        <Button href={`/new/${diary.id}`} color="primary" variant="light" size="sm" as={Link}>
+                    {isEditable(diary) && (
+                        <Button href={`/entry/${diary.id}`} color="primary" variant="light" size="sm" as={Link}>
                             Edit
                         </Button>
                     )}
-                    {true && (
+                    {isEditable(diary) && (
                         <form
                             action={handleDelete}
                             onSubmit={(e) => {

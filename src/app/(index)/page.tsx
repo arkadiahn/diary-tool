@@ -5,24 +5,9 @@ import clsx from "clsx";
 import Link from "next/link";
 import CustomChart from "./CustomChart";
 import example_entries from "./example_entries";
+import { getHasEntryThisWeek } from "@/helpers";
 
 import EntryCard from "./EntryCard";
-
-function getTargetSunday(): number {
-    const now = new Date();
-    const isBeforeMondayTenAM = now.getUTCDay() === 1 && now.getUTCHours() < 10;
-
-    const targetDate = new Date();
-    targetDate.setUTCDate(now.getUTCDate() - now.getUTCDay());
-
-    if (!isBeforeMondayTenAM) {
-        targetDate.setUTCDate(targetDate.getUTCDate() + 7);
-    }
-
-    targetDate.setUTCHours(0, 0, 0, 0);
-
-    return targetDate.getTime();
-}
 
 export default async function HomePage() {
     const session = await auth();
@@ -37,8 +22,7 @@ export default async function HomePage() {
         diaries = example_entries;
     }
     diaries = diaries.sort((a, b) => a.entryTime.getTime() - b.entryTime.getTime());
-    const hasEntryThisWeek =
-        !isExample && diaries.length > 0 && diaries[diaries.length - 1].entryTime.getTime() !== getTargetSunday();
+    const hasEntryThisWeek = !isExample && getHasEntryThisWeek(diaries);
 
     const entryDates = diaries.map((diary) => diary.entryTime.getTime());
     const entryLabels = diaries
@@ -60,7 +44,7 @@ export default async function HomePage() {
                     {session && (
                         <Card
                             as={Link}
-                            href="/new"
+                            href="/entry"
                             isPressable={true}
                             className="bg-success-50 dark:bg-success-100 w-full"
                         >
@@ -157,7 +141,7 @@ export default async function HomePage() {
 
             <div className={clsx("space-y-2 max-w-5xl mx-auto", isExample ? "opacity-40 pointer-events-none" : "")}>
                 {!hasEntryThisWeek && (
-                    <Card className="bg-success-50 dark:bg-success-100 w-full" isPressable={true} href="/new" as={Link}>
+                    <Card className="bg-success-50 dark:bg-success-100 w-full" isPressable={true} href="/entry" as={Link}>
                         <CardBody className="py-2">
                             <span className="text-success text-lg font-semibold">+ Create Entry for This Week</span>
                         </CardBody>
