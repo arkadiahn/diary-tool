@@ -1,9 +1,9 @@
 # 📖 Diary-Tool
 
-## About
+## ℹ️ About
 Diary-Tool is a lightweight application designed for students to write weekly diary entries and monitor their project progress over time. By regularly reflecting on their work, students can stay organized, track their pace, and identify areas for improvement. The tool also includes visual graphs to make progress more tangible and motivating.
 
-## Deploy
+## 🚀 Deploy
 To deploy the Diary-Tool a few preqesites are required:
 1. Keycloak Setup (with a authenticated client)
 2. PostgreSQL DB
@@ -24,7 +24,7 @@ SITE_NAME="DiaryTool"			# Optional
 SITE_DESCRIPTION="DiaryTool"	# Optional
 ```
 
-## Develop
+## 💻 Develop
 
 ```sh
 bun install
@@ -33,5 +33,5 @@ bun run dev
 
 ---
 
-Developed by Arkadia Heilbronn gGmbH
+Developed by [Arkadia Heilbronn gGmbH](https://arkadia.hn)
 
