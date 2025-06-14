@@ -44,7 +44,7 @@ export default function MotivationSlider({ motivation }: { motivation?: number }
                             role="img"
                             aria-label="mood"
                         >
-                            {MOOD_EMOJIS[motivation as keyof typeof MOOD_EMOJIS]}
+                            {MOOD_EMOJIS[motivationValue as keyof typeof MOOD_EMOJIS]}
                         </span>
                     </div>
                 )}

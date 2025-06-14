@@ -23,6 +23,10 @@ DATABASE_URL="{DATABASE_URL}"
 SITE_NAME="DiaryTool"			# Optional
 SITE_DESCRIPTION="DiaryTool"	# Optional
 ```
+```sh
+docker build -t diary-tool .
+docker run diary-tool
+```
 
 ## 💻 Develop
 
