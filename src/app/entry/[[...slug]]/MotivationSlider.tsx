@@ -21,7 +21,7 @@ export default function MotivationSlider({ motivation }: { motivation?: number }
 
     return (
         <>
-            <input type="hidden" name="motivation" value={motivation} />
+            <input type="hidden" name="motivation" value={motivationValue} />
             <Slider
                 label="Motivation"
                 step={1}

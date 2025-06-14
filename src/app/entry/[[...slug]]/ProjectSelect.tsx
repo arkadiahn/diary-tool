@@ -33,7 +33,8 @@ export default function ProjectSelect({ project }: { project?: string }) {
             label="Project you are currently working on"
             allowsCustomValue={true}
             isRequired={true}
-            defaultSelectedKey={project}
+            defaultSelectedKey={PROJECT_OPTIONS.includes(project || "") ? project : undefined}
+			defaultInputValue={project}
             maxLength={255}
             minLength={3}
             placeholder="Select or enter a project"
