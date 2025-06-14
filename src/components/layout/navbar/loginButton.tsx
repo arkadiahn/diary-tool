@@ -1,7 +1,7 @@
 "use client";
 
-import { signIn } from "next-auth/react";
 import { Button } from "@heroui/react";
+import { signIn } from "next-auth/react";
 
 export default function LoginButton() {
     return (

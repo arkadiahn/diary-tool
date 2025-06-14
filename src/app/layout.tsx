@@ -1,12 +1,11 @@
 import Providers from "@/components/providers";
-import { Open_Sans } from "next/font/google";
 import { siteConfig } from "@/siteConfig";
 import type { Metadata } from "next";
+import { Open_Sans } from "next/font/google";
 import "./globals.css";
 
 import Footer from "@/components/layout/footer";
 import Navbar from "@/components/layout/navbar";
-
 
 /* -------------------------------------------------------------------------- */
 /*                                    Fonts                                   */
@@ -35,13 +34,13 @@ export default function RootLayout({
     return (
         <html suppressHydrationWarning={true} lang="en">
             <body suppressHydrationWarning={true} className={`${openSans.className} antialiased`}>
-				<Providers>
-					<div className="h-dvh flex flex-col">
-						<Navbar />
-						<main className="flex-1 pb-8">{children}</main>
-						<Footer />
-					</div>
-				</Providers>
+                <Providers>
+                    <div className="h-dvh flex flex-col">
+                        <Navbar />
+                        <main className="flex-1 pb-8">{children}</main>
+                        <Footer />
+                    </div>
+                </Providers>
             </body>
         </html>
     );

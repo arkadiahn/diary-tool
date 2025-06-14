@@ -3,7 +3,6 @@
 import { HeroUIProvider } from "@heroui/react";
 import { ThemeProvider } from "next-themes";
 import { useRouter } from "next/navigation";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "react-hot-toast";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
@@ -12,10 +11,8 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     return (
         <HeroUIProvider navigate={router.push} locale="en-GB" disableRipple={true}>
             <ThemeProvider attribute="class" defaultTheme="system">
-                <NuqsAdapter>
-                    <Toaster position="top-right" />
-                    {children}
-                </NuqsAdapter>
+				<Toaster position="top-right" />
+				{children}
             </ThemeProvider>
         </HeroUIProvider>
     );

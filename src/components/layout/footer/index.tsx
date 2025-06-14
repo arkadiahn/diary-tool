@@ -15,14 +15,17 @@ export default function Footer() {
                 <div className="mt-4 md:order-1 md:mt-0">
                     <div className="flex items-center justify-center gap-3 md:justify-start">
                         <div className="flex items-center justify-center gap-1">
-                            <Image src="/diaryLogo.png" alt="GetGas Logo" width={15} height={15} />
+                            <Image src="/logo.png" alt="GetGas Logo" width={15} height={15} />
                             <span className="text-small font-medium">{siteConfig.name}</span>
                         </div>
                         <Divider className="h-4" orientation="vertical" />
                         <SystemStatus />
                     </div>
                     <p className="text-center text-tiny text-default-400 md:text-start">
-                        &copy; {new Date().getFullYear()} DiaryTool. Made with ❤️ by <a href="https://arkadia.hn" target="_blank" rel="noopener noreferrer" className="text-primary">Arkadia Heilbronn gGmbH</a>
+                        &copy; {new Date().getFullYear()} DiaryTool. Made with ❤️ by{" "}
+                        <a href="https://arkadia.hn" target="_blank" rel="noopener noreferrer" className="text-primary">
+                            Arkadia Heilbronn gGmbH
+                        </a>
                     </p>
                 </div>
             </div>

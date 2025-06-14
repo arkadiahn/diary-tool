@@ -1,8 +1,8 @@
 "use client";
 
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, User } from "@heroui/react";
-import { signOut } from "next-auth/react";
 import type { Session } from "next-auth";
+import { signOut } from "next-auth/react";
 
 interface AccountDropdownProps {
     session: Session;

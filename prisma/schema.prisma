@@ -30,4 +30,6 @@ model DiaryGoal {
 	completed Boolean  @default(false)
 	diaryId   String
 	diary     Diary    @relation(fields: [diaryId], references: [id], onDelete: Cascade)
+	createTime DateTime @default(now())
+	updateTime DateTime @updatedAt
 }

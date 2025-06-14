@@ -1,13 +1,12 @@
-import { Card, CardBody, CardHeader } from "@heroui/react";
-import example_entries from "./example_entries";
-import CustomChart from "./CustomChart";
 import { auth } from "@/auth";
 import prisma from "@/prisma";
-import Link from "next/link";
+import { Card, CardBody, CardHeader } from "@heroui/react";
 import clsx from "clsx";
+import Link from "next/link";
+import CustomChart from "./CustomChart";
+import example_entries from "./example_entries";
 
 import EntryCard from "./EntryCard";
-
 
 function getTargetSunday(): number {
     const now = new Date();
@@ -26,38 +25,41 @@ function getTargetSunday(): number {
 }
 
 export default async function HomePage() {
-	const session = await auth();
-	let diaries = await prisma.diary.findMany({
-		include: { goals: true },
-		where: {
-			accountId: session?.user.sub,
-		},
-	});
-	const isExample = !diaries.length;
-	if (isExample) {
-		diaries = example_entries;
-	}
-	diaries = diaries.sort((a, b) => a.entryTime.getTime() - b.entryTime.getTime());
-	const hasEntryThisWeek = !isExample && diaries.length > 0 && diaries[diaries.length - 1].entryTime.getTime() !== getTargetSunday();
+    const session = await auth();
+    let diaries = await prisma.diary.findMany({
+        include: { goals: true },
+        where: {
+            accountId: session?.user.sub,
+        },
+    });
+    const isExample = !diaries.length;
+    if (isExample) {
+        diaries = example_entries;
+    }
+    diaries = diaries.sort((a, b) => a.entryTime.getTime() - b.entryTime.getTime());
+    const hasEntryThisWeek =
+        !isExample && diaries.length > 0 && diaries[diaries.length - 1].entryTime.getTime() !== getTargetSunday();
 
-	const entryDates = diaries.map((diary) => diary.entryTime.getTime());
-	const entryLabels = diaries.map((diary) => {
-		if (diaries.indexOf(diary) === 0 || diary.project !== diaries[diaries.indexOf(diary) - 1].project) {
-			return {
-				title: diary.project,
-				date: diary.entryTime.getTime(),
-			};
-		}
-		return null;
-	}).filter((label) => label !== null);
+    const entryDates = diaries.map((diary) => diary.entryTime.getTime());
+    const entryLabels = diaries
+        .map((diary) => {
+            if (diaries.indexOf(diary) === 0 || diary.project !== diaries[diaries.indexOf(diary) - 1].project) {
+                return {
+                    title: diary.project,
+                    date: diary.entryTime.getTime(),
+                };
+            }
+            return null;
+        })
+        .filter((label) => label !== null);
 
-	return (
-		<div className="w-full px-4 sm:px-6 lg:px-10">
-			{isExample && (
+    return (
+        <div className="w-full px-4 sm:px-6 lg:px-10">
+            {isExample && (
                 <div className="mb-6 space-y-4">
                     {session && (
                         <Card
-							as={Link}
+                            as={Link}
                             href="/new"
                             isPressable={true}
                             className="bg-success-50 dark:bg-success-100 w-full"
@@ -76,10 +78,12 @@ export default async function HomePage() {
                 </div>
             )}
 
-			<div className={clsx(
-				"grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8",
-				isExample ? "opacity-60 pointer-events-none" : "",
-			)}>
+            <div
+                className={clsx(
+                    "grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8",
+                    isExample ? "opacity-60 pointer-events-none" : "",
+                )}
+            >
                 <Card className="w-full col-span-1 lg:col-span-3 xl:col-span-1">
                     <CardHeader>
                         <h3 className="text-xl font-medium">Motivation Over Time</h3>
@@ -87,16 +91,16 @@ export default async function HomePage() {
                     <CardBody>
                         <div className="w-full h-[400px] overflow-hidden">
                             <CustomChart
-								title="Motivation"
-								color="#006FEE"
-								data={diaries.map((diary) => diary.motivation)}
-								dates={entryDates}
-								labels={entryLabels}
-								yaxis={{
-									max: 10,
-								}}
-								tooltiptext="/10"
-							/>
+                                title="Motivation"
+                                color="#006FEE"
+                                data={diaries.map((diary) => diary.motivation)}
+                                dates={entryDates}
+                                labels={entryLabels}
+                                yaxis={{
+                                    max: 10,
+                                }}
+                                tooltiptext="/10"
+                            />
                         </div>
                     </CardBody>
                 </Card>
@@ -108,16 +112,16 @@ export default async function HomePage() {
                     <CardBody>
                         <div className="w-full h-[400px] overflow-hidden">
                             <CustomChart
-								title="Weeks till completion"
-								color="#17C964"
-								data={diaries.map((diary) => diary.completionWeeks)}
-								dates={entryDates}
-								labels={entryLabels}
-								yaxis={{
-									max: Math.max(...diaries.map((diary) => diary.completionWeeks)),
-								}}
-								tooltiptext=" weeks"
-							/>
+                                title="Weeks till completion"
+                                color="#17C964"
+                                data={diaries.map((diary) => diary.completionWeeks)}
+                                dates={entryDates}
+                                labels={entryLabels}
+                                yaxis={{
+                                    max: Math.max(...diaries.map((diary) => diary.completionWeeks)),
+                                }}
+                                tooltiptext=" weeks"
+                            />
                         </div>
                     </CardBody>
                 </Card>
@@ -129,39 +133,31 @@ export default async function HomePage() {
                     <CardBody>
                         <div className="w-full h-[400px] overflow-hidden">
                             <CustomChart
-								title="Tasks Completed"
-								color="#F5A524"
-								data={diaries.map((diary) => {
-									if (diary.goals.length === 0) {
-										return 0;
-									}
-									const completedTasks = diary.goals.filter((goal) => goal.completed).length;
-									return Math.round((completedTasks / diary.goals.length) * 100);
-								})}
-								dates={entryDates}
-								labels={entryLabels}
-								yaxis={{
-									max: 100,
-								}}
-								yaxistext="%"
-								tooltiptext="%"
-							/>
+                                title="Tasks Completed"
+                                color="#F5A524"
+                                data={diaries.map((diary) => {
+                                    if (diary.goals.length === 0) {
+                                        return 0;
+                                    }
+                                    const completedTasks = diary.goals.filter((goal) => goal.completed).length;
+                                    return Math.round((completedTasks / diary.goals.length) * 100);
+                                })}
+                                dates={entryDates}
+                                labels={entryLabels}
+                                yaxis={{
+                                    max: 100,
+                                }}
+                                yaxistext="%"
+                                tooltiptext="%"
+                            />
                         </div>
                     </CardBody>
                 </Card>
             </div>
 
-			<div className={clsx(
-				"space-y-2 max-w-5xl mx-auto",
-				isExample ? "opacity-40 pointer-events-none" : "",
-			)}>
+            <div className={clsx("space-y-2 max-w-5xl mx-auto", isExample ? "opacity-40 pointer-events-none" : "")}>
                 {!hasEntryThisWeek && (
-                    <Card
-					className="bg-success-50 dark:bg-success-100 w-full"
-                        isPressable={true}
-                        href="/new"
-                        as={Link}
-                    >
+                    <Card className="bg-success-50 dark:bg-success-100 w-full" isPressable={true} href="/new" as={Link}>
                         <CardBody className="py-2">
                             <span className="text-success text-lg font-semibold">+ Create Entry for This Week</span>
                         </CardBody>
@@ -171,6 +167,6 @@ export default async function HomePage() {
                     <EntryCard key={diary.id} diary={diary} />
                 ))}
             </div>
-		</div>
-	);
+        </div>
+    );
 }

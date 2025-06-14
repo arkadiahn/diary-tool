@@ -4,40 +4,48 @@ import { Spinner } from "@heroui/react";
 import type { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
 
-
 interface CustomChartProps {
-	title: string;
-	data: number[];
-	dates: number[];
-	labels: { title: string, date: number }[];
-	yaxis?: {
-		min?: number;
-		max?: number;
-		tickAmount?: number;
-	};
-	color: string;
-	tooltiptext: string;
-	yaxistext?: string;
+    title: string;
+    data: number[];
+    dates: number[];
+    labels: { title: string; date: number }[];
+    yaxis?: {
+        min?: number;
+        max?: number;
+        tickAmount?: number;
+    };
+    color: string;
+    tooltiptext: string;
+    yaxistext?: string;
 }
 
 const Chart = dynamic(() => import("react-apexcharts"), {
-	loading: () => (
-		<div className="flex justify-center items-center h-full">
-			<Spinner color="primary" />
-		</div>
-	),
-	ssr: false,
+    loading: () => (
+        <div className="flex justify-center items-center h-full">
+            <Spinner color="primary" />
+        </div>
+    ),
+    ssr: false,
 });
 
-export default function CustomChart({ title, data, dates, labels = [], yaxis = {}, color, tooltiptext, yaxistext = "" }: CustomChartProps) {
-	const defaultYAxis = {
-		min: 0,
-		max: 100,
-		tickAmount: 5,
-	};
+export default function CustomChart({
+    title,
+    data,
+    dates,
+    labels = [],
+    yaxis = {},
+    color,
+    tooltiptext,
+    yaxistext = "",
+}: CustomChartProps) {
+    const defaultYAxis = {
+        min: 0,
+        max: 100,
+        tickAmount: 5,
+    };
 
-	const options: ApexOptions = {
-		colors: [color],
+    const options: ApexOptions = {
+        colors: [color],
         chart: {
             type: "line",
             toolbar: {
@@ -63,16 +71,16 @@ export default function CustomChart({ title, data, dates, labels = [], yaxis = {
                 },
             },
         },
-		yaxis: {
-			...defaultYAxis,
-			...yaxis,
-			title: {
-				text: title,
-			},
-			labels: {
+        yaxis: {
+            ...defaultYAxis,
+            ...yaxis,
+            title: {
+                text: title,
+            },
+            labels: {
                 formatter: (value: number) => `${value}${yaxistext}`,
             },
-		},
+        },
         markers: {
             size: 6,
             strokeColors: "#fff",
@@ -109,17 +117,11 @@ export default function CustomChart({ title, data, dates, labels = [], yaxis = {
             marker: {
                 show: true,
             },
-			y: {
-				formatter: (value: number) => `${value}${tooltiptext}`,
-			},
+            y: {
+                formatter: (value: number) => `${value}${tooltiptext}`,
+            },
         },
     };
 
-	return (
-		<Chart
-			options={options}
-			series={[{ name: title, data: data }]}
-			type="line" height="100%"
-		/>
-	);
+    return <Chart options={options} series={[{ name: title, data: data }]} type="line" height="100%" />;
 }

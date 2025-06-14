@@ -1,12 +1,12 @@
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, type NavbarProps } from "@heroui/react";
-import { AccountDropdown } from "./accountDropdown";
-import { siteConfig } from "@/siteConfig";
-import LoginButton from "./loginButton";
-import Image from "next/image";
 import { auth } from "@/auth";
+import { siteConfig } from "@/siteConfig";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, type NavbarProps } from "@heroui/react";
+import Image from "next/image";
+import { AccountDropdown } from "./accountDropdown";
+import LoginButton from "./loginButton";
 
 export default async function NavbarComponent(props: NavbarProps) {
-	const session = await auth();
+    const session = await auth();
 
     return (
         <Navbar
@@ -21,13 +21,7 @@ export default async function NavbarComponent(props: NavbarProps) {
             <NavbarContent className="gap-4 rounded-full border-small border-default-200/20 bg-background/60 px-4 shadow-medium backdrop-blur-md backdrop-saturate-150 dark:bg-default-100/50">
                 {/* Logo */}
                 <NavbarBrand className="mr-2 w-[40vw] md:w-auto md:max-w-fit" as="a" href="/">
-                    <Image
-                        src="/diaryLogo.png"
-                        alt={`${siteConfig.name} Logo`}
-                        width={50}
-                        height={50}
-                        className="w-9"
-                    />
+                    <Image src="/logo.png" alt={`${siteConfig.name} Logo`} width={50} height={50} className="w-9" />
                     <span className="ml-2 font-medium text-lg md:text-xl">{siteConfig.name}</span>
                 </NavbarBrand>
 

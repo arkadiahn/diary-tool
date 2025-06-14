@@ -1,27 +1,25 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import prisma from "@/prisma";
-
+import { revalidatePath } from "next/cache";
 
 export async function handleDelete(formData: FormData) {
-	await prisma.diary.delete({
-		where: { id: formData.get("id") as string },
-	});
-	revalidatePath("/");
+    // @todo protect delete only for diary owner
+    await prisma.diary.delete({
+        where: { id: formData.get("id") as string },
+    });
+    revalidatePath("/");
 }
 
-export async function handleGoalChange(formData: FormData) {
-	const goals = Array.from(formData.entries()).filter(([key]) => key.startsWith("goal.")).map(([key, value]) => ({
-		id: key.split(".")[1],
-		completed: value === "",
-	}));
-	await prisma.diaryGoal.update({
-		where: {
-			id: goals[0].id,
-		},
-		data: {
-			completed: goals[0].completed,
-		},
-	});
+export async function handleGoalChange(goalId: string, completed: boolean) {
+    // @todo protect diary goal change only for diary owner
+    await prisma.diaryGoal.update({
+        where: {
+            id: goalId,
+        },
+        data: {
+            completed: completed,
+        },
+    });
+    revalidatePath("/");
 }
