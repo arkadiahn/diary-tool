@@ -1,10 +1,10 @@
 "use client";
 
 import type { Prisma } from "@/generated/prisma";
+import { isEditable } from "@/lib/helpers";
 import { CardBody, Divider, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/react";
 import { Card, CardHeader } from "@heroui/react";
 import { Checkbox } from "@heroui/react";
-import { isEditable } from "@/helpers";
 import { Button } from "@heroui/react";
 import { format } from "date-fns";
 import Link from "next/link";

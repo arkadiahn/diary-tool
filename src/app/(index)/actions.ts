@@ -1,6 +1,6 @@
 "use server";
 
-import prisma from "@/prisma";
+import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
 export async function handleDelete(formData: FormData) {

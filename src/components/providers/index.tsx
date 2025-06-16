@@ -11,8 +11,8 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     return (
         <HeroUIProvider navigate={router.push} locale="en-GB" disableRipple={true}>
             <ThemeProvider attribute="class" defaultTheme="system">
-				<Toaster position="top-right" />
-				{children}
+                <Toaster position="top-right" />
+                {children}
             </ThemeProvider>
         </HeroUIProvider>
     );

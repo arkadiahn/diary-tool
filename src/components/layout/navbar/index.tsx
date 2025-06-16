@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { auth } from "@/lib/auth";
 import { siteConfig } from "@/siteConfig";
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, type NavbarProps } from "@heroui/react";
 import Image from "next/image";

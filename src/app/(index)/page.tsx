@@ -1,11 +1,11 @@
-import { auth } from "@/auth";
-import prisma from "@/prisma";
+import { auth } from "@/lib/auth";
+import { getHasEntryThisWeek } from "@/lib/helpers";
+import prisma from "@/lib/prisma";
 import { Card, CardBody, CardHeader } from "@heroui/react";
 import clsx from "clsx";
 import Link from "next/link";
 import CustomChart from "./CustomChart";
 import example_entries from "./example_entries";
-import { getHasEntryThisWeek } from "@/helpers";
 
 import EntryCard from "./EntryCard";
 
@@ -141,7 +141,12 @@ export default async function HomePage() {
 
             <div className={clsx("space-y-2 max-w-5xl mx-auto", isExample ? "opacity-40 pointer-events-none" : "")}>
                 {!hasEntryThisWeek && (
-                    <Card className="bg-success-50 dark:bg-success-100 w-full" isPressable={true} href="/entry" as={Link}>
+                    <Card
+                        className="bg-success-50 dark:bg-success-100 w-full"
+                        isPressable={true}
+                        href="/entry"
+                        as={Link}
+                    >
                         <CardBody className="py-2">
                             <span className="text-success text-lg font-semibold">+ Create Entry for This Week</span>
                         </CardBody>

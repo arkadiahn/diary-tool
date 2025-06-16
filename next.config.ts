@@ -2,10 +2,12 @@ import type { NextConfig } from "next";
 import envSchema from "./envSchema";
 
 /* -------------------------------------------------------------------------- */
-/*                                 Check ENVs                                 */
+/*                             Check Runtime ENVs                             */
 /* -------------------------------------------------------------------------- */
 try {
-    envSchema.parse(process.env);
+    if (process.env.NEXT_PHASE === "phase-production-build") {
+        envSchema.parse(process.env);
+    }
 } catch (error) {
     console.error("Missing required environment variables:", error);
     process.exit(1);

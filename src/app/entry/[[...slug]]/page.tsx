@@ -1,7 +1,7 @@
-import { auth } from "@/auth";
-import prisma from "@/prisma";
+import { auth } from "@/lib/auth";
+import { getHasEntryThisWeek, isEditable } from "@/lib/helpers";
+import prisma from "@/lib/prisma";
 import { Button, Input, Textarea } from "@heroui/react";
-import { getHasEntryThisWeek, isEditable } from "@/helpers";
 import { Card, CardBody } from "@heroui/react";
 import { notFound, redirect } from "next/navigation";
 import GoalsSection from "./GoalsSection";
@@ -33,14 +33,14 @@ export default async function NewDiaryPage({ params }: { params: Promise<{ slug:
         return notFound();
     }
 
-	const diaries = await prisma.diary.findMany({
-		where: {
-			accountId: session?.user.sub,
-		},
-	});
-	if (!entry && getHasEntryThisWeek(diaries)) {
-		return notFound();
-	}
+    const diaries = await prisma.diary.findMany({
+        where: {
+            accountId: session?.user.sub,
+        },
+    });
+    if (!entry && getHasEntryThisWeek(diaries)) {
+        return notFound();
+    }
 
     const handleSubmitWithEntry = handleSubmit.bind(null, entry);
 
