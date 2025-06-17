@@ -12,7 +12,7 @@ import { handleSubmit } from "./actions";
 export default async function NewDiaryPage({ params }: { params: Promise<{ slug: string[] }> }) {
     const session = await auth();
     if (!session) {
-        // @todo do this better/somewhere else
+		// @todo improve this to redirect to signin
         redirect("/");
     }
     const slug = (await params).slug;
@@ -26,6 +26,7 @@ export default async function NewDiaryPage({ params }: { params: Promise<{ slug:
               },
               where: {
                   id: slug[0],
+
               },
           })
         : null;

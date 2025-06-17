@@ -22,7 +22,7 @@ export default function Footer() {
                         <SystemStatus />
                     </div>
                     <p className="text-center text-tiny text-default-400 md:text-start">
-                        &copy; {new Date().getFullYear()} DiaryTool. Made with ❤️ by{" "}
+                        DiaryTool. Made with ❤️ by{" "}
                         <a href="https://arkadia.hn" target="_blank" rel="noopener noreferrer" className="text-primary">
                             Arkadia Heilbronn gGmbH
                         </a>
